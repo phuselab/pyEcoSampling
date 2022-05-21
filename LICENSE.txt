@@ -1,0 +1,6 @@
+License:
+
+The program is free for non-commercial academic use. Please
+contact the authors if you are interested in using the software
+for commercial purposes. The software must not be modified or
+re-distributed without prior permission of the authors.
