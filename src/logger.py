@@ -1,12 +1,13 @@
+import os
 import sys
 import logging
 
 from config import Config
 
-class Logger():
+class Logger:
 
     def __init__(self, name, logging_level=logging.DEBUG, filename="logger.log"):
-        config = Configuration()
+        config = Config()
         logger = logging.getLogger(name)
         logger.setLevel(logging_level)
         formatter = logging.Formatter(

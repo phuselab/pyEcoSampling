@@ -44,8 +44,8 @@ def esComputeFeatures(fov_seq, feature_type, feature_params):
     """
 
     if feature_type == '3DLARK_SELFRESEMBLANCE':
-        fmap = ThreeDLARK(fov_seq, feature_params)
-        return fmap
+        feature_map = ThreeDLARK(fov_seq, feature_params)
+        return feature_map
     else:
         print("UNKNOWN TYPE OF EXPERIMENT")
 

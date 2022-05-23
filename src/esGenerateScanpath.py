@@ -1,3 +1,12 @@
+from config import GeneralConfig, SaliencyConfig, GazeConfig
+
+import os
+import cv2
+import numpy as np
+
+from utils.mkGaussian import mkGaussian
+import matplotlib.pyplot as plt
+
 # function esGenerateScanpath(config_file,  nOBS)
 # %esGenerateScanpath - Generates a scanpath on video by computing gaze shifts
 # %                     through Ecological Sampling (ES)
@@ -62,193 +71,201 @@
 # % Changes
 # %   12/12/2012  First Edition
 # %
+
+def esGenerateScanpath(config_file,  n_obs):
+
 # error(nargchk(1, 2, nargin));
 # if ~exist('nOBS', 'var') || isempty(nOBS)
 #     nOBS = 1;
 # end
 
-# try
-#     eval(config_file);
-# catch ME
-#     disp('error in evaluating config script')
-#     ME
-# end
 
-# %% INITIALIZATION
-# % The EXPERIMENT_TYPE sets Feature Extraction and Salience Map methods
-# %
-# % Setting feature parameters
-# if strcmp(EXPERIMENT_TYPE,'3DLARK_SELFRESEMBLANCE')
-#     % Set 3-D LARKs Parameters
-#     fType          = EXPERIMENT_TYPE;
-#     fParam.wsize   = WSIZE; % LARK spatial window size
-#     fParam.wsize_t = WSIZE_T; % LARK temporal window size
-#     fParam.alpha   = LARK_ALPHA; % LARK sensitivity parameter
-#     fParam.h       = LARK_H;  % smoothing parameter for LARK
-#     fParam.sigma   = LARK_SIGMA; % fall-off parameter for self-resemblamnce
-# else
-#         error('Unknown FEATURE type');
-# end
+    ## INITIALIZATION
+    # The EXPERIMENT_TYPE sets Feature Extraction and Salience Map methods
+    # Setting feature parameters
+    if GeneralConfig.EXPERIMENT_TYPE == '3DLARK_SELFRESEMBLANCE':
+        # Set 3-D LARKs Parameters
+        feature_type = GeneralConfig.EXPERIMENT_TYPE
+        feature_params = {}
+        feature_params["wsize"] = SaliencyConfig.WSIZE # LARK spatial window size
+        feature_params["wsize_t"] = SaliencyConfig.WSIZE_T # LARK temporal window size
+        feature_params["alpha"] = SaliencyConfig.LARK_ALPHA # LARK sensitivity parameter
+        feature_params["h"] = SaliencyConfig.LARK_H  # Smoothing parameter for LARK
+        feature_params["sigma"] = SaliencyConfig.LARK_SIGMA # fall-off parameter for self-resemblamnce
+    else:
+        print('ERROR: EXPERIMENT_TYPE not defined')
 
-# % Setting salience parameters
-# if strcmp(EXPERIMENT_TYPE,'3DLARK_SELFRESEMBLANCE')
-#     % Set Self Resemblance Parameters
-#     salType        = EXPERIMENT_TYPE;
-#     sParam.wsize   = WSIZE; % LARK spatial window size
-#     sParam.wsize_t = WSIZE_T; % LARK temporal window size
-#     sParam.sigma   = LARK_SIGMA; % fall-off parameter for self-resemblamnce
-# else
-#         error('Unknown SALIENCE type');
-# end
+    # Setting salience parameters
+    if GeneralConfig.EXPERIMENT_TYPE == '3DLARK_SELFRESEMBLANCE':
+        # Set Self Resemblance Parameters
+        sal_type = GeneralConfig.EXPERIMENT_TYPE;
+        salience_params = {}
+        salience_params["wsize"] = SaliencyConfig.WSIZE; # LARK spatial window size
+        salience_params["wsize_t"] = SaliencyConfig.WSIZE_T; # LARK temporal window size
+        salience_params["sigma"] = SaliencyConfig.LARK_SIGMA; # Fall-off parameter for self-resemblamnce
+    else:
+        print("Error!")
 
-# % Set proto object structure
-# old_protoParam.B     = [];
-# old_protoParam.a     = [];
-# old_protoParam.r1    = [];
-# old_protoParam.r2    = [];
-# old_protoParam.cx    = [];
-# old_protoParam.cy    = [];
-# old_protoParam.theta = [];
+    # Set proto object structure
+    old_protoParam = {}
+    old_protoParam["B"] = []
+    old_protoParam["a"] = []
+    old_protoParam["r1"] = []
+    old_protoParam["r2"] = []
+    old_protoParam["cx"] = []
+    old_protoParam["cy"] = []
+    old_protoParam["theta"] = []
 
-# % Setting parameters for the $$Dirichlet(\pi; nu0,nu1,nu2)$$ distribution
-# nu(1)=1; nu(2)=1; nu(3)=1; % we start with equal probabilities
+    # Setting parameters for the $$Dirichlet(\pi; nu0,nu1,nu2)$$ distribution
+    nu = np.ones(3) # We start with equal probabilities
 
-# % Setting sampling parameters
+    # Setting sampling parameters
+    gaze_sampling_params = {}
+    # Internal simulation: somehow related to visibility: the more the points
+    # that can be sampled the higher the visibility of the field
+    gaze_sampling_params["NUM_INTERNALSIM"] = GazeConfig.NUM_INTERNALSIM # Maximum allowed number of candidate new  gaze position r_new
+    # % If anything goes wrong retry:
+    gaze_sampling_params["MAX_NUMATTEMPTS"] = GazeConfig.MAX_NUMATTEMPTS; # Maximum allowed tries for sampling e new valid gaze position
 
-# % Internal simulation: somehow related to visibility: the more the points
-# % that can be sampled the higher the visibility of the field
-# gazeSampParam.NUM_INTERNALSIM = NUM_INTERNALSIM; %maximum allowed number of candidate new  gaze position r_new
-# % If anything goes wrong retry:
-# gazeSampParam.MAX_NUMATTEMPTS = MAX_NUMATTEMPTS; %maximum allowed tries for sampling e new valid gaze position
+    # Setting parameters for the alpha-stable distribution
+    alpha_stable_params = {}
+    alpha_stable_params["alpha"] = GazeConfig.ALPHA_STABLE;
+    alpha_stable_params["beta"]  = GazeConfig.BETA_STABLE;
+    alpha_stable_params["gamma"] = GazeConfig.GAMMA_STABLE;
+    alpha_stable_params["delta"] = GazeConfig.DELTA_STABLE;
 
+    # Allocating some vectors to be used later
+    disorder_plot = []
+    order_plot = []
+    complexity_plot = []
+    if GeneralConfig.SAVE_FOA_ONFILE:
+        all_FOA = []
 
+    # Reads the first frame and gets some parameters: frame size, etc...
+    img_list = [os.path.join(GeneralConfig.FRAME_DIR, image) for image in os.listdir(GeneralConfig.FRAME_DIR) if image.endswith(".jpg")]
+    img_list.sort()
+    fnum = len(img_list)
+    img_1 = cv2.imread(img_list[0])
+    n_row, n_col = img_1[:,:,0].shape # Rows, columns
 
-# % Setting parameters for the alpha-stable distribution
-# alpha_stblParam.alpha = alpha_stable;
-# alpha_stblParam.beta  = beta_stable;
-# alpha_stblParam.gamma = gamma_stable;
-# alpha_stblParam.delta = delta_stable;
+    # Set 2D histogram structure
+    # nbinsx=fix(nrow/xbinsize); nbinsy=fix(ncol/ybinsize);
+    # XLO = 1; XHI = nrow; YLO = 1; YHI =ncol;
 
-# % Allocating some vectors to be used later
-# Disorderplot=[]; Orderplot=[]; Complplot=[];
-# if SAVE_FOA_ONFILE
-#     allFOA=[];
-# end
+    # Set first FOA: default frame center
+    foa_size = round(max(n_row, n_col) / 6)
+    if GazeConfig.FIRST_FOA_ON_CENTER:
+        x_center = round(n_row/2)
+        y_center = round(n_col/2)
+    else:
+        print('\n No methods defined for setting the first FOA')
 
-# % Reads the first frame and gets some parameters: frame size, etc...
-# imglist = dir([FRAME_DIR '*.jpg']);
-# fnum    = length(imglist);
-# im1     = imread([FRAME_DIR imglist(nNImageStart-1).name]);
-# [r c]   = size(im1(:,:,1)); % rows, columns
-# nrow=r;
-# ncol=c;
+    final_foa = np.array([x_center, y_center])
 
-# % Set 2D histogram structure
-# nbinsx=fix(nrow/xbinsize); nbinsy=fix(ncol/ybinsize);
-# XLO = 1; XHI = nrow; YLO = 1; YHI =ncol;
+    # Set visualization parameters
+    if GeneralConfig.VISUALIZE_RESULTS:
+        font_size = 18
+        line_width = 2
+        marker_size = 16
+        NUMLINE = 2
+        NUM_PICS_LINE = 5
+        # % Set up display window
+        # scrsz = get(0,'ScreenSize');
+        # figure('Position',[1 scrsz(4) scrsz(3) scrsz(4)],'Name','Ecological Sampling of Gaze Shift Demo','NumberTitle','off')
 
-# % Set first FOA: default frame center
-# foaSize = round(max(r,c) / 6);
-# if firstFOAonCENTER
-#         xc=round(r/2);
-#         yc=round(c/2);
-# else
-#     fprintf('\n No methods defined for setting the  first FOA');
-# end
-# finalFOA = [xc yc];
+    # Number of iterations
+    n = 0
+    # Number of proto_objects
+    numproto = 0
+    # Previous gaze shift direction
+    dir_old = 0
 
-# % Set visualization parameters
-# if VISUALIZE_RESULTS
-#     font_size=18; line_width=2 ; marker_size=16;
-#     NUMLINE=2;
-#     NUMPICSLINE=5;
-#     % Set up display window
-#     scrsz = get(0,'ScreenSize');
-#     figure('Position',[1 scrsz(4) scrsz(3) scrsz(4)],'Name','Ecological Sampling of Gaze Shift Demo','NumberTitle','off')
-# end
-
-
-# n        = 0; % number of iterations
-# numproto = 0; % number of proto_objects
-# dir_old  = 0; % previous gaze shift direction
-
-# %%THE ECOLOGICAL SAMPLING CYCLE UNFOLDING IN TIME
-# %
-# for iFrame=nNImageStart+offset:frameStep:nNImageEnd
-
-#     fprintf('\n Processing Frame #%d\n', iFrame);
+    # THE ECOLOGICAL SAMPLING CYCLE UNFOLDING IN TIME
+    start = GeneralConfig.NN_IMG_START + GeneralConfig.OFFSET
+    end = GeneralConfig.NN_IMG_END
+    step = GeneralConfig.FRAME_STEP
+    for frame in range(start, end, step):
+        print(f"Processing Frame #{frame}\n");
 
 #     % Choosing features and salience to be used within the experiment
-#     if strcmp(EXPERIMENT_TYPE,'3DLARK_SELFRESEMBLANCE')
-#         nFrames=WSIZE_T;
-#         n=n+1;
+        if GeneralConfig.EXPERIMENT_TYPE == '3DLARK_SELFRESEMBLANCE':
+            n_frames = SaliencyConfig.WSIZE_T
+            n += 1
+            # A. SAMPLING THE NATURAL HABITAT (VIDEO)
+            # Reading three consecutive frames
+            if GeneralConfig.VERBOSE:
+                print('Data acquisition')
 
-#         %%A. SAMPLING THE NATURAL HABITAT (VIDEO)
-#         %
-#         % Reading three consecutive frames
-#         if VERBOSE
-#             disp('Data acquisition')
-#         end
-#         predFrame = imread([FRAME_DIR imglist(iFrame-offset).name]);  % get previous frame
-#         currFrame = imread([FRAME_DIR imglist(iFrame).name]);         % get current frame
-#         nextFrame = imread([FRAME_DIR imglist(iFrame+offset).name]);  % get subsequent frame
+            pred_frame = cv2.imread(img_list[frame-GeneralConfig.OFFSET]) # Get previous frame
+            curr_frame = cv2.imread(img_list[frame]) # Get current frame
+            next_frame = cv2.imread(img_list[frame+GeneralConfig.OFFSET])# Get subsequent frame
 
-#         % Converting to grey level
-#         I        = zeros(r,c,nFrames);
-#         I(:,:,1) = rgb2gray(predFrame);
-#         I(:,:,2) = rgb2gray(currFrame);
-#         I(:,:,3) = rgb2gray(nextFrame);
+            # Converting to grey level
+            I = np.zeros((n_row, n_col, n_frames))
+            I[:,:,0] = cv2.cvtColor(pred_frame, cv2.COLOR_BGR2GRAY)
+            I[:,:,1] = cv2.cvtColor(curr_frame, cv2.COLOR_BGR2GRAY)
+            I[:,:,2] = cv2.cvtColor(next_frame, cv2.COLOR_BGR2GRAY)
 
-#         % For visualization
-#         show_currFrame=I(:,:,2);
+            # For visualization
+            show_curr_frame = curr_frame
 
-#         %%A.1 MAKES A FOVEATED FRAME
-#         %
-#         % Using:
-#         %   IM = mkGaussian(SIZE, COVARIANCE, MEAN, AMPLITUDE)
-#         %
-#         %   Compute a matrix with dimensions SIZE (a [Y X] 2-vector, or a
-#         %   scalar) containing a Gaussian function, centered at pixel position
-#         %   specified by MEAN (default = (size+1)/2), with given COVARIANCE (can
-#         %   be a scalar, 2-vector, or 2x2 matrix.  Default = (min(size)/6)^2),
-#         %   and AMPLITUDE.  AMPLITUDE='norm' (default) will produce a
-#         %   probability-normalized function.  All but the first argument are
-#         %   optional.
-#         %   from Eero Simoncelli, 6/96.
-#         if VERBOSE
-#             disp('Makes a foa dependent image')
-#         end
-#         sz=[r,c];   cov=(min(sz(1),sz(2))/1.5)^2.5;
-#         foaFilter = mkGaussian(sz, cov, finalFOA',1);
-#         foveated_I(:,:,1)= double(I(:,:,1)).*foaFilter;
-#         foveated_I(:,:,2)= double(I(:,:,2)).*foaFilter;
-#         foveated_I(:,:,3)= double(I(:,:,3)).*foaFilter;
+            # A.1 MAKES A FOVEATED FRAME
 
-#         %For visualization
-#         show_foveatedFrame = foveated_I(:,:,2);
+            #   Using:
+            #   IM = mkGaussian(SIZE, COVARIANCE, MEAN, AMPLITUDE)
 
-#         %%A.2 COMPUTE FEATURES OF THE PHYSICAL LANDSCAPE
-#         %
-#         % reducing the frame to [64 64] dimension suitable for feature
-#         % extraction
-#         if VERBOSE
-#             disp('Get features')
-#         end
-#         S = imresize(double(foveated_I(:,:,1)),[64 64],'bilinear');
-#         Seq(:,:,1) = S/std(S(:));
-#         S = imresize(double(foveated_I(:,:,2)),[64 64],'bilinear');
-#         Seq(:,:,2) = S/std(S(:));
-#         S = imresize(double(foveated_I(:,:,3)),[64 64],'bilinear');
-#         Seq(:,:,3) = S/std(S(:));
-#         Seq = Seq/std(Seq(:));
+            #   Compute a matrix with dimensions SIZE (a [Y X] 2-vector, or a
+            #   scalar) containing a Gaussian function, centered at pixel position
+            #   specified by MEAN (default = (size+1)/2), with given COVARIANCE (can
+            #   be a scalar, 2-vector, or 2x2 matrix.  Default = (min(size)/6)^2),
+            #   and AMPLITUDE.  AMPLITUDE='norm' (default) will produce a
+            #   probability-normalized function.  All but the first argument are
+            #   optional.
+            #   from Eero Simoncelli, 6/96.
+            if GeneralConfig.VERBOSE:
+                print('Makes a foa dependent image')
 
-#         % The method for computing features has been set in the
-#         % config_file
-#         fMap = esComputeFeatures(Seq, fType, fParam);
+            size = np.array([n_row, n_col])
+            cov = (np.min(size)/1.5)**2.5
+            conjugate_T_foa = final_foa.conj().T
 
-#         % using the current frame for visualization
-#         show_fMap = imresize(double(fMap(:,:,2)),[nrow ncol],'bilinear');
-#         foveated_fMap = fMap;
+
+            foa_filter = mkGaussian(size, cov, conjugate_T_foa, 1)
+
+            foveated_I = np.zeros((n_row, n_col, n_frames))
+            foveated_I[:,:,0] = np.multiply(I[:,:,0].astype('double'), foa_filter)
+            foveated_I[:,:,1] = np.multiply(I[:,:,1].astype('double'), foa_filter)
+            foveated_I[:,:,2] = np.multiply(I[:,:,2].astype('double'), foa_filter)
+
+            # For visualization
+            show_foveated_frame = foveated_I[:,:,1]
+
+
+            # A.2 COMPUTE FEATURES OF THE PHYSICAL LANDSCAPE
+            #
+            # reducing the frame to [64 64] dimension suitable for feature
+            # extraction
+            # if GeneralConfig.VERBOSE:
+            #     print('Get features')
+
+            # S = cv2.resize(foveated_I[:,:,0].astype('double'), (64, 64)) # Bilinear by default
+            # Seq[:,:,0] = S / np.std(S[:])
+
+            # S = cv2.resize(foveated_I[:,:,1].astype('double'), (64, 64))
+            # Seq[:,:,1] = S / np.std(S[:])
+
+            # S = cv2.resize(foveated_I[:,:,2].astype('double'), (64, 64))
+            # Seq[:,:,2] = S / np.std(S[:])
+
+            # Seq = Seq / np.std(Seq[:])
+
+            # The method for computing features has been set in the
+            # config_file
+            # fMap = esComputeFeatures(Seq, feature_type, feature_params)
+
+            # Using the current frame for visualization
+            # show_fMap = imresize(double(fMap(:,:,2)),[nrow ncol],'bilinear')
+            # foveated_fMap = fMap;
 
 #         %%A.3 SAMPLE THE FOVEATED SALIENCE MAP
 #         %
@@ -482,24 +499,34 @@
 #         end
 #     end
 
-#     if VISUALIZE_RESULTS
-#         %%THE ART CORNER
-#         countpics=1;
-#         % Displaying relevant steps of the process.
-#         %figure(1);
+            if GeneralConfig.VISUALIZE_RESULTS:
 
-#         % 1. The original frame.
-#         subplot(NUMLINE, NUMPICSLINE, countpics); sc(currFrame); label(currFrame, 'Current frame');
+                # Displaying relevant steps of the process.
+                #figure(1);
+                fig, ax = plt.subplots(NUMLINE, NUM_PICS_LINE, figsize=(15, 5))
 
-#         % 2. The foveated frame.
-#         countpics=countpics+1;
-#         subplot(NUMLINE, NUMPICSLINE, countpics);  sc(show_foveatedFrame); label(show_foveatedFrame, 'Foveated Frame')
-#         if SAVE_FOV_IMG
-#             [X,MAP]= frame2im(getframe);
-#             FILENAME=[RESULT_DIR VIDEO_NAME '/FOV/FOV' imglist(iFrame).name];
-#             imwrite(X,FILENAME,'jpeg');
-#         end
+                # 1. The original frame.
+                ax[0, 0].imshow(cv2.cvtColor(show_curr_frame, cv2.COLOR_BGR2RGB))
+                ax[0, 0].set_title('Current frame')
 
+                # subplot(NUMLINE, NUMPICSLINE, countpics);
+                # sc(currFrame);
+                # label(currFrame, 'Current frame');
+
+                # 2. The foveated frame.
+                ax[0, 1].imshow(show_foveated_frame, cmap='gray')
+                ax[0, 1].set_title('Foveated frame')
+                plt.tight_layout()
+                plt.show()
+                if GeneralConfig.SAVE_FOV_IMG:
+                    pass
+                    # [X,MAP]= frame2im(getframe);
+                    # FILENAME=[RESULT_DIR VIDEO_NAME '/FOV/FOV' imglist(iFrame).name];
+                    # imwrite(X,FILENAME,'jpeg');
+
+
+
+            break
 #         % 3. The feature map
 #         countpics=countpics+1;
 #         subplot(NUMLINE, NUMPICSLINE, countpics); sc(show_fMap); label(show_fMap, 'Feature Map')

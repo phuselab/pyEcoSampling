@@ -1,6 +1,6 @@
 import numpy as np
 
-    # % References
+# % References
 # %  J. Shiner, M. Davison, and P. Landsberg, ?Simple measure for complexity,?
 # %  Physical review E, vol. 59, no. 2, pp. 1459?1464, 1999.
 # %

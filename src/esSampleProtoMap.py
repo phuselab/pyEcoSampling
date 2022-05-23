@@ -1,33 +1,3 @@
-# function [M_tMap, protoMap protoMap_raw normSal] = esSampleProtoMap(sMap,...
-#                                                           currFrame,...
-#                                                           nBestProto)
-# %esSampleProtoMap - Generates the patch map M(t)
-# %
-# % Synopsis
-# %          [protoMap protoMap_raw normSal] = esSampleProtoMap(sMap,currFrame, nBestProto)
-# %
-# % Description
-# %     In a first step generates the raw patch map by thresholding  the normalized salience map
-# %     so as to achieve 95% significance level for deciding whether the given saliency values are
-# %     in the extreme tails
-# %     In a second step get the N_V best patches ranked through their size and returns the actual
-# %     M(t) map
-# %
-# %
-# % Inputs ([]s are optional)
-# %   (matrix) sMap         the salience map, 0/1 overlay representation
-# %   (matrix) currFrame    the current frame
-# %   (integer) nBestProto  the N_V most valuable patches
-# %
-# %
-# % Outputs ([]s are optional)
-# %   (matrix) M_tMap       the patch map M(t)
-# %   (matrix) protoMap     the object layer representation of patch map M(t)
-# %   (matrix) protoMap_raw   the raw patch map
-# %   (matrix) normSal      the normalized salience map
-# %
-# %
-# %
 # % Requirements
 # %   Image Processing toolbox
 # %
@@ -35,52 +5,93 @@
 # %   [1] G. Boccignone and M. Ferraro, Ecological Sampling of Gaze Shifts
 # %       IEEE Trans. Systems Man Cybernetics - Part B (to appear)
 # %
-# %
 # % Author
 # %   Giuseppe Boccignone <Giuseppe.Boccignone(at)unimi.it>
-# %
 # %
 # % Changes
 # %   12/12/2012  First Edition
 # %
 
-# protoMap_raw= false(size(sMap)); % allocating space for the raw map
+import numpy as np
 
-# % Normalizing salience
-# normSal=sMap;
-# maxsal=max(max(normSal));
-# minsal=min(min(normSal));
-# normSal= (normSal-minsal)./(maxsal-minsal);
-# normSal=normSal*100;
+def esSampleProtoMap(s_map, curr_frame, n_best_proto):
+    """Generates the patch map M(t).
 
-# % Salience thresholding
-# % Method 1: adaptive on mu
-# %mu=mean2(sal);
-# %stdv=std2(sal);
-# %ind=find(sal>=4*mu); %standard measure 3*mu
-# % Method 2: percentile based
-# ind=find(normSal >= prctile(normSal(:),90));
-# protoMap_raw(ind)=1;
-# protoMap_raw(ind)= currFrame(ind);
+    In a first step generates the raw patch map by thresholding  the normalized salience map
+    so as to achieve 95% significance level for deciding whether the given saliency values are
+    in the extreme tails
+    In a second step get the N_V best patches ranked through their size and returns the actual
+    M(t) map
+
+    Args:
+        s_map (matrix): the salience map, 0/1 overlay representation
+        curr_frame (matrix): the current frame
+        n_best_proto (integer): the N_V most valuable patches
+
+    Outputs:
+        M_tMap (matrix): the patch map M(t)
+        proto_map (matrix): the object layer representation of patch map M(t)
+        proto_map_raw (matrix): the raw patch map
+        norm_sal (matrix): the normalized salience map
+
+    Returns:
+        _type_: _description_
+    """
+
+    protomap_raw = np.zeros(s_map.shape)
+    # Normalizing salience
+    norm_sal = s_map
+    max_sal = np.max(norm_sal)
+    min_sal = np.min(norm_sal)
+    norm_sal = np.divide((norm_sal-min_sal),(max_sal-min_sal))
+    norm_sal = norm_sal*100
+
+    # Method percentile based
+    ind = np.stack(np.where(norm_sal >= np.percentile(norm_sal,95)), axis=-1)
+    protomap_raw[ind[:,0], ind[:,1]] = 1
+
+    # Samples the N_V best patches
+    opening_window=7
+    M_tMap = esSampleNbestProto(protomap_raw, n_best_proto, opening_window)
+
+    protoMap = np.logical_not(M_tMap)
+
+    return M_tMap, protoMap
+
+    # ind=find(normSal >= prctile(normSal(:),90));
+    # protoMap_raw(ind)=1;
+    # protoMap_raw(ind)= currFrame(ind);
 
 
-# % Samples the N_V best patches
-# openingwindow=7;
-# M_tMap = esSampleNbestProto(protoMap_raw,nBestProto,openingwindow);
+
+    # openingwindow=7;
+    # M_tMap = esSampleNbestProto(protoMap_raw,nBestProto,openingwindow);
 
 
-# protoMap= M_tMap;
-# fbw = M_tMap==0;
-# protoMap(fbw) = 1;
-# fbw = M_tMap==1;
-# protoMap(fbw) = 0;
-# end
+    # protoMap= M_tMap;
+    # fbw = M_tMap==0;
+    # protoMap(fbw) = 1;
+    # fbw = M_tMap==1;
+    # protoMap(fbw) = 0;
+    # end
 
 
-# % -------------------------------------------------
-# function M_tMap = esSampleNbestProto(protoMap_raw, nBest, win)
-# %esSampleNbestProto - Samples the N_V best patches ranked through their size and returns the actual
-# %                     M(t) map
+
+def esSampleNbestProto(protoMap_raw, nBest, win):
+    """Samples the N_V best patches.
+
+    Samples the N_V best patches ranked through their size and returns the actual
+    M(t) map
+
+    Args:
+        protoMap_raw (matrix): the raw patch map
+        nBest (integer): the N_V most valuable patches
+        win (integer): the window size
+
+    Returns:
+       M_tMap (matrix): the patch map M(t)
+    """
+    pass
 
 # % Use morphological operations
 # se = strel('disk',win);

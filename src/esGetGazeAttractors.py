@@ -1,20 +1,8 @@
+import numpy as np
+
 # function FOA_attractors = esGetGazeAttractors(landscape, predFOA, numproto, SIMPLE_ATTRACTOR)
 
-# %esGetGazeAttractors - Samples the possible gaze attractors
-# %
-# %
-# % Synopsis
-# %          FOA_attractors = esGetGazeAttractors(landscape, predFOA, numproto, SIMPLE_ATTRACTOR)
-# %
-# % Description
-# %     Function computing possible ONE or MULTIPLE gaze attractors
-# %     If a landscape of proto-objects is given then their centers are used as described in [1]
-# %     Otherwise attractors are determined through the IPs sampled from saliency as in [2].
-# %
-# %
-# % Inputs ([]s are optional)
-# %   (struct) landscape                  The parameters for setting the
-# %                                       landscape representation (proto-objects or straight IPs
+# %   (struct) landscape
 # %    - areaProto;
 # %    - protObject_centers;
 # %        or
@@ -22,25 +10,9 @@
 # %    - xbinsize;
 # %    - ybinsize;
 # %    - NMAX;
-# %   (vector) predFOA                    1 x 2 vector representing the previous FoA coordinates
-# %   (scalar) numproto                   actual number of proto-objects
-# %   (bool)   SIMPLE_ATTRACTOR           if true (1) using a single best
-# %                                       attractor; otherwise, determines multiple attractors
-# %
-# % Outputs ([]s are optional)
-# %
-# %   (matrix) FOA_attractors             N_V x 2 matrix representing the
-# %                                        FoA attractors
-# %
-# % Example:
-# %
-# %
-# %
+
 # % See also
 # %   esGazeSampling
-# %
-# % Requirements
-# %
 # %
 # % References
 # %   [1] G. Boccignone and M. Ferraro, Ecological Sampling of Gaze Shifts
@@ -51,8 +23,6 @@
 # %       G. Maino and G. Foresti, Eds.	Springer Berlin / Heidelberg, 2011,
 # %       vol. 6978, pp. 187?196.
 # %
-# %
-# %
 # % Author
 # %   Giuseppe Boccignone <Giuseppe.Boccignone(at)unimi.it>
 # %
@@ -60,33 +30,63 @@
 # %   12/12/2012  First Edition
 # %
 
-# MAKE_STABLE= false;  % if true: if multiple maxima, choose the first closest one to the previous FOA for stability
-#                      % purposes
-
-# % Setting the landscape
-# if numproto
-#    areaProto          = landscape.areaProto;
-#    protObject_centers = landscape.protObject_centers;
-# else
-#    histmat  = landscape.histmat;
-#    xbinsize = landscape.xbinsize;
-#    ybinsize = landscape.ybinsize;
-#    NMAX     = landscape.NMAX;
-# end
 
 
-# % LANDSCAPE EVALUATION
-# if SIMPLE_ATTRACTOR
-#     if numproto
-#         % patch of maximum area to set at least 1 potential candidateFOA mean
-#         maxProto = max(areaProto);
-#         ind      = find(maxProto==areaProto);
-#         % center of the patch
-#         foax     = round(protObject_centers(ind,1));
-#         foay     = round(protObject_centers(ind,2));
+def esGetGazeAttractors(landscape, predFOA, numproto, SIMPLE_ATTRACTOR):
+    """Samples the possible gaze attractors.
+
+    Function computing possible ONE or MULTIPLE gaze attractors
+    If a landscape of proto-objects is given then their centers are used as described in [1].
+    Otherwise attractors are determined through the IPs sampled from saliency as in [2].
+
+    Args:
+        landscape (dict): The parameters for setting the landscape representation
+            (proto-objects or straight IPs)
+        predFOA (vector): 1 x 2 vector representing the previous FoA coordinates
+        numproto (integer): actual number of proto-objects
+        SIMPLE_ATTRACTOR (bool): if true (1) using a single best attractor;
+            otherwise, determines multiple attractors
+
+    Returns:
+        FOA_attractors (matrix):  N_V x 2 matrix representing the FoA attractors
+    """
+
+    # If true: if multiple maxima, choose the first closest one
+    # to the previous FOA for stability purposes
+    MAKE_STABLE = False
+
+    # Setting the landscape
+    if numproto:
+        area_proto = landscape["areaProto"]
+        prot_object_centers = landscape["protObject_centers"]
+    else:
+        histmat = landscape["histmat"]
+        xbin_size = landscape["xbinsize"]
+        ybin_size = landscape["ybinsize"]
+        NMAX = landscape["NMAX"]
+
+
+    # Landscape Evaluation
+    if SIMPLE_ATTRACTOR:
+        if numproto:
+            # Patch of maximum area to set at least 1 potential candidateFOA mean
+            index = np.argmax(area_proto)
+            max_proto = area_proto[index]
+            # Center fo the Patch
+            foa_x = round(prot_object_centers[index, 0])
+            foa_y = round(prot_object_centers[index, 1])
+        else:
+            # Histogram maximum to set at least 1 potential candidateFOA mean
+            max_hist = np.max(np.max(histmat))
+            x_max, y_max = np.where(histmat == max_hist)
+            k = 1
+            if MAKE_STABLE:
+                # If multiple maxima, choose the first closest one
+                # to the previous FOA for stability purposes
+                X = (x_max, y_max)
+                XI =
 
 #     else
-#         % histogram maximum to set at least 1 potential candidateFOA mean
 #         maxhist     = max(max(histmat));
 #         [xmax ymax] = find(maxhist==histmat);
 #         k=1;

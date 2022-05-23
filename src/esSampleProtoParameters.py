@@ -31,8 +31,6 @@
 # %                                the rotation parameter
 # %                                 - new_protoParam.theta  normal form parameters
 # %
-# %
-# %
 # % Requirements
 # %   fitellip.m
 # %
