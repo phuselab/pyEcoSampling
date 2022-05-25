@@ -17,7 +17,7 @@
 # %
 
 
-
+from saliency_tools import ThreeDLARK as lark
 
 def esComputeFeatures(fov_seq, feature_type, feature_params):
     """Computes features using a foveated sequence of frames.
@@ -44,7 +44,7 @@ def esComputeFeatures(fov_seq, feature_type, feature_params):
     """
 
     if feature_type == '3DLARK_SELFRESEMBLANCE':
-        feature_map = ThreeDLARK(fov_seq, feature_params)
+        feature_map = lark.ThreeDLARK(fov_seq, feature_params)
         return feature_map
     else:
         print("UNKNOWN TYPE OF EXPERIMENT")

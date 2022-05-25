@@ -1,4 +1,5 @@
 
+from saliency_tools.SpaceTimeSaliencyMap import SpaceTimeSaliencyMap
 
 # % See also
 # %   SpaceTimeSaliencyMap
@@ -47,7 +48,7 @@ def esComputeSalience(f_map, seq, sal_type, s_param):
     """
     if sal_type == '3DLARK_SELFRESEMBLANCE':
         # Compute 3-D SELF RESEMBLANCE SPATIO TEMPORAL SALIENCY
-        sm = SpaceTimeSaliencyMap(seq, f_map, s_param["wsize"], s_param["wsize_t"], s_param["sigma"])
+        sm = SpaceTimeSaliencyMap(seq, f_map, s_param)
         # Salience on the current frame
         s_map = sm[:,:,2]
         return s_map

@@ -24,8 +24,8 @@ def mkGaussian(size, cov=None, mean=None, amplitude='norm'):
     if mean is None:
         mean = (size+1)/2
 
+    x_ramp, y_ramp = np.meshgrid(np.arange(1, size[1]+1) - mean[1], np.arange(1, size[0]+1) - mean[0])
 
-    x_ramp, y_ramp = np.meshgrid(np.arange(0, size[1]) - mean[1], np.arange(0, size[0]) - mean[0])
 
     if np.isscalar(cov):  # Scalar
         if amplitude == 'norm':

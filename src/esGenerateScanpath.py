@@ -1,10 +1,23 @@
-from config import GeneralConfig, SaliencyConfig, GazeConfig
+from turtle import shape
+from config import GeneralConfig, SaliencyConfig, GazeConfig, ProtoConfig
 
 import os
 import cv2
 import numpy as np
 
+from skimage import io
+from skimage.color import rgb2gray
+from skimage.transform import resize
+
 from utils.mkGaussian import mkGaussian
+from esComputeFeatures import esComputeFeatures
+from esComputeSaliency import esComputeSalience
+from esSampleProtoMap import esSampleProtoMap
+from esSampleProtoParameters import esSampleProtoParameters
+
+from matplotlib.patches import Ellipse
+
+
 import matplotlib.pyplot as plt
 
 # function esGenerateScanpath(config_file,  nOBS)
@@ -145,7 +158,7 @@ def esGenerateScanpath(config_file,  n_obs):
     img_list = [os.path.join(GeneralConfig.FRAME_DIR, image) for image in os.listdir(GeneralConfig.FRAME_DIR) if image.endswith(".jpg")]
     img_list.sort()
     fnum = len(img_list)
-    img_1 = cv2.imread(img_list[0])
+    img_1 = io.imread(img_list[0])
     n_row, n_col = img_1[:,:,0].shape # Rows, columns
 
     # Set 2D histogram structure
@@ -196,15 +209,20 @@ def esGenerateScanpath(config_file,  n_obs):
             if GeneralConfig.VERBOSE:
                 print('Data acquisition')
 
-            pred_frame = cv2.imread(img_list[frame-GeneralConfig.OFFSET]) # Get previous frame
-            curr_frame = cv2.imread(img_list[frame]) # Get current frame
-            next_frame = cv2.imread(img_list[frame+GeneralConfig.OFFSET])# Get subsequent frame
+            # print(img_list[frame])
+            pred_frame = io.imread(img_list[frame-GeneralConfig.OFFSET]) # Get previous frame
+            curr_frame = io.imread(img_list[frame]) # Get current frame
+            next_frame = io.imread(img_list[frame+GeneralConfig.OFFSET])# Get subsequent frame
 
             # Converting to grey level
             I = np.zeros((n_row, n_col, n_frames))
-            I[:,:,0] = cv2.cvtColor(pred_frame, cv2.COLOR_BGR2GRAY)
-            I[:,:,1] = cv2.cvtColor(curr_frame, cv2.COLOR_BGR2GRAY)
-            I[:,:,2] = cv2.cvtColor(next_frame, cv2.COLOR_BGR2GRAY)
+            I[:,:,0] = rgb2gray(pred_frame)
+            # cv2.cvtColor(pred_frame, cv2.COLOR_BGR2GRAY)
+            I[:,:,1] = rgb2gray(curr_frame)
+            #  cv2.cvtColor(curr_frame, cv2.COLOR_BGR2GRAY)
+            I[:,:,2] = rgb2gray(next_frame)
+            #  cv2.cvtColor(next_frame, cv2.COLOR_BGR2GRAY)
+
 
             # For visualization
             show_curr_frame = curr_frame
@@ -240,114 +258,118 @@ def esGenerateScanpath(config_file,  n_obs):
             # For visualization
             show_foveated_frame = foveated_I[:,:,1]
 
-
             # A.2 COMPUTE FEATURES OF THE PHYSICAL LANDSCAPE
-            #
+
             # reducing the frame to [64 64] dimension suitable for feature
             # extraction
-            # if GeneralConfig.VERBOSE:
-            #     print('Get features')
+            if GeneralConfig.VERBOSE:
+                print('Get features')
 
-            # S = cv2.resize(foveated_I[:,:,0].astype('double'), (64, 64)) # Bilinear by default
-            # Seq[:,:,0] = S / np.std(S[:])
 
-            # S = cv2.resize(foveated_I[:,:,1].astype('double'), (64, 64))
-            # Seq[:,:,1] = S / np.std(S[:])
+            Seq=np.zeros((64, 64, n_frames))
+            S = resize(foveated_I[:,:,0].astype('double'), (64, 64), order=1) # Bilinear by default
+            Seq[:,:,0] = np.divide(S, np.std(S[:]))
+            S = resize(foveated_I[:,:,1].astype('double'), (64, 64), order=1)
+            Seq[:,:,1] = S / np.std(S[:])
+            S = resize(foveated_I[:,:,2].astype('double'), (64, 64), order=1)
+            Seq[:,:,2] = S / np.std(S[:])
+            Seq = Seq / np.std(Seq[:])
 
-            # S = cv2.resize(foveated_I[:,:,2].astype('double'), (64, 64))
-            # Seq[:,:,2] = S / np.std(S[:])
 
-            # Seq = Seq / np.std(Seq[:])
-
-            # The method for computing features has been set in the
-            # config_file
-            # fMap = esComputeFeatures(Seq, feature_type, feature_params)
-
+            # The method for computing features has been set in the config_file
+            fMap = esComputeFeatures(Seq, feature_type, feature_params)
             # Using the current frame for visualization
-            # show_fMap = imresize(double(fMap(:,:,2)),[nrow ncol],'bilinear')
-            # foveated_fMap = fMap;
+            # print(fMap[:,:,1,1])
+            show_feature_map = resize(fMap[:,:,1,1].astype('double'), (n_row, n_col), order=1)
+            foveated_feature_map = fMap
 
-#         %%A.3 SAMPLE THE FOVEATED SALIENCE MAP
-#         %
-#         % The method for sampling the salience has been set in the
-#         % config_file
-#         if VERBOSE
-#             disp('Sample a saliency map')
-#         end
-#         sMap  = esComputeSalience(foveated_fMap, Seq, salType, sParam);
-#         sMap  = imresize(sMap(:,:),[size(I,1) size(I,2)]);
+            # A.3 SAMPLE THE FOVEATED SALIENCE MAP
+            #
+            # The method for sampling the salience has been set in the
+            # config_file
+            if GeneralConfig.VERBOSE:
+                print('Sample a saliency map')
 
-#         % for visualization
-#         show_sMap = sMap;
-#     else
-#         error('Unknown experiment type');
-#     end
+            saliency_map = esComputeSalience(foveated_feature_map, Seq, sal_type, salience_params)
+            saliency_map = resize(saliency_map[:,], (I.shape[0], I.shape[1]), order=1)
 
-#     numproto = 0; %this will  change only if PROTO=1 and proto-objects sampled
-#     if PROTO
-#         %%A.4 SAMPLE PROTO-OBJECTS
-#         % Using the proto-object representation which is the base of method
-#         % described in IEEE Trans SMC paper [2]
-#         %
-#         % If no proto-object are detected or PROTO is false, then we simply
-#         % go back to the original procedure described in the ICIAP 2011
-#         % paper [2]
-#         %
+            # For visualization
+            # print(curr_frame[:,:,0].shape)
+            # print(saliency_map.shape)
+            # show_saliency_map = np.dstack((curr_frame, saliency_map))
 
-#         % Sampling the patch or proto-object map M(t)
-#         if VERBOSE
-#             fprintf('\n Sampling the proto-object map \n');
-#         end
-#         [M_tMap protoMap protoMap_raw sal] = esSampleProtoMap(sMap,currFrame,nBestProto);
-#         % we now have:
-#         %   the proto-object map                            M(t)
-#         %   the overlay rapresentation of proto-objects:    protoMap
-#         %   the raw proto-object map:                       protoMap_raw
-#         %   the normalized saliency:                        sal
 
-#         show_proto = protoMap_raw;
+            # print(show_saliency_map.shape)
 
-#         % Sampling the proto-object parameters
-#         if VERBOSE
-#             fprintf('\n Sampling the proto-object parameters \n');
-#         end
-#         [numproto new_protoParam] = esSampleProtoParameters(M_tMap, old_protoParam);
 
-#         % Saving current parameters
-#         old_protoParam.B     = new_protoParam.B;     % the proto-objects boundaries: B{k}
-#         % the proto-objects fitting ellipses parameters:
-#         %    a(1)x^2 + a(2)xy + a(3)y^2 + a(4)x + a(5)y + a(6) = 0
-#         old_protoParam.a     = new_protoParam.a;     % conics parameters: a{k}
-#         % normal form parameters: ((x-cx)/r1)^2 + ((y-cy)/r2)^2 = 1
-#         old_protoParam.r1    = new_protoParam.r1;    % axis
-#         old_protoParam.r2    = new_protoParam.r2;    % axis
-#         old_protoParam.cx    = new_protoParam.cx;    % patch centers
-#         old_protoParam.cy    = new_protoParam.cy;    % --
-#         % rotated by theta
-#         old_protoParam.theta = new_protoParam.theta; % normal form parameters
+        else:
+            print('Unknown experiment type')
 
-#         % Determine the center and the area of patches for subsequent IP
-#         % sampling
-#         % fprintf('\n Proto-objects centers x=%f y=%f \n', cx, cy);
-#         if numproto > 0
-#             protObject_centers = [new_protoParam.cx(:), new_protoParam.cy(:)];
-#             nV = size(protObject_centers,1);
-#             if VERBOSE
-#                 fprintf('\n Number of protObject_centers: %d \n', size(protObject_centers,1));
-#             end
-#             show_proto = imoverlay(currFrame, protoMap, [0 0 0]);
 
-#             areaProto=zeros(1,nV);
-#             %totArea=size(sal,1)*size(sal,2);
-#             %kmax=nV;
-#             for p=1:nV
-#                  %for all proto-objects: area of the fitting ellipse/area of the saliency map
-#                  areaProto(p)= new_protoParam.r1(p)*new_protoParam.r2(p)*pi;
-#             end
-#         end
-#     end
 
-#     %%A.5 SAMPLE INTEREST POINTS / PREYS
+
+        numproto = 0; # This will  change only if PROTO=1 and proto-objects sampled
+        if ProtoConfig.PROTO:
+            # A.4 SAMPLE PROTO-OBJECTS
+            # Using the proto-object representation which is the base of method
+            # described in IEEE Trans SMC paper [2]
+            #
+            # If no proto-object are detected or PROTO is false, then we simply
+            # go back to the original procedure described in the ICIAP 2011
+            # paper [2]
+
+            # Sampling the patch or proto-object map M(t)
+            if GeneralConfig.VERBOSE:
+                print('Sampling the proto-object map');
+
+            mt_map, protomap, protomap_raw, saliency_norm = esSampleProtoMap(saliency_map)
+
+            # We now have:
+            #   the proto-object map                            M(t)
+            #   the overlay rapresentation of proto-objects:    protoMap
+            #   the raw proto-object map:                       protoMap_raw
+            #   the normalized saliency:                        saliency_norm
+
+            show_proto = protomap_raw
+
+            # Sampling the proto-object parameters
+            if GeneralConfig.VERBOSE:
+                print('Sampling the proto-object parameters')
+
+            num_proto, new_proto_params = esSampleProtoParameters(mt_map, old_protoParam)
+
+            # Saving current parameters
+            old_protoParam["B"] = new_proto_params["B"] # The proto-objects boundaries: B{k}
+            # the proto-objects fitting ellipses parameters:
+            #    a(1)x^2 + a(2)xy + a(3)y^2 + a(4)x + a(5)y + a(6) = 0
+            old_protoParam["a"] = new_proto_params["a"]     # conics parameters: a{k}
+            # normal form parameters: ((x-cx)/r1)^2 + ((y-cy)/r2)^2 = 1
+            old_protoParam["r1"] = new_proto_params["r1"] # axis
+            old_protoParam["r2"] = new_proto_params["r2"] # axis
+            old_protoParam["cx"] = new_proto_params["cx"] # patch centers
+            old_protoParam["cy"] = new_proto_params["cy"] # --
+            # Rotated by theta
+            old_protoParam["theta"] = new_proto_params["theta"] # Normal form parameters
+
+            # Determine the center and the area of patches for subsequent IP
+            # sampling
+            cx = new_proto_params["cx"]
+            cy = new_proto_params["cy"]
+            if num_proto > 0:
+                proto_object_centers = np.array([list(cx.values()), list(cy.values())]).T
+                nV = proto_object_centers.shape[0]
+                if GeneralConfig.VERBOSE:
+                    print(f"Number of protObject_centers: {proto_object_centers.shape[0]}")
+
+                show_proto = np.ma.masked_where(protomap == 0, protomap)
+                area_proto = np.zeros(nV)
+
+
+                for p in range(0, nV):
+                    # for all proto-objects: area of the fitting ellipse/area of the saliency map
+                    area_proto[p] = new_proto_params["r1"][p]*new_proto_params["r2"][p]*np.pi
+
+#     %A.5 SAMPLE INTEREST POINTS / PREYS
 #     % sampling from proto-objects or directly from the map if numproto==0
 #     if numproto >0
 #         % Random sampling from proto-objects
@@ -405,9 +427,9 @@ def esGenerateScanpath(config_file,  n_obs):
 
 #     SampledPointsCoord=[xCord yCord];
 
-#     %%B. SAMPLING THE APPROPRIATE OCULOMOTOR ACTION
+#     %B. SAMPLING THE APPROPRIATE OCULOMOTOR ACTION
 
-#     %%B.1 EVALUATING THE COMPLEXITY OF THE SCENE
+#     %B.1 EVALUATING THE COMPLEXITY OF THE SCENE
 #     % $$ C(t)$$ captures the time-varying configurational complexity of interest points
 #     % within the landscape
 
@@ -439,7 +461,7 @@ def esGenerateScanpath(config_file,  n_obs):
 #     % Used for plotting the complexity curve in time
 #     Disorderplot=[Disorderplot Disorder]; Orderplot=[Orderplot Order]; Complplot=[Complplot Compl];
 
-#     %%B.2. ACTION SELECTION VIA LANDSCAPE COMPLEXITY
+#     %B.2. ACTION SELECTION VIA LANDSCAPE COMPLEXITY
 
 #     % Dirichlet hyper-parameter update
 #     nu = esHyperParamUpdate(nu, Disorder, Order, Compl, COMPL_EPS);
@@ -462,7 +484,7 @@ def esGenerateScanpath(config_file,  n_obs):
 #         fprintf('\n Action sampled: z = %d \n', z);
 #     end
 
-#     %%C. SAMPLING THE GAZE SHIFT
+#     %C. SAMPLING THE GAZE SHIFT
 #     %
 #     if VERBOSE
 #         fprintf('\n Sample gaze point \n');
@@ -499,66 +521,71 @@ def esGenerateScanpath(config_file,  n_obs):
 #         end
 #     end
 
-            if GeneralConfig.VISUALIZE_RESULTS:
+        if GeneralConfig.VISUALIZE_RESULTS:
 
-                # Displaying relevant steps of the process.
-                #figure(1);
-                fig, ax = plt.subplots(NUMLINE, NUM_PICS_LINE, figsize=(15, 5))
+            # Displaying relevant steps of the process.
+            #figure(1);
+            fig, ax = plt.subplots(NUMLINE, NUM_PICS_LINE, figsize=(15, 5))
 
-                # 1. The original frame.
-                ax[0, 0].imshow(cv2.cvtColor(show_curr_frame, cv2.COLOR_BGR2RGB))
-                ax[0, 0].set_title('Current frame')
+            # 1. The original frame.
+            ax[0, 0].imshow(show_curr_frame)
+            ax[0, 0].set_title('Current frame')
 
-                # subplot(NUMLINE, NUMPICSLINE, countpics);
-                # sc(currFrame);
-                # label(currFrame, 'Current frame');
+            # subplot(NUMLINE, NUMPICSLINE, countpics);
+            # sc(currFrame);
+            # label(currFrame, 'Current frame');
 
-                # 2. The foveated frame.
-                ax[0, 1].imshow(show_foveated_frame, cmap='gray')
-                ax[0, 1].set_title('Foveated frame')
-                plt.tight_layout()
-                plt.show()
-                if GeneralConfig.SAVE_FOV_IMG:
-                    pass
-                    # [X,MAP]= frame2im(getframe);
-                    # FILENAME=[RESULT_DIR VIDEO_NAME '/FOV/FOV' imglist(iFrame).name];
-                    # imwrite(X,FILENAME,'jpeg');
+            # 2. The foveated frame.
+            ax[0, 1].imshow(show_foveated_frame, cmap='gray')
+            ax[0, 1].set_title('Foveated frame')
+
+            if GeneralConfig.SAVE_FOV_IMG:
+                pass
+                # [X,MAP]= frame2im(getframe);
+                # FILENAME=[RESULT_DIR VIDEO_NAME '/FOV/FOV' imglist(iFrame).name];
+                # imwrite(X,FILENAME,'jpeg');
+
+            # 3. The feature map
+            ax[0, 2].imshow(show_feature_map, cmap='gray')
+            ax[0, 2].set_title('Feature Map')
+
+            # 4. The saliency map
+            ax[0, 3].imshow(saliency_map, cmap='jet')
+            ax[0, 3].set_title('Saliency Map')
+            if GeneralConfig.SAVE_SAL_IMG:
+                pass
+                # [X,MAP]= frame2im(getframe);
+                # FILENAME=[RESULT_DIR VIDEO_NAME '/SAL/SAL' imglist(iFrame).name];
+                # imwrite(X,FILENAME,'jpeg');
+
+
+            # 5. The proto-objects
+            if num_proto > 0:
+                ax[0, 4].imshow(show_curr_frame)
+                ax[0, 4].imshow(show_proto, cmap='gray', interpolation='nearest')
+                ax[0, 4].set_title('Proto-Objects')
+                for p in range(nV):
+                    ((centx,centy), (width,height), angle) = new_proto_params["a"][p]
+                    elli = Ellipse((centx,centy), width, height, angle)
+                    elli.set_ec('yellow')
+                    elli.set_fill(False)
+                    ax[0, 4].add_artist(elli)
+
+                #     if SAVE_PROTO_IMG
+                #         [X,MAP]= frame2im(getframe);
+                #         FILENAME=[RESULT_DIR VIDEO_NAME '/PROTO/PROTO' imglist(iFrame).name];
+                #         imwrite(X,FILENAME,'jpeg');
+
+            plt.tight_layout()
+            plt.show()
 
 
 
-            break
-#         % 3. The feature map
-#         countpics=countpics+1;
-#         subplot(NUMLINE, NUMPICSLINE, countpics); sc(show_fMap); label(show_fMap, 'Feature Map')
+        break
 
-#         % 4. The saliency map
-#         countpics=countpics+1;
-#         subplot(NUMLINE, NUMPICSLINE, countpics) ;
-#         tempIm=cat(3,show_sMap, show_currFrame); sc(tempIm,'prob_jet');  label(tempIm, 'Saliency map');
-#         if SAVE_SAL_IMG
-#             [X,MAP]= frame2im(getframe);
-#             FILENAME=[RESULT_DIR VIDEO_NAME '/SAL/SAL' imglist(iFrame).name];
-#             imwrite(X,FILENAME,'jpeg');
-#         end
 
-#         % 5. The proto-objects
-#         if numproto>0
-#             countpics=countpics+1;
-#             subplot(NUMLINE, NUMPICSLINE, countpics);
-#             sc(show_proto); hold on
-#             for p=1:nV
-#                     [X Y]=drawellip2(new_protoParam.a{p});
-#                     hold on
-#                     plot(Y,X,'y')
-#             end
-#             label(show_proto, 'Proto-Objects');
-#             if SAVE_PROTO_IMG
-#                 [X,MAP]= frame2im(getframe);
-#                 FILENAME=[RESULT_DIR VIDEO_NAME '/PROTO/PROTO' imglist(iFrame).name];
-#                 imwrite(X,FILENAME,'jpeg');
-#             end
-#         end
-#         hold off
+
+#
 
 #         % 6. The Interest points
 #         countpics=countpics+1;

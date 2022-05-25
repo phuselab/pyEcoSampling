@@ -75,7 +75,7 @@ class SaliencyConfig:
 class ProtoConfig:
     # PROTO-OBJECTS PARAMETERS
     PROTO = 1 #using a proto-object representation
-    nBestProto = 15 #num max of retrieved proto-object
+    N_BEST_PROTO = 8 #num max of retrieved proto-object
 
 class IPConfig:
     #-------------------------------------------------------------------------

@@ -13,8 +13,10 @@
 # %
 
 import numpy as np
+from config import ProtoConfig
+import cv2
 
-def esSampleProtoMap(s_map, curr_frame, n_best_proto):
+def esSampleProtoMap(s_map):
     """Generates the patch map M(t).
 
     In a first step generates the raw patch map by thresholding  the normalized salience map
@@ -52,32 +54,14 @@ def esSampleProtoMap(s_map, curr_frame, n_best_proto):
 
     # Samples the N_V best patches
     opening_window=7
-    M_tMap = esSampleNbestProto(protomap_raw, n_best_proto, opening_window)
+    M_tMap = esSampleNbestProto(protomap_raw, opening_window)
 
-    protoMap = np.logical_not(M_tMap)
+    proto_map = np.logical_not(M_tMap)
 
-    return M_tMap, protoMap
-
-    # ind=find(normSal >= prctile(normSal(:),90));
-    # protoMap_raw(ind)=1;
-    # protoMap_raw(ind)= currFrame(ind);
+    return M_tMap, proto_map, protomap_raw, norm_sal
 
 
-
-    # openingwindow=7;
-    # M_tMap = esSampleNbestProto(protoMap_raw,nBestProto,openingwindow);
-
-
-    # protoMap= M_tMap;
-    # fbw = M_tMap==0;
-    # protoMap(fbw) = 1;
-    # fbw = M_tMap==1;
-    # protoMap(fbw) = 0;
-    # end
-
-
-
-def esSampleNbestProto(protoMap_raw, nBest, win):
+def esSampleNbestProto(protoMap_raw, win):
     """Samples the N_V best patches.
 
     Samples the N_V best patches ranked through their size and returns the actual
@@ -85,34 +69,28 @@ def esSampleNbestProto(protoMap_raw, nBest, win):
 
     Args:
         protoMap_raw (matrix): the raw patch map
-        nBest (integer): the N_V most valuable patches
         win (integer): the window size
 
     Returns:
        M_tMap (matrix): the patch map M(t)
     """
-    pass
+    se = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (win,win))
+    closing = cv2.morphologyEx(protoMap_raw, cv2.MORPH_OPEN, se)
 
-# % Use morphological operations
-# se = strel('disk',win);
-# protoMap_raw = imopen(protoMap_raw,se);
+    contours, hierarchy = cv2.findContours(cv2.convertScaleAbs(protoMap_raw),cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
 
-# % Calculating 8 connected components via Rosenfeld and Pfaltz
-# [L,obj] = bwlabel(protoMap_raw,8);
+    size_c = []
+    for i,c in enumerate(contours):
+        size_c.append(c.shape[0])
+    sort_idx = np.argsort(np.array(size_c))[::-1]
 
-# % Returns the foreground connected component in the binary image
-# % supplied that have the specified ranked size(s).
-# maxL = max(L(:));					      % max number of connected components
-# h = hist(L(find(protoMap_raw)),[1:maxL]); % find indexes of labeled elements, by column scanning,
-#                                           %    and compute occurence of labels from 1 to maxL
-# [sh,sr] = sort(-h);                       % sorting with respect to the number of occurrence
-#                                           %    sh is the num occurrences (negative: -8   -6  -4  -2),
-#                                           %    sr = corresponding labels
-# M_tMap = protoMap_raw & 0;
-# if nBest > maxL
-#      nBest = maxL;
-# end
-# for i=1:nBest
-#     M_tMap = M_tMap | (L==sr(i)) ;      % returns the nBest by  dimension
-# end
-# end
+    M_tMap = np.zeros(protoMap_raw.shape)
+    nBest = min(ProtoConfig.N_BEST_PROTO, len(contours))
+
+    for i in range(nBest):
+        img = np.zeros(protoMap_raw.shape)
+        cv2.fillPoly(img, pts =[contours[sort_idx[i]]], color=(255,255,255))
+        img = img/np.max(img)
+        M_tMap = M_tMap + img
+
+    return M_tMap
