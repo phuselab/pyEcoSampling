@@ -1,4 +1,5 @@
 import numpy as np
+from config import ComplexityConfig
 
 # % References
 # %  J. Shiner, M. Davison, and P. Landsberg, ?Simple measure for complexity,?
@@ -18,7 +19,7 @@ import numpy as np
 
 
 
-def compute_complexity(c_type, histmat, N, n_bins):
+def compute_complexity(histmat, N, n_bins):
     """Computes spatial configuration complexity $$ C(t)$$ of Interest points.
 
     The function is a simple wrapper for complexity computation.
@@ -39,14 +40,14 @@ def compute_complexity(c_type, histmat, N, n_bins):
     Examples:
         >>> disorder, order, compl = esComputeComplexity('SDL', histmat, N, n_bins)
     """
-
+    c_type = ComplexityConfig.TYPE
     # H is Shannon entropy (which is an equivalent of Boltzman-Gibbs's entropy)
-    phistmat = (histmat / N) + eps
-    H = -np.sum(np.sum(phistmat * np.log(phistmat)))
+    phistmat = (histmat / N) + np.finfo(float).eps
+    H = -np.sum(np.sum(np.multiply(phistmat, np.log(phistmat))))
 
     if c_type == 'SDL':
         # Shiner-Davison-Landsberg (SDL) complexity
-        h_sup = np.log(n_bins);
+        h_sup = np.log(n_bins)
         disorder = H / h_sup
         order = 1 - disorder
     elif c_type == 'LMC':

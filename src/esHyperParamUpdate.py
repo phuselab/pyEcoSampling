@@ -44,8 +44,7 @@ def esHyperParamUpdate(nu, disorder, order, complexity, c_eps):
         nu (vector): new Dirichlet Hyperparameters
 
     Examples:
-
-        nu = esHyperParamUpdate(nu_old, Disorder,Order,Compl, COMPL_EDGE)
+        >>> nu = esHyperParamUpdate(nu_old, disorder, order, compl, COMPL_EDGE)
 
     """
 
@@ -68,8 +67,8 @@ def esHyperParamUpdate(nu, disorder, order, complexity, c_eps):
         # At the edge of chaos
         nu[1] = nu[1] + 1
 
-#     if VERBOSE
-#      disp('MAX COMPLEXITY!!!!!!')
+    # if VERBOSE:
+    #  disp('MAX COMPLEXITY!!!!!!')
 
     return nu
 

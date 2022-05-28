@@ -82,17 +82,18 @@ class IPConfig:
     # INTEREST POINT SAMPLER
     #-------------------------------------------------------------------------
     # Type of interest operator to use
-    INTEREST_POINT_TYPE = 'SelfResemblance'
+    TYPE = 'SelfResemblance'
 
     # Scales at which features are extracted (radius of region in pixels).
-    INTEREST_POINT_SCALE = np.arange(10, 30)
+    SCALE = np.arange(10, 30)
 
     # Maximum number of interest points allowed per image
-    INTEREST_POINT_MAX_POINTS = 80 #30 original
+    MAX_POINTS = 80 #30 original
 
     # Parameters for particular type of detector
-    INTEREST_POINT_WEIGHTED_SAMPLING = 1 #1= saliency weighted density, 0 = random sampling
-    INTEREST_POINT_WEIGHTED_SCALE = 0
+    WEIGHTED_SAMPLING = 1 #1= saliency weighted density, 0 = random sampling
+    WEIGHTED_SCALE = 0
+    N_POINTS = 0 # Only used on non-weighted sampling.
 
     WINDOW_SIZE = 7 #spatial resolution of IP: this should be set as a function of the scale at which IP has been detected
 
@@ -108,11 +109,11 @@ class IPConfig:
 
 class ComplexityConfig:
 
-    COMPLEXITY_TYPE = 'SDL';  # Shiner-Davison-Landsberg (SDL) complexity
+    TYPE = 'SDL';  # Shiner-Davison-Landsberg (SDL) complexity
     # complexity_type  = 'LMC'; # Lòpez-Ruiz, Mancini, and Calbet complexity
     # complexity_type  = 'FC';  # Feldman and Crutchfield?s amendment replaces D with
                                 # the Kullback-Leibler divergence
-    COMPL_EPS = 0.004 # 0.002
+    EPS = 0.004 # 0.002
 
 
 class GazeConfig:

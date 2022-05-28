@@ -1,8 +1,9 @@
 from turtle import shape
-from config import GeneralConfig, SaliencyConfig, GazeConfig, ProtoConfig
+from config import GeneralConfig, SaliencyConfig, GazeConfig, ProtoConfig, IPConfig
 
 import os
 import cv2
+import pymc3 as pm
 import numpy as np
 
 from skimage import io
@@ -14,8 +15,11 @@ from esComputeFeatures import esComputeFeatures
 from esComputeSaliency import esComputeSalience
 from esSampleProtoMap import esSampleProtoMap
 from esSampleProtoParameters import esSampleProtoParameters
+from esInterestPointSampling import interest_point_sampling
+from esComputeComplexity import compute_complexity
 
-from matplotlib.patches import Ellipse
+from matplotlib.patches import Ellipse, Circle
+
 
 
 import matplotlib.pyplot as plt
@@ -142,10 +146,10 @@ def esGenerateScanpath(config_file,  n_obs):
 
     # Setting parameters for the alpha-stable distribution
     alpha_stable_params = {}
-    alpha_stable_params["alpha"] = GazeConfig.ALPHA_STABLE;
-    alpha_stable_params["beta"]  = GazeConfig.BETA_STABLE;
-    alpha_stable_params["gamma"] = GazeConfig.GAMMA_STABLE;
-    alpha_stable_params["delta"] = GazeConfig.DELTA_STABLE;
+    alpha_stable_params["alpha"] = GazeConfig.ALPHA_STABLE
+    alpha_stable_params["beta"]  = GazeConfig.BETA_STABLE
+    alpha_stable_params["gamma"] = GazeConfig.GAMMA_STABLE
+    alpha_stable_params["delta"] = GazeConfig.DELTA_STABLE
 
     # Allocating some vectors to be used later
     disorder_plot = []
@@ -193,6 +197,14 @@ def esGenerateScanpath(config_file,  n_obs):
     # Previous gaze shift direction
     dir_old = 0
 
+    disorder_plot = []
+    order_plot = []
+    complexity_plot = []
+
+    fig, ax = plt.subplots(NUMLINE, NUM_PICS_LINE, figsize=(15, 5))
+    plt.ion()
+    plt.show()
+
     # THE ECOLOGICAL SAMPLING CYCLE UNFOLDING IN TIME
     start = GeneralConfig.NN_IMG_START + GeneralConfig.OFFSET
     end = GeneralConfig.NN_IMG_END
@@ -209,7 +221,6 @@ def esGenerateScanpath(config_file,  n_obs):
             if GeneralConfig.VERBOSE:
                 print('Data acquisition')
 
-            # print(img_list[frame])
             pred_frame = io.imread(img_list[frame-GeneralConfig.OFFSET]) # Get previous frame
             curr_frame = io.imread(img_list[frame]) # Get current frame
             next_frame = io.imread(img_list[frame+GeneralConfig.OFFSET])# Get subsequent frame
@@ -279,7 +290,6 @@ def esGenerateScanpath(config_file,  n_obs):
             # The method for computing features has been set in the config_file
             fMap = esComputeFeatures(Seq, feature_type, feature_params)
             # Using the current frame for visualization
-            # print(fMap[:,:,1,1])
             show_feature_map = resize(fMap[:,:,1,1].astype('double'), (n_row, n_col), order=1)
             foveated_feature_map = fMap
 
@@ -369,97 +379,100 @@ def esGenerateScanpath(config_file,  n_obs):
                     # for all proto-objects: area of the fitting ellipse/area of the saliency map
                     area_proto[p] = new_proto_params["r1"][p]*new_proto_params["r2"][p]*np.pi
 
-#     %A.5 SAMPLE INTEREST POINTS / PREYS
-#     % sampling from proto-objects or directly from the map if numproto==0
-#     if numproto >0
-#         % Random sampling from proto-objects
-#         if VERBOSE
-#             fprintf('\n Sample interest points from proto-objects \n');
-#         end
+            # A.5 SAMPLE INTEREST POINTS / PREYS
+            # sampling from proto-objects or directly from the map if numproto==0
+            if num_proto > 0:
+                # Random sampling from proto-objects
+                if GeneralConfig.VERBOSE:
+                    print("Sample interest points from proto-objects")
 
-#         %totArea=size(sal,1)*size(sal,2);
-#         totArea=sum(areaProto);
 
-#         allpoints=[];
-#         N=0;
-#         for p=1:nV
-#             %finds the number of IPs per patch
-#             n = round(3*Interest_Point.Max_Points * areaProto(p)/totArea);
-#             N = N+n;
+                total_area= np.sum(area_proto)
 
-#             % Samples interest points from a Normal centered on the patch
-#             % Using:
-#             %  RANDNORM(n,m,[],V) returns a matrix of n columns where each column is a sample
-#             %                     from a multivariate normal with mean m (a column vector) and
-#             %                     V specifies the covariance matrix.
-#             covProto  = [(5*new_protoParam.r2(p)) , 0; 0, (5*new_protoParam.r1(p))];
-#             muProto   = [protObject_centers(p,1); protObject_centers(p,2)];
-#             r_p       = randnorm(n, muProto, [], covProto);
-#             allpoints = [allpoints r_p];
+                all_points = np.empty((0, 2), float)
+                N=0
+                for p in range(nV):
+                    # Finds the number of IPs per patch
+                    n = round(3 * IPConfig.MAX_POINTS * area_proto[p] / total_area)
+                    if n > 0:
+                        N += n
+                        cov_proto = np.array([[(5*new_proto_params["r2"][p]) , 0],
+                                            [0, (5*new_proto_params["r1"][p])]])
+                        mu_proto = proto_object_centers[p]
+                        # PYMC
+                        mv_normal_dist = pm.MvNormal.dist(mu=mu_proto, cov=cov_proto, shape=(2, ))
+                        # print(.shape)
 
-#         end
-#         SampledPointsCoord= allpoints';
-#         xCord= SampledPointsCoord(:,1);
-#         yCord= SampledPointsCoord(:,2);
+                        r_p = mv_normal_dist.random(size=n)
+                        all_points = np.vstack((all_points, r_p))
 
-#         if WITH_PERTURBATION
-#             % Adds some other IPs by sampling directly from the salience
-#             % landscape
-#             [xCord2 yCord2 scale]= InterestPoint_Sampling(sMap,Interest_Point);
-#             N2=length(scale); %number of points
-#             SampledPointsCoord2=[xCord2 yCord2];
 
-#             N=N+N2;
+                xCord = all_points[:,0]
+                yCord = all_points[:,1]
 
-#             xCord=[xCord;xCord2];
-#             yCord=[yCord;yCord2];
-#         end
-#     else
-#         % If no proto-object have been found sampling from the salience map
-#         % random sampling weighted by saliency as in  Boccignone & Ferraro [2]
-#         if VERBOSE
-#             fprintf('\n No patches detected: Sampling interest points \n');
-#         end
-#         [xCord yCord scale]= InterestPoint_Sampling(sMap,Interest_Point);
-#         N=length(scale); %number of points
+                if IPConfig.WITH_PERTURBATION:
+                    # Adds some other IPs by sampling directly from the salience
+                    # landscape
+                    xCord2, yCord2, scale = interest_point_sampling(saliency_map)
 
-#     end
+                    N2 = len(scale) # Number of points
+                    # SampledPointsCoord2 = [xCord2, yCord2]
 
-#     SampledPointsCoord=[xCord yCord];
+                    N += N2
+                    xCord = np.append(xCord, xCord2)
+                    yCord = np.append(yCord, yCord2)
+            else:
+                # If no proto-object have been found sampling from the salience map
+                # random sampling weighted by saliency as in  Boccignone & Ferraro [2]
+                if GeneralConfig.VERBOSE:
+                    print("No patches detected: Sampling interest points")
 
-#     %B. SAMPLING THE APPROPRIATE OCULOMOTOR ACTION
+                xCord, yCord, scale = interest_point_sampling(saliency_map)
+                N = len(scale) # Number of points
 
-#     %B.1 EVALUATING THE COMPLEXITY OF THE SCENE
-#     % $$ C(t)$$ captures the time-varying configurational complexity of interest points
-#     % within the landscape
 
-#     % Step 1. Computing the 2D histogram of IPs
-#     % Inputs:
-#     %     SampledPointsCoord: N x 2 real array containing N data points or N x 1 array
-#     %     nbinsx:             number of bins in the x dimension (defaults to 20)
-#     %     nbinsy:             number of bins in the y dimension (defaults to 20)
-#     if VERBOSE
-#         fprintf('\n Histogramming interest points \n');
-#     end
+            sampled_points_coord = [xCord, yCord]
 
-#     [histmat Xbins Ybins] = hist2d(SampledPointsCoord,nbinsx, nbinsy,  [XLO XHI], [YLO YHI]);
-#     % we now have:
-#     %     histmat:   2D histogram array (rows represent X, columns represent Y)
-#     %     Xbins:     the X bin edges (see below)
-#     %     Ybins:     the Y bin edges (see below)
+        # B. SAMPLING THE APPROPRIATE OCULOMOTOR ACTION
 
-#     numSamples = sum(sum(histmat));
-#     numBins    = size(histmat,1)*size(histmat,2);
+        # B.1 EVALUATING THE COMPLEXITY OF THE SCENE
+        # $$C(t)$$ captures the time-varying configurational complexity of interest points
+        # within the landscape
 
-#     % Step2. Evaluate complexity $$ C(t)$$
-#     %
-#     if VERBOSE
-#         fprintf('\n Evaluate complexity \n');
-#     end
-#     [Disorder Order Compl] = esComputeComplexity(complexity_type, histmat, numSamples, numBins);
+        # Step 1. Computing the 2D histogram of IPs
+        # Inputs:
+        #     SampledPointsCoord: N x 2 real array containing N data points or N x 1 array
+        #     nbinsx:             number of bins in the x dimension (defaults to 20)
+        #     nbinsy:             number of bins in the y dimension (defaults to 20)
 
-#     % Used for plotting the complexity curve in time
-#     Disorderplot=[Disorderplot Disorder]; Orderplot=[Orderplot Order]; Complplot=[Complplot Compl];
+        if GeneralConfig.VERBOSE:
+            print("Histogramming interest points")
+
+        n_bins_x = np.floor(n_row / IPConfig.X_BIN_SIZE).astype(int)
+        n_bins_y = np.floor(n_col / IPConfig.Y_BIN_SIZE).astype(int)
+
+        hist_mat, x_bins, y_bins = np.histogram2d(sampled_points_coord[0], sampled_points_coord[1],
+                                                  bins=[n_bins_x, n_bins_y])
+        # plt.close(hist2d_img)
+        #  We now have:
+        #      histmat:   2D histogram array (rows represent X, columns represent Y)
+        #      Xbins:     the X bin edges (see below)
+        #      Ybins:     the Y bin edges (see below)
+        num_samples = np.sum(np.sum(hist_mat))
+        num_bins = hist_mat.shape[0]*hist_mat.shape[1]
+
+        # Step 2 Evaluate complexity $$C(t)$$
+
+        if GeneralConfig.VERBOSE:
+            print('Evaluate complexity')
+
+
+        disorder, order, complexity = compute_complexity(hist_mat, num_samples, num_bins)
+
+        # Used for plotting the complexity curve in time
+        disorder_plot.append(disorder)
+        order_plot.append(order)
+        complexity_plot.append(complexity)
 
 #     %B.2. ACTION SELECTION VIA LANDSCAPE COMPLEXITY
 
@@ -523,9 +536,19 @@ def esGenerateScanpath(config_file,  n_obs):
 
         if GeneralConfig.VISUALIZE_RESULTS:
 
+            ax[0, 0].clear()
+            ax[0, 1].clear()
+            ax[0, 2].clear()
+            ax[0, 3].clear()
+            ax[0, 4].clear()
+            ax[1, 0].clear()
+            ax[1, 1].clear()
+            ax[1, 2].clear()
+            ax[1, 3].clear()
+            ax[1, 4].clear()
+
+
             # Displaying relevant steps of the process.
-            #figure(1);
-            fig, ax = plt.subplots(NUMLINE, NUM_PICS_LINE, figsize=(15, 5))
 
             # 1. The original frame.
             ax[0, 0].imshow(show_curr_frame)
@@ -570,74 +593,64 @@ def esGenerateScanpath(config_file,  n_obs):
                     elli.set_ec('yellow')
                     elli.set_fill(False)
                     ax[0, 4].add_artist(elli)
-
-                #     if SAVE_PROTO_IMG
+                    if GeneralConfig.SAVE_PROTO_IMG:
+                        pass
                 #         [X,MAP]= frame2im(getframe);
                 #         FILENAME=[RESULT_DIR VIDEO_NAME '/PROTO/PROTO' imglist(iFrame).name];
                 #         imwrite(X,FILENAME,'jpeg');
 
+            #  6. The Interest points
+            ax[1, 0].imshow(show_curr_frame)
+            ax[1, 0].set_title("Sampled Interest Points (IP)")
+            # Show image with region marked
+            for b in range(yCord.shape[0]):
+                # plot(yCord(b),xCord(b),'r.')
+                circle = Circle((xCord[b],yCord[b]), 4, color='r', lw=1)
+                ax[1, 0].add_artist(circle)
+                # drawcircle(xCord(b),yCord(b),4,'r',1)
+
+            # for idc in range(len(candx)):
+            #     circle = Circle((candx[idc], candy[idc]), 4, color='y', lw=2)
+            #     ax[1, 0].add_artist(circle)
+            #     # drawcircle(candx(idc), candy(idc),4,'y',2);
+
+            # circle = Circle((candidate_FOA[0], candidate_FOA[1]), 10, color='g', lw=6)
+            # ax[1, 0].add_artist(circle)
+
+
+            if GeneralConfig.SAVE_IP_IMG:
+                pass
+                # [X,MAP]= frame2im(getframe);
+                # FILENAME=[RESULT_DIR VIDEO_NAME '/IP/IP' imglist(iFrame).name];
+                # imwrite(X,FILENAME,'jpeg');
+
+
+            # 7. The IP Empirical distribution for computing complexity
+            import seaborn as sns
+            sns.heatmap(hist_mat.T, linewidth=0.2, cbar=False, cmap='jet', ax=ax[1, 1])
+            ax[1, 1].set_axis_off()
+            ax[1, 1].set_title("IP Empirical Distribution")
+            if GeneralConfig.SAVE_HISTO_IMG:
+                pass
+                # [X,MAP]= frame2im(getframe);
+                # FILENAME=[RESULT_DIR VIDEO_NAME '/HISTO/HISTO' imglist(iFrame).name];
+                # imwrite(X,FILENAME,'jpeg');
+
+
+            # 8. The Complexity curves
+            ax[1, 2].plot(disorder_plot, 'r--', label='Disorder', linewidth=line_width)
+            ax[1, 2].plot(order_plot, 'g-', label='Order', linewidth=line_width)
+            ax[1, 2].set_title("Order/Disorder")
+
+            ax[1, 3].plot(complexity_plot, label='Complexity', linewidth=line_width)
+            ax[1, 3].set_title("Complexity")
+            print(disorder_plot)
+            print(order_plot)
+
+
             plt.tight_layout()
-            plt.show()
-
-
-
-        break
-
-
-
-#
-
-#         % 6. The Interest points
-#         countpics=countpics+1;
-#         subplot(NUMLINE, NUMPICSLINE, countpics);
-#         sc(currFrame); label(currFrame, 'Sampled Interest Points (IP)');
-#         %%% Show image with region marked
-#         hold on;
-#         for b=1:size(yCord,1)
-#             plot(yCord(b),xCord(b),'r.');
-#             drawcircle(xCord(b),yCord(b),4,'r',1);
-#             hold on;
-#         end
-
-#         for idc=1:length(candx)
-#                 drawcircle(candx(idc), candy(idc),4,'y',2);
-#                  hold on;
-#         end
-
-#         drawcircle(candidateFOA(1), candidateFOA(2),10,'g',6);hold on;
-
-#         if SAVE_IP_IMG
-#              [X,MAP]= frame2im(getframe);
-#              FILENAME=[RESULT_DIR VIDEO_NAME '/IP/IP' imglist(iFrame).name];
-#              imwrite(X,FILENAME,'jpeg');
-#         end
-#         hold off;
-#         hold off;
-
-#         % 7. The IP Empirical distribution for computing complexity
-#         countpics=countpics+1;
-#         subplot(NUMLINE, NUMPICSLINE, countpics);
-#         pcolor(Ybins,Xbins,flipud(histmat'));
-#         axis square tight ;
-#         if SAVE_HISTO_IMG
-#              [X,MAP]= frame2im(getframe);
-#              FILENAME=[RESULT_DIR VIDEO_NAME '/HISTO/HISTO' imglist(iFrame).name];
-#              imwrite(X,FILENAME,'jpeg');
-#          end
-
-
-#         % 8. The Complexity curves
-#         countpics=countpics+1;
-#         hnd_comp=subplot(NUMLINE, NUMPICSLINE, countpics);
-#         set(hnd_comp, 'FontSize', font_size); title('Order/Disorder'), hold on ;
-#         plot(Disorderplot,'r--','LineWidth',line_width); hold on
-#         plot(Orderplot,'g-','LineWidth',line_width); hold on
-#         hold off
-#         countpics=countpics+1;
-#         hnd_comp=subplot(NUMLINE, NUMPICSLINE, countpics);
-#         set(hnd_comp, 'FontSize', font_size); title('Complexity'), hold on ;
-#         plot(Complplot,'b-'); hold on
-#         hold off;
+            plt.pause(0.001)
+        # break
 
 #         % 9. The sampled FOA
 #         countpics=countpics+1;
