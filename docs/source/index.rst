@@ -16,9 +16,6 @@ Welcome to Eco Sampling's documentation!
 .. automodule:: esComputeFeatures
    :members:
 
-.. automodule:: esGetGazeAttractors
-   :members:
-
 Indices and tables
 ==================
 

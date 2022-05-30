@@ -18,11 +18,8 @@ from esSampleProtoParameters import esSampleProtoParameters
 from esInterestPointSampling import interest_point_sampling
 from esComputeComplexity import compute_complexity
 
-from matplotlib.patches import Ellipse, Circle
+from utils.plotter import Plotter
 
-
-
-import matplotlib.pyplot as plt
 
 # function esGenerateScanpath(config_file,  nOBS)
 # %esGenerateScanpath - Generates a scanpath on video by computing gaze shifts
@@ -179,17 +176,6 @@ def esGenerateScanpath(config_file,  n_obs):
 
     final_foa = np.array([x_center, y_center])
 
-    # Set visualization parameters
-    if GeneralConfig.VISUALIZE_RESULTS:
-        font_size = 18
-        line_width = 2
-        marker_size = 16
-        NUMLINE = 2
-        NUM_PICS_LINE = 5
-        # % Set up display window
-        # scrsz = get(0,'ScreenSize');
-        # figure('Position',[1 scrsz(4) scrsz(3) scrsz(4)],'Name','Ecological Sampling of Gaze Shift Demo','NumberTitle','off')
-
     # Number of iterations
     n = 0
     # Number of proto_objects
@@ -201,9 +187,8 @@ def esGenerateScanpath(config_file,  n_obs):
     order_plot = []
     complexity_plot = []
 
-    fig, ax = plt.subplots(NUMLINE, NUM_PICS_LINE, figsize=(15, 5))
-    plt.ion()
-    plt.show()
+
+    plt = Plotter()
 
     # THE ECOLOGICAL SAMPLING CYCLE UNFOLDING IN TIME
     start = GeneralConfig.NN_IMG_START + GeneralConfig.OFFSET
@@ -536,121 +521,24 @@ def esGenerateScanpath(config_file,  n_obs):
 
         if GeneralConfig.VISUALIZE_RESULTS:
 
-            ax[0, 0].clear()
-            ax[0, 1].clear()
-            ax[0, 2].clear()
-            ax[0, 3].clear()
-            ax[0, 4].clear()
-            ax[1, 0].clear()
-            ax[1, 1].clear()
-            ax[1, 2].clear()
-            ax[1, 3].clear()
-            ax[1, 4].clear()
-
-
+            data = {
+                "original_frame": show_curr_frame,
+                "foveated_frame": show_foveated_frame,
+                "feature_map": show_feature_map,
+                "saliency_map": saliency_map,
+                "proto_mask": show_proto,
+                "num_proto": num_proto,
+                "proto_params": new_proto_params,
+                "nV": nV,
+                "circle_coords": (xCord, yCord),
+                "hist_mat": hist_mat.T,
+                "order": order_plot,
+                "disorder": disorder_plot,
+                "complexity": complexity_plot,
+            }
             # Displaying relevant steps of the process.
+            plt.plot_visualization(data)
 
-            # 1. The original frame.
-            ax[0, 0].imshow(show_curr_frame)
-            ax[0, 0].set_title('Current frame')
-
-            # subplot(NUMLINE, NUMPICSLINE, countpics);
-            # sc(currFrame);
-            # label(currFrame, 'Current frame');
-
-            # 2. The foveated frame.
-            ax[0, 1].imshow(show_foveated_frame, cmap='gray')
-            ax[0, 1].set_title('Foveated frame')
-
-            if GeneralConfig.SAVE_FOV_IMG:
-                pass
-                # [X,MAP]= frame2im(getframe);
-                # FILENAME=[RESULT_DIR VIDEO_NAME '/FOV/FOV' imglist(iFrame).name];
-                # imwrite(X,FILENAME,'jpeg');
-
-            # 3. The feature map
-            ax[0, 2].imshow(show_feature_map, cmap='gray')
-            ax[0, 2].set_title('Feature Map')
-
-            # 4. The saliency map
-            ax[0, 3].imshow(saliency_map, cmap='jet')
-            ax[0, 3].set_title('Saliency Map')
-            if GeneralConfig.SAVE_SAL_IMG:
-                pass
-                # [X,MAP]= frame2im(getframe);
-                # FILENAME=[RESULT_DIR VIDEO_NAME '/SAL/SAL' imglist(iFrame).name];
-                # imwrite(X,FILENAME,'jpeg');
-
-
-            # 5. The proto-objects
-            if num_proto > 0:
-                ax[0, 4].imshow(show_curr_frame)
-                ax[0, 4].imshow(show_proto, cmap='gray', interpolation='nearest')
-                ax[0, 4].set_title('Proto-Objects')
-                for p in range(nV):
-                    ((centx,centy), (width,height), angle) = new_proto_params["a"][p]
-                    elli = Ellipse((centx,centy), width, height, angle)
-                    elli.set_ec('yellow')
-                    elli.set_fill(False)
-                    ax[0, 4].add_artist(elli)
-                    if GeneralConfig.SAVE_PROTO_IMG:
-                        pass
-                #         [X,MAP]= frame2im(getframe);
-                #         FILENAME=[RESULT_DIR VIDEO_NAME '/PROTO/PROTO' imglist(iFrame).name];
-                #         imwrite(X,FILENAME,'jpeg');
-
-            #  6. The Interest points
-            ax[1, 0].imshow(show_curr_frame)
-            ax[1, 0].set_title("Sampled Interest Points (IP)")
-            # Show image with region marked
-            for b in range(yCord.shape[0]):
-                # plot(yCord(b),xCord(b),'r.')
-                circle = Circle((xCord[b],yCord[b]), 4, color='r', lw=1)
-                ax[1, 0].add_artist(circle)
-                # drawcircle(xCord(b),yCord(b),4,'r',1)
-
-            # for idc in range(len(candx)):
-            #     circle = Circle((candx[idc], candy[idc]), 4, color='y', lw=2)
-            #     ax[1, 0].add_artist(circle)
-            #     # drawcircle(candx(idc), candy(idc),4,'y',2);
-
-            # circle = Circle((candidate_FOA[0], candidate_FOA[1]), 10, color='g', lw=6)
-            # ax[1, 0].add_artist(circle)
-
-
-            if GeneralConfig.SAVE_IP_IMG:
-                pass
-                # [X,MAP]= frame2im(getframe);
-                # FILENAME=[RESULT_DIR VIDEO_NAME '/IP/IP' imglist(iFrame).name];
-                # imwrite(X,FILENAME,'jpeg');
-
-
-            # 7. The IP Empirical distribution for computing complexity
-            import seaborn as sns
-            sns.heatmap(hist_mat.T, linewidth=0.2, cbar=False, cmap='jet', ax=ax[1, 1])
-            ax[1, 1].set_axis_off()
-            ax[1, 1].set_title("IP Empirical Distribution")
-            if GeneralConfig.SAVE_HISTO_IMG:
-                pass
-                # [X,MAP]= frame2im(getframe);
-                # FILENAME=[RESULT_DIR VIDEO_NAME '/HISTO/HISTO' imglist(iFrame).name];
-                # imwrite(X,FILENAME,'jpeg');
-
-
-            # 8. The Complexity curves
-            ax[1, 2].plot(disorder_plot, 'r--', label='Disorder', linewidth=line_width)
-            ax[1, 2].plot(order_plot, 'g-', label='Order', linewidth=line_width)
-            ax[1, 2].set_title("Order/Disorder")
-
-            ax[1, 3].plot(complexity_plot, label='Complexity', linewidth=line_width)
-            ax[1, 3].set_title("Complexity")
-            print(disorder_plot)
-            print(order_plot)
-
-
-            plt.tight_layout()
-            plt.pause(0.001)
-        # break
 
 #         % 9. The sampled FOA
 #         countpics=countpics+1;
