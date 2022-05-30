@@ -24,7 +24,7 @@ class Plotter:
         ax.set_title(title)
 
     @classmethod
-    def _image_plot(cls, ax, image, title, cmap=None, interpol=None):
+    def _image_plot(cls, ax, image, title, cmap='viridis', interpol=None):
         cls._configure_axis(ax, title)
         ax.imshow(image, cmap=cmap, interpolation=interpol)
 
@@ -75,14 +75,14 @@ class Plotter:
         #         # FILENAME=[RESULT_DIR VIDEO_NAME '/SAL/SAL' imglist(iFrame).name];
         #         # imwrite(X,FILENAME,'jpeg');
 
-    def plot_proto_objects(cls, axes, current_frame, proto_mask, num_proto, proto_params, nV):
+    def plot_proto_objects(cls, axes, current_frame, proto_mask, num_proto, proto_params_elipses, nV):
         if num_proto > 0:
             cls._image_plot(axes, current_frame, 'Proto-Objects')
             cls._image_plot(axes, proto_mask, 'Proto-Objects',
                             cmap='gray', interpol='nearest')
 
             for p in range(nV):
-                ((centx,centy), (width,height), angle) = proto_params["a"][p]
+                ((centx,centy), (width,height), angle) = proto_params_elipses[p]
                 elli = Ellipse((centx,centy), width, height, angle)
                 elli.set_ec('yellow')
                 elli.set_fill(False)

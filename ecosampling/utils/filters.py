@@ -12,7 +12,7 @@
 
 import numpy as np
 
-def mkGaussian(size, cov=None, mean=None, amplitude='norm'):
+def mk_gaussian(size, cov=None, mean=None, amplitude='norm'):
 
     size = size[:]
     if len(size) == 1:
