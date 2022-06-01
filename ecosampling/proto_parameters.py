@@ -1,3 +1,14 @@
+"""
+
+Authors:
+    - Giuseppe Boccignone <giuseppe.boccignone@unimi.it>
+    - Renato Nobre <renato.avellarnobre@studenti.unimi.it>
+
+Changes:
+    - 12/12/2012  First Edition Matlab
+    - 31/05/2022  Python Edition
+"""
+
 
 from config import ProtoConfig
 from utils.logger import Logger
@@ -37,7 +48,7 @@ class ProtoParameters:
             # old_protoParam["theta"] = new_proto_params["theta"] # Normal form parameters
 
 
-    # function [numproto new_protoParam] = esSampleProtoParameters(M_tMap, old_protoParam)
+# function [numproto new_protoParam] = esSampleProtoParameters(M_tMap, old_protoParam)
 # %esSampleProtoParameters - Generates the patch map M(t) parameters $$\theta_p$$
 # %
 # % Synopsis
@@ -69,10 +80,7 @@ class ProtoParameters:
 # %                                 - new_protoParam.cy     normal form parameters
 # %                                the rotation parameter
 # %                                 - new_protoParam.theta  normal form parameters
-# %
-# % Requirements
-# %   fitellip.m
-# %
+
 # % References
 # %
 # %    G. Boccignone and M. Ferraro, Ecological Sampling of Gaze Shifts,
@@ -82,16 +90,7 @@ class ProtoParameters:
 # %                             in Proc. Int. Conf. in Central Europe on Computer Graphics,
 # %                             Visualization and Interactive Digital Media,
 # %                             vol. 1, 1998, pp. 125?132.
-# %
-# %
-# %
-# % Author
-# %   Giuseppe Boccignone <Giuseppe.Boccignone(at)unimi.it>
-# %
-# %
-# % Changes
-# %   12/12/2012  First Edition
-# %
+
 
     def _calculate_center_area(self, num_proto):
          # Determine the center and the area of patches for

@@ -1,12 +1,24 @@
-import os
-import numpy as np
+"""
 
-from utils.filters import mk_gaussian
+Authors:
+    - Giuseppe Boccignone <giuseppe.boccignone@unimi.it>
+    - Renato Nobre <renato.avellarnobre@studenti.unimi.it>
+
+Changes:
+    - 12/12/2012  First Edition Matlab
+    - 31/05/2022  Python Edition
+"""
+
+
+import os
+
+import numpy as np
 from skimage import io
 from skimage.color import rgb2gray
 from skimage.transform import resize
-from config import GeneralConfig, SaliencyConfig
 
+from config import GeneralConfig, SaliencyConfig
+from utils.filters import mk_gaussian
 from utils.logger import Logger
 
 logger = Logger(__name__)

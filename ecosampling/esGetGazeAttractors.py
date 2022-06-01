@@ -1,5 +1,6 @@
 import numpy as np
 
+from config import GazeConfig
 # function FOA_attractors = esGetGazeAttractors(landscape, predFOA, numproto, SIMPLE_ATTRACTOR)
 
 # %   (struct) landscape
@@ -28,11 +29,9 @@ import numpy as np
 # %
 # % Changes
 # %   12/12/2012  First Edition
-# %
 
 
-
-def esGetGazeAttractors(landscape, predFOA, numproto, SIMPLE_ATTRACTOR):
+def esGetGazeAttractors(landscape, pred_foa, num_proto):
     """Samples the possible gaze attractors.
 
     Function computing possible ONE or MULTIPLE gaze attractors
@@ -56,22 +55,20 @@ def esGetGazeAttractors(landscape, predFOA, numproto, SIMPLE_ATTRACTOR):
     MAKE_STABLE = False
 
     # Setting the landscape
-    if numproto:
-        area_proto = landscape["areaProto"]
-        prot_object_centers = landscape["protObject_centers"]
+    if num_proto > 0:
+        area_proto = landscape["area_proto"]
+        prot_object_centers = landscape["proto_centers"]
     else:
         histmat = landscape["histmat"]
         xbin_size = landscape["xbinsize"]
         ybin_size = landscape["ybinsize"]
         NMAX = landscape["NMAX"]
 
-
     # Landscape Evaluation
-    if SIMPLE_ATTRACTOR:
-        if numproto:
+    if GazeConfig.SIMPLE_ATTRACTOR:
+        if num_proto > 0:
             # Patch of maximum area to set at least 1 potential candidateFOA mean
             index = np.argmax(area_proto)
-            max_proto = area_proto[index]
             # Center fo the Patch
             foa_x = round(prot_object_centers[index, 0])
             foa_y = round(prot_object_centers[index, 1])
@@ -83,54 +80,47 @@ def esGetGazeAttractors(landscape, predFOA, numproto, SIMPLE_ATTRACTOR):
             if MAKE_STABLE:
                 # If multiple maxima, choose the first closest one
                 # to the previous FOA for stability purposes
-                X = (x_max, y_max)
-                XI =
+                X = [x_max, y_max]
+                XI = np.flip(pred_foa, axis=1)
+                k, d = dsearchn(X,XI)
 
-#     else
-#         maxhist     = max(max(histmat));
-#         [xmax ymax] = find(maxhist==histmat);
-#         k=1;
-#         if MAKE_STABLE
-#             % if multiple maxima, choose the first closest one to the previous FOA for stability
-#             % purposes
-#             X           = [xmax ymax];
-#             XI          = fliplr(predFOA);%flipping true coordinates because XI are inverted
-#             [k,d]       = dsearchn(X,XI);
-#         end
-#         foax        = round(xmax(k,1)*xbinsize - xbinsize/2);  %this actually is the column index in the image bitmap!
-#         foay        = round(ymax(k,1)*ybinsize - ybinsize/2);  %this actually is the row index in the image bitmap!
+                # This actually is the column index in the image bitmap
+                foa_x = round(x_max[k, 0]*xbin_size - xbin_size/2)
+                # This actually is the row index in the image bitmap!
+                foa_y = round(y_max[k, 0]*ybin_size - ybin_size/2)
 
-#         % swap image coordinates
-#         temp=foax; foax=foay; foay=temp;
-#     end
-#     % now we have at least 1 potential candidate FOA
-#     % simple one point attractor: use the candidate FOA
-#     FOA_attractors = [foax foay];
+                # Swap image coordinates
+                foa_x, foa_y = foa_y, foa_x
 
-# else
-#     % multipoint attractor
-#     if numproto
-#         FOA_attractors      = zeros(size(protObject_centers));
-#         FOA_attractors(:,1) = round(protObject_centers(:,1));
-#         FOA_attractors(:,2) = round(protObject_centers(:,2));
-#     else
-#         %find first  NMAX to determine the total attractor potential in
+        # Now we have at least 1 potential candidate FOA
+        # simple one point attractor: use the candidate FOA
+        foa_attractors = [foa_x, foa_y]
+    else:
+        # Multipoint attractor
+        if num_proto > 0:
+            foa_attractors = np.zeros(prot_object_centers.shape)
+            foa_attractors[:,0] = round(prot_object_centers[:,0])
+            foa_attractors[:,1] = round(prot_object_centers[:,1])
+        else:
+        # %find first  NMAX to determine the total attractor potential in
 #         %LANGEVIN:
 #         %   HI...HNMAX. H=(X-X0)^2 , dH/dX=2(X-X0)
 
-#         % the engine
-#         [ms,mx] = sort(histmat(:),'descend');
-#         [rx,cx] = ind2sub(size(histmat),mx);
+            # the engine
+            [ms,mx] = sort(histmat(:),'descend');
+            # histmat.flatten()[::-1].sort()
+            [rx,cx] = ind2sub(size(histmat),mx)
 
-#         FOA_attractors_all = [rx,cx,ms]; % row col val: row col inverted with respect to image coord
-#         FOA_attractors_all = FOA_attractors_all(1:NMAX,:);
+            # row col val: row col inverted with respect to image coord
+            foa_attractors_all = [rx,cx,ms]
+            foa_attractors_all = foa_attractors_all[0:NMAX,:]
 
-#         % retains only row col
-#         FOA_attractors      = FOA_attractors_all(:,1:2);
-#         FOA_attractors(:,1) = round(FOA_attractors(:,1)*xbinsize - xbinsize/2);  %this actually is the column index in the image bitmap!
-#         FOA_attractors(:,2) = round(FOA_attractors(:,2)*ybinsize - ybinsize/2);  %this actually is the column index in the image bitmap!
+            # Retains only row col
+            foa_attractors = foa_attractors_all[:,0:1]
+            # This actually is the column index in the image bitmap
+            foa_attractors[:,0] = round(foa_attractors[:,0]*xbin_size - xbin_size/2)
+            # This actually is the column index in the image bitmap!
+            foa_attractors[:,1] = round(foa_attractors[:,1]*ybin_size - ybin_size/2)
 
-#         %swap image coordinates
-#         FOA_attractors = fliplr(FOA_attractors);
-#     end
-# end
+            # Swap image coordinates
+            foa_attractors = np.fliplr(foa_attractors, axis=1)

@@ -1,3 +1,14 @@
+"""
+
+Authors:
+    Giuseppe Boccignone <giuseppe.boccignone@unimi.it>
+    Renato Nobre <renato.avellarnobre@studenti.unimi.it>
+
+Changes:
+    12/12/2012  First Edition Matlab
+    31/05/2022  Python Edition
+"""
+
 import numpy as np
 
 def discrete_sampler(density, num_samples, replacement_option=True):

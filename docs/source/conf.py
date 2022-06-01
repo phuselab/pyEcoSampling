@@ -12,7 +12,7 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../../src'))
+sys.path.insert(0, os.path.abspath('../../ecosampling'))
 
 
 # -- Project information -----------------------------------------------------
@@ -34,7 +34,8 @@ release = '1.0.0'
 extensions = ["sphinx_rtd_theme",
               "sphinx.ext.napoleon",
               "sphinx.ext.viewcode",
-              "sphinx.ext.autodoc"]
+              "sphinx.ext.autodoc",
+              "sphinx.ext.mathjax"]
 
 napoleon_include_private_with_doc = True
 napoleon_custom_sections = [('Returns', 'params_style')]
@@ -70,3 +71,5 @@ autodoc_mock_imports = ["pandas"]
 
 # def setup(app):
 #     app.add_css_file('css/modify.css')
+
+autodoc_member_order = 'bysource'

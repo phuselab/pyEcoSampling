@@ -123,7 +123,7 @@ class GazeConfig:
 
     FIRST_FOA_ON_CENTER = 1; # If == 1 sets the first Foa on frame center
 
-    SIMPLE_ATTRACTOR = 0; # If == 1 using one point attractor in the potential
+    SIMPLE_ATTRACTOR = False; # If == 1 using one point attractor in the potential
                         # otherwise using multipoints
 
     # NMAX number of potential FOAS to determine the total attractor potential in

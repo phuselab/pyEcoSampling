@@ -1,11 +1,21 @@
-from utils.logger import Logger
-from config import IPConfig
+"""
+
+Authors:
+    - Giuseppe Boccignone <giuseppe.boccignone@unimi.it>
+    - Renato Nobre <renato.avellarnobre@studenti.unimi.it>
+
+Changes:
+    - 12/12/2012  First Edition Matlab
+    - 31/05/2022  Python Edition
+"""
+
+
 import numpy as np
 import pymc3 as pm
 
-from utils.discreteSampler import discrete_sampler
-
-
+from config import IPConfig
+from utils.statistics import discrete_sampler
+from utils.logger import Logger
 
 logger = Logger(__name__)
 
@@ -125,14 +135,6 @@ class IPSampler:
 # %   (vector) xCord            (1 x Interest_Point.Max_Points) coordinates and scale of IPs
 # %   (vector) yCord
 # %   (vector) scale            (1 x Interest_Point.Max_Points) characteristic scale of points (radius,inpixels)
-# %
-# %
-# % Authors
-# %   Giuseppe Boccignone <Giuseppe.Boccignone(at)unimi.it>
-# %
-# % Changes
-# %   12/12/2012  First Edition
-# %
 
 
     def _boccignone_ferraro_ip_sampling(self, saliency_map):

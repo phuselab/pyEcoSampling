@@ -1,9 +1,20 @@
+"""
+
+Authors:
+    - Giuseppe Boccignone <giuseppe.boccignone@unimi.it>
+    - Renato Nobre <renato.avellarnobre@studenti.unimi.it>
+
+Changes:
+    - 12/12/2012  First Edition Matlab
+    - 31/05/2022  Python Edition
+"""
+
 
 import numpy as np
-from config import GeneralConfig, SaliencyConfig
 
-from utils.logger import Logger
+from config import GeneralConfig, SaliencyConfig
 from utils.helper import EdgeMirror3
+from utils.logger import Logger
 
 logger = Logger(__name__)
 
@@ -12,11 +23,16 @@ class FeatureMap:
     def __init__(self):
         self.feature_type = GeneralConfig.EXPERIMENT_TYPE
         self.params = {
-            "wsize": SaliencyConfig.WSIZE, # LARK spatial window size
-            "wsize_t": SaliencyConfig.WSIZE_T, # LARK temporal window size
-            "alpha": SaliencyConfig.LARK_ALPHA, # LARK sensitivity parameter
-            "h": SaliencyConfig.LARK_H,  # Smoothing parameter for LARK
-            "sigma" :SaliencyConfig.LARK_SIGMA, # fall-off parameter for self-resemblamnce
+            # LARK spatial window size
+            "wsize": SaliencyConfig.WSIZE,
+            # LARK temporal window size
+            "wsize_t": SaliencyConfig.WSIZE_T,
+            # LARK sensitivity parameter
+            "alpha": SaliencyConfig.LARK_ALPHA,
+            # Smoothing parameter for LARK
+            "h": SaliencyConfig.LARK_H,
+            # Fall-off parameter for self-resemblamnce
+            "sigma" :SaliencyConfig.LARK_SIGMA,
         }
         self.show = None
 
@@ -64,6 +80,14 @@ class FeatureMap:
 
 
     def _3D_LARK(self, fov_seq):
+        """_summary_
+
+        Args:
+            fov_seq (_type_): _description_
+
+        Returns:
+            _type_: _description_
+        """
 
         wsize = self.params["wsize"]
         h = self.params["h"]

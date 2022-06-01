@@ -7,14 +7,34 @@ Welcome to Eco Sampling's documentation!
 ========================================
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+  :maxdepth: 2
+  :caption: User Documentation
 
-.. automodule:: esComputeComplexity
-   :members:
+  user/intro
+  user/install
+  user/usage
 
-.. automodule:: esComputeFeatures
-   :members:
+.. toctree::
+  :maxdepth: 2
+  :caption: EcoSampling Modules
+
+  ecosampling/generate_scanpath
+  ecosampling/frame_processor
+  ecosampling/salience_map
+  ecosampling/feature_map
+  ecosampling/proto_parameters
+  ecosampling/interest_points
+  ecosampling/complexity
+
+.. toctree::
+  :maxdepth: 2
+  :caption: Utils
+
+   utils/statistics
+   utils/filters
+   utils/helper
+   utils/logger
+   utils/plotter
 
 Indices and tables
 ==================

@@ -1,22 +1,21 @@
+"""
+
+Authors:
+    - Giuseppe Boccignone <giuseppe.boccignone@unimi.it>
+    - Renato Nobre <renato.avellarnobre@studenti.unimi.it>
+
+Changes:
+    - 12/12/2012  First Edition Matlab
+    - 31/05/2022  Python Edition
+"""
+
 
 # % See also
 # %   SpaceTimeSaliencyMap
 # %
-# % Requirements
-# %   SpaceTimeSaliencyMap (./saltools/SelfResemblance2/)
-# %
 # % References
 # %   H. Seo and P. Milanfar, Static and space-time visual saliency detection by self-resemblance,
 # %                           Journal of Vision, vol. 9, no. 12, pp. 1?27, 2009
-# %
-# %
-# % Authors
-# %   Giuseppe Boccignone <Giuseppe.Boccignone(at)unimi.it>
-# %
-# %
-# % Changes
-# %   12/12/2012  First Edition
-# %
 
 # For visualization
 # print(curr_frame[:,:,0].shape)

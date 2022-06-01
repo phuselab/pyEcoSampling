@@ -16,11 +16,9 @@
 # %   12/12/2012  First Edition
 # %
 # %
+from utils.logger import Logger
+logger = Logger(__name__)
 
-
-
-
-# VERBOSE=false;
 
 def esHyperParamUpdate(nu, disorder, order, complexity, c_eps):
     """Dirichlet hyper-parameter update.
@@ -66,9 +64,7 @@ def esHyperParamUpdate(nu, disorder, order, complexity, c_eps):
     else:
         # At the edge of chaos
         nu[1] = nu[1] + 1
-
-    # if VERBOSE:
-    #  disp('MAX COMPLEXITY!!!!!!')
+        logger.verbose('MAX COMPLEXITY!!!!!!')
 
     return nu
 

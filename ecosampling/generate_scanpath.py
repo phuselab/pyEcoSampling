@@ -1,10 +1,45 @@
 
+"""Generates a scanpath on video by computing gaze shifts through Ecological Sampling (ES).
+
+Baseline implementation of the Ecological Sampling model, a stochastic model of eye guidance
+The gaze shift mechanism is conceived as an active random sampling that
+the "foraging eye" carries out upon the visual landscape,
+under the constraints set by the observable features and the
+global complexity of the  landscape.
+The actual gaze relocation is driven by a stochastic differential equation
+whose noise source is sampled from a mixture of alpha-stable distributions.
+The sampling strategy allows to mimic a fundamental property of eye guidance:
+where we choose to look next at any given moment in time is not completely deterministic,
+but neither is it completely random
+
+
+Notes:
+    - See the comments in each routine for details of what it does
+    - Settings for the experiment should be held in the
+      configuration file.
+
+Authors:
+    - Giuseppe Boccignone <giuseppe.boccignone@unimi.it>
+    - Renato Nobre <renato.avellarnobre@studenti.unimi.it>
+
+Changes:
+    - 12/12/2012  First Edition Matlab
+    - 31/05/2022  Python Edition
+"""
+
 import numpy as np
+import pymc3 as pm
 
 from complexity import Complexity
-from config import GazeConfig, GeneralConfig, ProtoConfig
+from config import (ComplexityConfig, GazeConfig, GeneralConfig, IPConfig,
+                    ProtoConfig)
+# from gaze_sampler import GazeSampler
+# from esGazeSampling import esGazeSampling
+# from esGetGazeAttractors import esGetGazeAttractors
+# from esHyperParamUpdate import esHyperParamUpdate
 from feature_map import FeatureMap
 from frame_processor import FrameProcessor
+from gaze_sampler import GazeSampler
 from interest_points import IPSampler
 from proto_parameters import ProtoParameters
 from salience_map import SalienceMap
@@ -13,37 +48,11 @@ from utils.plotter import Plotter
 
 logger = Logger(__name__)
 
-# function esGenerateScanpath(config_file,  nOBS)
-# %esGenerateScanpath - Generates a scanpath on video by computing gaze shifts
-# %                     through Ecological Sampling (ES)
-# %
-# % Synopsis
-# %          esGenerateScanpath(config_file)
-# %
-# % Description
-# %     Baseline implementation of the Ecological Sampling model, a stochastic model of eye guidance
-# %     The gaze shift mechanism is conceived as  an active random sampling  that
-# %     the "foraging eye" carries out upon the visual landscape,
-# %     under the constraints set by the  observable features   and the
-# %     global complexity of the  landscape.
-# %     The actual  gaze relocation is  driven by a stochastic differential equation
-# %     whose noise source is sampled from a mixture of $$\alpha$$-stable distributions.
-# %     The sampling strategy  allows to mimic a fundamental property of  eye guidance:
-# %     where we choose to look next at any given moment in time is not completely deterministic,
-# %     but neither is it completely random
-# %
-# %   See the comments in each routine for details of what it does
-# %   Settings for the experiment should be held in the configuration
-# %   file.
-# %
+
 # % Inputs ([]s are optional)
 # %   (string) config_file  the name of a configuration file in the .\config
 # %                         directory to be evaluated for setting the
 # %                         experiment parameters
-# %
-# % Outputs ([]s are optional)
-# %
-# %   ....
 # %
 # % Example:
 # %
@@ -58,13 +67,7 @@ logger = Logger(__name__)
 # %       ser. Lecture Notes in Computer Science,
 # %       G. Maino and G. Foresti, Eds.	Springer Berlin / Heidelberg, 2011,
 # %       vol. 6978, pp. 187?196.
-# % Author
-# %   Giuseppe Boccignone <Giuseppe.Boccignone(at)unimi.it>
-# %
-# %
-# % Changes
-# %   12/12/2012  First Edition
-# %
+
 
 def esGenerateScanpath(config_file,  n_obs):
 
@@ -81,25 +84,7 @@ def esGenerateScanpath(config_file,  n_obs):
 
     # Set proto object structure
     proto_params = ProtoParameters()
-
-    # Setting parameters for the $$Dirichlet(\pi; nu0,nu1,nu2)$$ distribution
-    nu = np.ones(3) # We start with equal probabilities
-
-    # Setting sampling parameters
-    gaze_sampling_params = {}
-    # Internal simulation: somehow related to visibility: the more the points
-    # that can be sampled the higher the visibility of the field
-    gaze_sampling_params["NUM_INTERNALSIM"] = GazeConfig.NUM_INTERNALSIM # Maximum allowed number of candidate new  gaze position r_new
-    # % If anything goes wrong retry:
-    gaze_sampling_params["MAX_NUMATTEMPTS"] = GazeConfig.MAX_NUMATTEMPTS; # Maximum allowed tries for sampling e new valid gaze position
-
-    # Setting parameters for the alpha-stable distribution
-    alpha_stable_params = {}
-    alpha_stable_params["alpha"] = GazeConfig.ALPHA_STABLE
-    alpha_stable_params["beta"]  = GazeConfig.BETA_STABLE
-    alpha_stable_params["gamma"] = GazeConfig.GAMMA_STABLE
-    alpha_stable_params["delta"] = GazeConfig.DELTA_STABLE
-
+    gaze_sampler = GazeSampler()
     complexity_evaluator = Complexity()
     frame_sampling = FrameProcessor()
 
@@ -115,7 +100,7 @@ def esGenerateScanpath(config_file,  n_obs):
         print('\n No methods defined for setting the first FOA')
 
     final_foa = np.array([x_center, y_center])
-
+    nu = np.ones(3)
     # Number of iterations
     n = 0
     # Previous gaze shift direction
@@ -144,6 +129,7 @@ def esGenerateScanpath(config_file,  n_obs):
         # A.3 SAMPLE THE FOVEATED SALIENCE MAP
         saliency_map = saliency_generator.compute_salience(foveated_feature_map, frame_sampling)
 
+        num_proto = 0
         if ProtoConfig.PROTO:
             # A.4 SAMPLE PROTO-OBJECTS
             num_proto = proto_params.sample_proto_objects(saliency_map)
@@ -155,67 +141,60 @@ def esGenerateScanpath(config_file,  n_obs):
         # B.1 EVALUATING THE COMPLEXITY OF THE SCENE
         hist_mat, n_samples, n_bins = ip_sampler.histogram_ips(frame_sampling, sampled_points_coord)
         # Step 2 Evaluate complexity $$C(t)$$
-        complexity_evaluator.compute_complexity(hist_mat, n_samples, n_bins)
+        order, disorder, complexity = complexity_evaluator.compute_complexity(hist_mat, n_samples, n_bins)
 
-#     %B.2. ACTION SELECTION VIA LANDSCAPE COMPLEXITY
+        # B.2. ACTION SELECTION VIA LANDSCAPE COMPLEXITY
+        # Dirichlet hyper-parameter update
+        nu = esHyperParamUpdate(nu, disorder, order, complexity, ComplexityConfig.EPS)
+        logger.verbose(f"Complexity  {complexity} // Order {order} // Disorder {disorder}")
+        logger.verbose(f"Parameter nu1 {nu[0]}")
+        logger.verbose(f"Parameter nu2 {nu[1]}")
+        logger.verbose(f"Parameter nu3 {nu[2]}")
 
-#     % Dirichlet hyper-parameter update
-#     nu = esHyperParamUpdate(nu, Disorder, Order, Compl, COMPL_EPS);
-#     if VERBOSE
-#         fprintf('\n Complexity  %g // Order %g // Disorder %g', Compl, Order, Disorder);
-#         fprintf('\n Parameter nu1 %g', nu(1));
-#         fprintf('\n Parameter nu2 %g', nu(2));
-#         fprintf('\n Parameter nu3 %g', nu(3));
-#     end
+        # Sampling the \pi parameter that is the probability of an order event
+        # $$\pi ~ %Dir(\pi | \nu)$$
+        dirchlet_dist = pm.Dirichlet.dist(nu)
+        pi_prob = dirchlet_dist.random(size=1)
 
-#     % Sampling the \pi parameter that is the probability of an order event
-#     %   $$\pi ~ %Dir(\pi | \nu)$$
-#     pi_prob = dirichlet_sample(nu, 1);
+        # Sampling the kind of gaze-shift regime:
+        # $$ z ~ Mult(z | \pi) $$
+        # z = sample_discrete(pi_prob,1,1)
 
-#     % Sampling the kind of gaze-shift regime:
-#     %   $$ z ~ Mult(z | \pi) $$
-#     z = sample_discrete(pi_prob,1,1);
+        # logger.verbose(f"Action sampled: z = {z}")
 
-#     if VERBOSE
-#         fprintf('\n Action sampled: z = %d \n', z);
-#     end
+        # # C. SAMPLING THE GAZE SHIFT
+        # logger.verbose("Sample gaze point")
 
-#     %C. SAMPLING THE GAZE SHIFT
-#     %
-#     if VERBOSE
-#         fprintf('\n Sample gaze point \n');
+        # pred_foa = final_foa # Saving the previous FOA
+        # if n % 1 == 0:
+        #     # Setting the landscape
+        #     landscape = {}
+        #     if num_proto > 0:
+        #        landscape["area_proto"] = proto_params.area_proto
+        #        landscape["proto_centers"] = proto_params.proto_centers
+        #     else:
+        #        landscape["histmat"] = hist_mat
+        #        landscape["xbinsize"] = IPConfig.X_BIN_SIZE
+        #        landscape["ybinsize"] = IPConfig.Y_BIN_SIZE
+        #        landscape["NMAX"] = GazeConfig.NMAX
 
-#     end
+        # # Setting the attractors of the FOA
+        # foa_attractors = esGetGazeAttractors(landscape, pred_foa, num_proto)
 
-#     predFOA = finalFOA; % saving the previous FOA
-#     if mod(n,1)==0
-#         %setting the landscape
-#         if numproto
-#            landscape.areaProto = areaProto;
-#            landscape.protObject_centers = protObject_centers;
-#         else
-#            landscape.histmat  = histmat;
-#            landscape.xbinsize = xbinsize;
-#            landscape.ybinsize = ybinsize;
-#            landscape.NMAX     = NMAX;
-#         end
+        # # sampling the FOA, which is returned togethre with the simulated candidates
+        # # setting the oculomotor state z parameter;
+        # gaze_sampling_params["z"] = z
+        # final_foa, dir_new, candx, candy, candidateFOA = esGazeSampling(gaze_sampling_params,
+        #                                                                foa_size, foa_attractors,
+        #                                                                nrow, ncol, predFOA, dir_old,
+        #                                                                alpha_stblParam,xCord, yCord)
 
-#         %setting the attractors of the FOA
-#         FOA_attractors = esGetGazeAttractors(landscape, predFOA, numproto, SIMPLE_ATTRACTOR);
+        # dir_old = dir_new; # saving the previous shift directio
 
-#         %sampling the FOA, which is returned togethre with the simulated candidates
-#         % setting the oculomotor state z parameter;
-#         gazeSampParam.z = z;
-#         [finalFOA  dir_new  candx candy candidateFOA] = esGazeSampling(gazeSampParam, foaSize, FOA_attractors,nrow,ncol,...
-#                                                                         predFOA, dir_old, alpha_stblParam,xCord, yCord);
+        # if set, save the FOA coordinates on file
+        # if SAVE_FOA_ONFILE
+        #     allFOA.append([allFOA ;finalFOA];
 
-#         dir_old = dir_new; % saving the previous shift directio
-
-#         % if set, save the FOA coordinates on file
-#         if SAVE_FOA_ONFILE
-#          allFOA= [allFOA ;finalFOA];
-#         end
-#     end
 
         if GeneralConfig.VISUALIZE_RESULTS:
 
@@ -237,93 +216,13 @@ def esGenerateScanpath(config_file,  n_obs):
             # Displaying relevant steps of the process.
             plt.plot_visualization(data)
 
-
-#         % 9. The sampled FOA
-#         countpics=countpics+1;
-#         subplot(NUMLINE, NUMPICSLINE, countpics);
-#         %title('Final FOA'), hold on ;
-#         %making FOA
-#         rad=foaSize; BW = mkDisc(size(currFrame), rad, finalFOA');
-#         BW=logical(BW);   BW2= BW; BW2=logical(1-BW);
-#         rgb = imoverlay(currFrame, BW2, [0 0 0]);
-#         sc(rgb); label(rgb, 'Final FOA');
-#         if SAVE_FOA_IMG
-#             [X,MAP]= frame2im(getframe);
-#             FILENAME=[RESULT_DIR VIDEO_NAME '/FOA/FOA' imglist(iFrame).name];
-#             imwrite(X,FILENAME,'jpeg');
-#         end
-#     drawnow
-#     end %VISUALIZE
-
-# end % ES gaze shift loop
-
 # % Save some results if configured
 # if SAVE_COMPLEXITY_ONFILE
 #     outfilenameord=[RESULT_DIR VIDEO_NAME 'order.mat']
 #     save(outfilenameord,'Orderplot');
 #     outfilenameord=[RESULT_DIR VIDEO_NAME 'disorder.mat']
 #     save(outfilenameord,'Disorderplot');
-# end
 
 # if SAVE_FOA_ONFILE
 #     outfilename=[RESULT_DIR VIDEO_NAME '_FOA.mat']
 #     save(outfilename,'allFOA');
-# end
-
-# end % FUNCTION
-
-# runEcologicalSampling-  Top level script that runs a
-#                    Ecological Sampling (ES) experiment.
-#                    The experiment consists in putting into action a
-#                    defined number of
-#                    artificial observers, each generating a visual scanpath
-#                    on a given
-#                    video
-#                    All paremeters defining the experiment are
-#                    defined in the config_<type of experiment>.m script
-#                    file
-#
-# See also
-#   esGenerateScanpath
-#   config_<type of experiment>
-#
-# Requirements
-#   Image Processing toolbox
-#   Statistical toolbox
-
-# References
-#   [1] G. Boccignone and M. Ferraro, Ecological Sampling of Gaze Shifts
-#       IEEE Trans. Systems Man Cybernetics - Part B (on line IEEExplore)
-#
-#   [2] G. Boccignone and M. Ferraro, The active sampling of gaze-shifts,
-#       in Image Analysis and Processing ICIAP 2011,
-#       ser. Lecture Notes in Computer Science,
-#       G. Maino and G. Foresti, Eds.	Springer Berlin / Heidelberg, 2011,
-#       vol. 6978, pp. 187?196.
-#
-# Authors
-#   Giuseppe Boccignone <Giuseppe.Boccignone(at)unimi.it>
-#
-# License
-#   The program is free for non-commercial academic use. Please
-#   contact the authors if you are interested in using the software
-#   for commercial purposes. The software must not modified or
-#   re-distributed without prior permission of the authors.
-#
-# Changes
-#   20/01/2012  First Edition
-
-
-if __name__ == "__main__":
-    # Set here the total number of observers / scanpaths to be simulated
-    total_observers = 1
-
-    # Set the configuration filename (parameters) of the experiment
-    configFileName = 'config_demo'
-
-    for n_obs in range(total_observers):
-       #  Generate and visualize an ES scanpath
-       #  Calling the overall routine esGenerateScanpath that does everything, with
-       #  a configuration file: the routine will run each subsection of the gaze shift
-       #  scheme in turn.
-       esGenerateScanpath(configFileName,  n_obs)

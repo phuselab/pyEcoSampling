@@ -56,124 +56,100 @@
 # %       ser. Lecture Notes in Computer Science,
 # %       G. Maino and G. Foresti, Eds.	Springer Berlin / Heidelberg, 2011,
 # %       vol. 6978, pp. 187?196.
-# %
-# %
-# %
-# % Author
-# %   Giuseppe Boccignone <Giuseppe.Boccignone(at)unimi.it>
-# %
-# % Changes
-# %   12/12/2012  First Edition
-# %
-
-#     VERBOSE = false;
-#     candx=[]; candy=[];
-
-#     accept = 0;
-
-#     finalFOA = predFOA; %rough initialization: nothing changes
-#     % setting Langevin SDE parameters
-#     dHx          = sdeParam.dHx;    %SDE gradient potential  x coordinate
-#     dHy          = sdeParam.dHy;    %SDE gradient potential  y coordinate
-#     xi           = sdeParam.xi;     %SDE alpha-stable component
-#     dir_new      = sdeParam.dir_new;%SDE new direction of the gaze shift
-#     alpha_stable = sdeParam.alpha;  %SDE alpha-stable characteristic exponent parameter
-#     gamma_stable = sdeParam.gamma;  %SDE alpha-stable scale parameter
-#     h            = sdeParam.h;      %SDE integration step
 
 
-#     % Sampling the shift dx, dy on the basis of the generalized discretized Langevin:
-#     % $$\mathbf{r}_{F}(t_{n+1}) \approx \mathbf{r}_{F}(t_{n})  -  \sum_{p=1}^{N_V} ( \mathbf{r}_{F}(t_{n}) -\mathbf{r}_p(t_{n}) ) \tau
-#     %    + \gamma_k \mathbb{I} \tau^{1/\alpha_k} \xi_{k}$$
+from utils.logger import Logger
+import numpy as np
 
-#     value = sqrt(gamma_stable)*(h^(1/alpha_stable))*xi;
-#     dx  =   dHx*h   +   value.*sin(dir_new);
-#     dy  =   dHy*h   +   value.*cos(dir_new);
+logger = Logger(__name__)
 
-#     % Candidate new FOA
-#     % (1 x NUM_SIMATTEMPTS) coordinate vectors
-#     tryFOA_x = predFOA(1) + dx;
-#     tryFOA_y = predFOA(2) + dy;
+def esLangevinSimSampling(sdeParam, predFOA, nrow,ncol, xCordIP, yCordIP):
+    candx=[]
+    candy=[]
+    accept = 0
 
-#     tryFOA_x = round(tryFOA_x);
-#     tryFOA_y = round(tryFOA_y);
+    finalFOA = predFOA # Rough initialization: nothing changes
 
-#     % Verifies if the candidate shift is located within the image
-#     validcord = find((tryFOA_x >=1) & (tryFOA_x <nrow) & (tryFOA_y >=1) & (tryFOA_y <ncol));
-#     if VERBOSE
-#          fprintf('\n Sampled %d valid candidate FOAs', numel(validcord));
-#     end
-#     if numel(validcord) == 1
-#         % Retains only the valid ones
-#         tryFOA_x = tryFOA_x(validcord);
-#         tryFOA_y = tryFOA_y(validcord);
+    # Setting Langevin SDE parameters
+    dHx = sdeParam["dHx"] # SDE gradient potential x coordinate
+    dHy = sdeParam["dHy"] # SDE gradient potential y coordinate
+    xi = sdeParam["xi"] # SDE alpha-stable component
+    dir_new = sdeParam["dir_new"] # SDE new direction of the gaze shift
+    alpha_stable = sdeParam["alpha"] # SDE alpha-stable characteristic exponent parameter
+    gamma_stable = sdeParam["gamma"] # SDE alpha-stable scale parameter
+    h = sdeParam["h"] # SDE integration step
 
-#         % always make sure these are integer coordinates
-#         tryFOA_x = round(tryFOA_x);
-#         tryFOA_y = round(tryFOA_y);
+    # Sampling the shift dx, dy on the basis of the generalized discretized Langevin:
+    # $$\mathbf{r}_{F}(t_{n+1}) \approx \mathbf{r}_{F}(t_{n})  -  \sum_{p=1}^{N_V} ( \mathbf{r}_{F}(t_{n}) -\mathbf{r}_p(t_{n}) ) \tau
+    #    + \gamma_k \mathbb{I} \tau^{1/\alpha_k} \xi_{k}$$
+    value = np.sqrt(gamma_stable)*(h**(1/alpha_stable))*xi
+    dx = dHx*h + np.multiply(value, np.sin(dir_new))
+    dy = dHy*h + np.multiply(value, np.cos(dir_new))
 
-#         NcandFOAs =length(tryFOA_y);
-#         candx = tryFOA_x; candy = tryFOA_y;
-#         finalFOA(1) = candx; finalFOA(2) = candy;
-#         finalFOA = round(finalFOA);
-#         accept = 1;
-#     end
+    # Candidate new FOA
+    # (1 x NUM_SIMATTEMPTS) coordinate vectors
+    tryFOA_x = round(predFOA[0] + dx)
+    tryFOA_y = round(predFOA[1] + dy)
 
-#     if numel(validcord)>1
-#         % Retains only the valid ones
-#         tryFOA_x = tryFOA_x(validcord);
-#         tryFOA_y = tryFOA_y(validcord);
+    # Verifies if the candidate shift is located within the image
+    validcord = find((tryFOA_x >=1) & (tryFOA_x <nrow) & (tryFOA_y >=1) & (tryFOA_y <ncol))
 
-#         % always make sure these are integer coordinates
-#         tryFOA_x = round(tryFOA_x);
-#         tryFOA_y = round(tryFOA_y);
+    logger.verbose(f"Sampled {validcord.size} valid candidate FOAs")
 
-#         NcandFOAs =length(tryFOA_y);
+    if validcord.size == 1:
+        # Retains only the valid ones
+        tryFOA_x = round(tryFOA_x[validcord])
+        tryFOA_y = round(tryFOA_y[validcord])
+        NcandFOAs = len(tryFOA_y)
+        candx, candy = tryFOA_x, tryFOA_y
+        finalFOA[0], finalFOA[1] = candx, candy
+        finalFOA = round(finalFOA)
+        accept = 1
+    elif validcord.size > 1:
+        # Retains only the valid ones
+        tryFOA_x = round(tryFOA_x[validcord])
+        tryFOA_y = round(tryFOA_y[validcord])
+        NcandFOAs = len(tryFOA_y)
 
-#         if VERBOSE
-#                 fprintf('\n Sampled  %d candidate new FOAS', NcandFOAs);
-#         end
+        logger.verbose('\n Sampled  #d candidate new FOAS', NcandFOAs)
 
-#         candx = tryFOA_x; candy = tryFOA_y;
+        candx, candy = tryFOA_x, tryFOA_y
 
-#         % computes the local visibility with respect to the FOA
-#         foaSize = round(max(nrow,nrow) / 6);
-#         localVisibilityRadius = 1.5*foaSize;
+        # Computes the local visibility with respect to the FOA
+        foaSize = round(max(nrow,nrow) / 6)
+        localVisibilityRadius = 1.5*foaSize
 
-#         % Choose the best FOA among the simulated
-#         % ... For each simulated FOA, computes how many preys  /IPs (generate dalle patch)
-#         % ....are within the visual search range
-#         % ... The IP which can get more preys survives...
-#         %
-#         % NOTE: this could be improved or extended with smarter criteria!!
-#         %
-#         sampledIP = [xCordIP yCordIP];
-#         candidateFOAs = [tryFOA_x' tryFOA_y'];
+        # Choose the best FOA among the simulated
+        # ... For each simulated FOA, computes how many preys  /IPs (generate dalle patch)
+        # ....are within the visual search range
+        # ... The IP which can get more preys survives...
+        #
+        # NOTE: this could be improved or extended with smarter criteria!!
+        #
+        sampledIP = [xCordIP, yCordIP]
+        candidateFOAs = [tryFOA_x.conj().T, tryFOA_y.conj().T]
+        logger.verbose('\n Choosing the best one')
 
-#         if VERBOSE
-#                 fprintf('\n Choosing the best one');
-#         end
+        # Performs a range search via kd-tree:
+        # idxIP contains the indices of points in X
+        # whose distance to candidateFOAs(I,:) are not greater than localVisibilityRadius,
+        # and these indices are sorted in the ascending order of the corresponding distance values D.
+        # - idxIP is NcandFOAs-by-1 cell array, where NcandFOAs is
+        # the number of rows in candidateFOAs
+        # - D{I} contains the distance values between candidateFOAs(I,:) and the corresponding
+        # points returned in idxIP{I}.
 
-#         % Performs a range search via kd-tree:
-#         % idxIP contains the indices of points in X
-#         % whose distance to candidateFOAs(I,:) are not greater than localVisibilityRadius,
-#         % and these indices are sorted in the ascending order of the corresponding distance values D.
-#         % - idxIP is NcandFOAs-by-1 cell array, where NcandFOAs is
-#         % the number of rows in candidateFOAs
-#         % - D{I} contains the distance values between candidateFOAs(I,:) and the corresponding
-#         % points returned in idxIP{I}.
+        [idxIP, D] = rangesearch(sampledIP,candidateFOAs,localVisibilityRadius)
+        maxnIP= -1
+        for nCand in range(NcandFOAs):
+            temp=idxIP{nCand}
+            len_temp = len(temp); #get the number of interest points in the visibility range
+            if (len_temp > maxnIP):
+                maxnIP = len_temp
+                bestCandID = nCand
 
-#         [idxIP, D] = rangesearch(sampledIP,candidateFOAs,localVisibilityRadius);
-#         maxnIP= -1;
-#         for nCand=1:NcandFOAs
-#             temp=idxIP{nCand};
-#             len=length(temp); %get the number of interest points in the visibility range
-#             if (len > maxnIP)
-#                 maxnIP = len; bestCandID = nCand;
-#             end
-#         end
+        finalFOA = candidateFOAs[bestCandID, :]
+        finalFOA = round(finalFOA)
+        accept = 1
 
-#         finalFOA = candidateFOAs(bestCandID, :);
-#         finalFOA = round(finalFOA);
-#         accept = 1;
-#     end
+    return finalFOA, dir_new, accept, candx, candy

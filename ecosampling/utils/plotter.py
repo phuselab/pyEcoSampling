@@ -1,3 +1,14 @@
+"""
+
+Authors:
+    Giuseppe Boccignone <giuseppe.boccignone@unimi.it>
+    Renato Nobre <renato.avellarnobre@studenti.unimi.it>
+
+Changes:
+    12/12/2012  First Edition Matlab
+    31/05/2022  Python Edition
+"""
+
 import seaborn as sns
 import matplotlib.pyplot as plt
 from matplotlib.patches import Ellipse, Circle
@@ -139,3 +150,21 @@ class Plotter:
         # 9. The Complexity curves
         cls._configure_axis(axes, "Complexity" , keep_axis=True)
         axes.plot(complexity_series, label='Complexity', linewidth=lw)
+
+
+#         % 9. The sampled FOA
+#         countpics=countpics+1;
+#         subplot(NUMLINE, NUMPICSLINE, countpics);
+#         %title('Final FOA'), hold on ;
+#         %making FOA
+#         rad=foaSize; BW = mkDisc(size(currFrame), rad, finalFOA');
+#         BW=logical(BW);   BW2= BW; BW2=logical(1-BW);
+#         rgb = imoverlay(currFrame, BW2, [0 0 0]);
+#         sc(rgb); label(rgb, 'Final FOA');
+#         if SAVE_FOA_IMG
+#             [X,MAP]= frame2im(getframe);
+#             FILENAME=[RESULT_DIR VIDEO_NAME '/FOA/FOA' imglist(iFrame).name];
+#             imwrite(X,FILENAME,'jpeg');
+#         end
+#     drawnow
+#     end %VISUALIZE

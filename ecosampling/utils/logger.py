@@ -1,3 +1,12 @@
+"""
+
+Authors:
+    Renato Nobre <renato.avellarnobre@studenti.unimi.it>
+
+Changes:
+    31/05/2022  Python Edition
+"""
+
 from config import GeneralConfig
 
 class Logger:
