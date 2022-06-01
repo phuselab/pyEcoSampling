@@ -1,23 +1,28 @@
-"""
+"""Collection of statistics related functions.
 
 Authors:
-    Giuseppe Boccignone <giuseppe.boccignone@unimi.it>
-    Renato Nobre <renato.avellarnobre@studenti.unimi.it>
+    - Giuseppe Boccignone <giuseppe.boccignone@unimi.it>
+    - Renato Nobre <renato.avellarnobre@studenti.unimi.it>
 
 Changes:
-    12/12/2012  First Edition Matlab
-    31/05/2022  Python Edition
+    - 12/12/2012  First Edition Matlab
+    - 31/05/2022  Python Edition
 """
 
 import numpy as np
 
 def discrete_sampler(density, num_samples, replacement_option=True):
-    # Function that draws samples from a discrete density
-    #
-    # density - discrete probability density (should sum to 1)
-    # num_samples - number of samples to draw
-    # replacement_option: 1 for sampling with replacment, 0 for no replacment
+    """Function that draws samples from a discrete density.
 
+    Args:
+        density (vector): discrete probability density (should sum to 1)
+        num_samples (_type_): number of samples to draw
+        replacement_option (bool, optional): True for sampling with replacement
+            False for non replacement. Defaults to True.
+
+    Returns:
+        Samples drown from the discrete density.
+    """
     samples_out = np.zeros((1, num_samples))
 
     # Get CDF

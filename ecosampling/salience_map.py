@@ -1,4 +1,4 @@
-"""
+"""Salience Map class file.
 
 Authors:
     - Giuseppe Boccignone <giuseppe.boccignone@unimi.it>
@@ -10,19 +10,6 @@ Changes:
 """
 
 
-# % See also
-# %   SpaceTimeSaliencyMap
-# %
-# % References
-# %   H. Seo and P. Milanfar, Static and space-time visual saliency detection by self-resemblance,
-# %                           Journal of Vision, vol. 9, no. 12, pp. 1?27, 2009
-
-# For visualization
-# print(curr_frame[:,:,0].shape)
-# print(saliency_map.shape)
-# show_saliency_map = np.dstack((curr_frame, saliency_map))
-# print(show_saliency_map.shape)
-
 from config import GeneralConfig, SaliencyConfig
 from utils.helper import EdgeMirror3
 import numpy as np
@@ -31,14 +18,29 @@ from utils.logger import Logger
 logger = Logger(__name__)
 
 class SalienceMap:
+    """Compute salience map given a feature map.
+
+    The salience map is a simple wrapper for salience computation.
+    Executes the salience algorithm which is defined.
+
+    Note:
+        We implemented as a backend the Static and space-time visual
+        saliency detection by self-resemblance method. Additional methods
+        require to be implemented.
+
+    Attributes:
+        sal_type (str): Experiment type for saliency computation.
+        wsize (int): LARK spatial window size.
+        wsize_t (int): LARK temporal window size.
+        sigma (float): LARK fall-off parameter.
+        show (matrix): Saliency map on the current frame.
+    """
 
     def __init__(self):
         self.sal_type = GeneralConfig.EXPERIMENT_TYPE
-        self.params = {
-            "wsize": SaliencyConfig.WSIZE, # LARK spatial window size
-            "wsize_t": SaliencyConfig.WSIZE_T, # LARK temporal window size
-            "sigma": SaliencyConfig.LARK_SIGMA, # Fall-off parameter for self-resemblamnce
-        }
+        self.wsize = SaliencyConfig.WSIZE
+        self.wsizet = SaliencyConfig.WSIZE_T
+        self.sigma = SaliencyConfig.LARK_SIGMA
         self.show = None
 
     def compute_salience(self, feature_map, frame_sampling):
@@ -55,8 +57,11 @@ class SalienceMap:
             sal_type (string): the salience computation method
             s_param (struct): the salience computation parameters
 
-        Outputs:
+        Returns:
             s_map (matrix): the salience map on the current frame
+
+        Raises:
+            NotImplementedError: if the salience computation method is not implemented.
 
         Note:
             Any kind of salience or oriority map computation will do:
@@ -76,15 +81,40 @@ class SalienceMap:
             s_map = sm[:,:,2]
             s_map = frame_sampling.frame_resize_orginal(s_map[:,])
         else:
-            print('\n UNKNOWN SALIENCE COMPUTATION TYPE.....')
+            raise NotImplementedError('UNKNOWN SALIENCE COMPUTATION TYPE')
 
         self.show = s_map
         return s_map
 
+
+# For visualization
+# print(curr_frame[:,:,0].shape)
+# print(saliency_map.shape)
+# show_saliency_map = np.dstack((curr_frame, saliency_map))
+# print(show_saliency_map.shape)
+
+
     def _space_time_saliency_map(self, lark):
-        wsize = self.params["wsize"]
-        size_t = self.params["wsize_t"]
-        sigma = self.params["sigma"]
+        """Compute Space-time Self-Resemblance.
+
+        Note:
+            Adapted from Matlab's version by Hae Jong on Apr 25, 2011 [1]
+
+        Args:
+            lark (np.array): 3D LARK descriptors
+
+        Returns:
+            Space-time Saliency Map
+
+        References
+        ----------
+        .. [1] `Seo, H. J., & Milanfar, P. (2009). Static and space-time visual saliency detection
+           by self-resemblance. Journal of vision, 9(12), 15-15.
+           <https://jov.arvojournals.org/article.aspx?articleid=2122209>`_
+        """
+        wsize = self.wsize
+        size_t = self.wsize_t
+        sigma = self.sigma
 
         win = (wsize-1) // 2
         win_t = (size_t-1) // 2

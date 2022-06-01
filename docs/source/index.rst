@@ -30,11 +30,10 @@ Welcome to Eco Sampling's documentation!
   :maxdepth: 2
   :caption: Utils
 
-   utils/statistics
-   utils/filters
-   utils/helper
-   utils/logger
-   utils/plotter
+  utils/statistics
+  utils/helper
+  utils/logger
+  utils/plotter
 
 Indices and tables
 ==================

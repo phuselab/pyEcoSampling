@@ -1,4 +1,4 @@
-"""
+"""Feature Map class file.
 
 Authors:
     - Giuseppe Boccignone <giuseppe.boccignone@unimi.it>
@@ -19,21 +19,34 @@ from utils.logger import Logger
 logger = Logger(__name__)
 
 class FeatureMap:
+    """Compute features and create feature map.
+
+    The compute features is a simple wrapper for feature computation.
+    Executes the feature extraction algorithm which is defined.
+
+    Note:
+        We implemented as a backend the Static and space-time visual
+        saliency detection by self-resemblance method. Additional methods
+        require to be implemented.
+
+    Attributes:
+        feature_type (str): Experiment type for saliency computation.
+        wsize (int): LARK spatial window size.
+        wsize_t (int): LARK temporal window size.
+        alpha (float): LARK sensitivity parameter.
+        sigma (float): Fall-off parameter for self-resemblamnce.
+        h (float): Smoothing parameter for LARK.
+        show (np.ndarray): Version of the feature map to visualization.
+    """
+
 
     def __init__(self):
         self.feature_type = GeneralConfig.EXPERIMENT_TYPE
-        self.params = {
-            # LARK spatial window size
-            "wsize": SaliencyConfig.WSIZE,
-            # LARK temporal window size
-            "wsize_t": SaliencyConfig.WSIZE_T,
-            # LARK sensitivity parameter
-            "alpha": SaliencyConfig.LARK_ALPHA,
-            # Smoothing parameter for LARK
-            "h": SaliencyConfig.LARK_H,
-            # Fall-off parameter for self-resemblamnce
-            "sigma" :SaliencyConfig.LARK_SIGMA,
-        }
+        self.wsize = SaliencyConfig.WSIZE
+        self.wsize_t = SaliencyConfig.WSIZE_T
+        self.alpha = SaliencyConfig.LARK_ALPHA
+        self.sigma = SaliencyConfig.LARK_SIGMA
+        self.h = SaliencyConfig.LARK_H
         self.show = None
 
     def compute_features(self, fov_seq, frame_sampling):
@@ -63,16 +76,16 @@ class FeatureMap:
 
         References
         ----------
-        .. [1] `H. Seo and P. Milanfar, Static and space-time visual saliency detection by self-resemblance,
-        Journal of Vision, vol. 9, no. 12, pp. 1?27, 2009
-        <https://jov.arvojournals.org/article.aspx?articleid=2122209>`_
+        .. [1] `Seo, H. J., & Milanfar, P. (2009). Static and space-time visual saliency detection
+           by self-resemblance. Journal of vision, 9(12), 15-15.
+           <https://jov.arvojournals.org/article.aspx?articleid=2122209>`_
         """
         logger.verbose("Get features")
         feature_map = None
         if self.feature_type == '3DLARK_SELFRESEMBLANCE':
             feature_map = self._3D_LARK(fov_seq)
         else:
-            print("UNKNOWN TYPE OF EXPERIMENT")
+            raise NotImplementedError("UNKNOWN TYPE OF EXPERIMENT")
 
         self.show = frame_sampling.frame_resize_orginal(feature_map[:,:,1,1].astype('double'))
 
@@ -80,19 +93,28 @@ class FeatureMap:
 
 
     def _3D_LARK(self, fov_seq):
-        """_summary_
+        """Compute 3-D LARK descriptors.
+
+        Note:
+            Adapted from Matlab's version by Hae Jong on Apr 25, 2011 [1]
 
         Args:
-            fov_seq (_type_): _description_
+            fov_seq (np.ndarray): Foveated Map Sequence.
 
         Returns:
-            _type_: _description_
+            lark (np.ndarray): 3D LARK descriptors
+
+        References
+        ----------
+        .. [1] `Seo, H. J., & Milanfar, P. (2009). Static and space-time visual saliency detection
+           by self-resemblance. Journal of vision, 9(12), 15-15.
+           <https://jov.arvojournals.org/article.aspx?articleid=2122209>`_
         """
 
-        wsize = self.params["wsize"]
-        h = self.params["h"]
-        wsize_t = self.params["wsize_t"]
-        alpha = self.params["alpha"]
+        wsize = self.wsize
+        h = self.h
+        wsize_t = self.wsize_t
+        alpha = self.alpha
 
         # Gradient calculation
         zx, zy, zt = np.gradient(fov_seq)
@@ -155,8 +177,6 @@ class FeatureMap:
                                         np.expand_dims(gy.flatten(), axis=1),
                                         np.expand_dims(gt.flatten(), axis=1)), axis=1)
 
-
-
                     _, s, v, = np.linalg.svd(G)
 
                     S = np.zeros(3)
@@ -201,7 +221,6 @@ class FeatureMap:
         x1x2 = np.reshape(np.tile(np.reshape(x12, new_shape), (M*N*T,1)), new_final_shape)
         x1x3 = np.reshape(np.tile(np.reshape(x13, new_shape), (M*N*T,1)), new_final_shape)
         x2x3 = np.reshape(np.tile(np.reshape(x23, new_shape), (M*N*T,1)), new_final_shape)
-
 
         # % Geodesic distance computation between a center and surrounding voxels
         lark = np.zeros((M, N, T, wsize, wsize, wsize_t))
