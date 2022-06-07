@@ -36,7 +36,8 @@ class ActionSelector:
             nu (vector): previous Dirichlet Hyperparameters
 
         Returns:
-            _type_: _description_
+            nu (vector): new Dirichlet Hyperparameters
+            z (int): selected action index
         """
         nu = self._dirichlet_hyper_param_update(nu)
         logger.verbose(f"Complexity  {self.complexity} // Order {self.order} // Disorder {self.disorder}")

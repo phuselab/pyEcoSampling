@@ -1,4 +1,4 @@
-"""
+"""File for the GazeSampler class.
 
 Authors:
     - Giuseppe Boccignone <giuseppe.boccignone@unimi.it>
@@ -30,7 +30,14 @@ from scipy.spatial import cKDTree
 logger = Logger(__name__)
 
 class GazeSampler:
-    """_summary_
+    """Compute the future Focus of Attention, using gaze sampling.
+
+    Function computing, using gaze attractors, the actual gaze relocation by
+    sampling the appropriate noise parameters from a mixture of alpha-stable distributions
+    as a function of the oculomotor state, The parameters are used to propose one or multiple
+    candidate gaze shifts actually implemented by calling for ``_langevin_sampling``,
+    which performs the Langevin step. Eventually decides and sets the actual shift
+    to the new Focus of Attention.
 
     Attributes:
         start_nu (np.array): vector of the starting probabilities for the Dirichlet distribution.

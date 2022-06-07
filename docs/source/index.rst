@@ -25,6 +25,8 @@ Welcome to Eco Sampling's documentation!
   ecosampling/proto_parameters
   ecosampling/interest_points
   ecosampling/complexity
+  ecosampling/action_selector
+  ecosampling/gaze_sampler
 
 .. toctree::
   :maxdepth: 2
