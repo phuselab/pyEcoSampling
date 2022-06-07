@@ -129,7 +129,6 @@ class IPSampler:
                 mu_proto = proto_params.proto_centers[p]
                 # PYMC
                 mv_normal_dist = pm.MvNormal.dist(mu=mu_proto, cov=cov_proto, shape=(2, ))
-                # print(.shape)
 
                 r_p = mv_normal_dist.random(size=n)
                 all_points = np.vstack((all_points, r_p))

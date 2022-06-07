@@ -39,7 +39,7 @@ class SalienceMap:
     def __init__(self):
         self.sal_type = GeneralConfig.EXPERIMENT_TYPE
         self.wsize = SaliencyConfig.WSIZE
-        self.wsizet = SaliencyConfig.WSIZE_T
+        self.wsize_t = SaliencyConfig.WSIZE_T
         self.sigma = SaliencyConfig.LARK_SIGMA
         self.show = None
 
@@ -86,12 +86,6 @@ class SalienceMap:
         self.show = s_map
         return s_map
 
-
-# For visualization
-# print(curr_frame[:,:,0].shape)
-# print(saliency_map.shape)
-# show_saliency_map = np.dstack((curr_frame, saliency_map))
-# print(show_saliency_map.shape)
 
 
     def _space_time_saliency_map(self, lark):

@@ -48,57 +48,74 @@ class GeneralConfig:
     VISUALIZE_RESULTS = 1
 
     # For saving need to set VISUALIZE_RESULTS=1
-    SAVE_FOV_IMG = 0  # If = 1, saving the foveated image
-    SAVE_SAL_IMG = 0  # If = 1, saving the salience map
-    SAVE_PROTO_IMG = 0  # If = 1, saving the proto-object map
-    SAVE_IP_IMG = 0  # If = 1, saving the interest point map
-    SAVE_HISTO_IMG = 0  # If = 1, saving the histogram map
-    SAVE_FOA_IMG = 0  # If = 1, saving the FOA image
+    SAVE_FOV_IMG = True  # If = 1, saving the foveated image
+    SAVE_SAL_IMG = True  # If = 1, saving the salience map
+    SAVE_PROTO_IMG = True  # If = 1, saving the proto-object map
+    SAVE_IP_IMG = True  # If = 1, saving the interest point map
+    SAVE_HISTO_IMG = True  # If = 1, saving the histogram map
+    SAVE_FOA_IMG = True  # If = 1, saving the FOA image
 
     # Saving data
     SAVE_FOA_ONFILE = 0
     SAVE_COMPLEXITY_ONFILE = 0
 
 class SaliencyConfig:
-    # SELF RESEMBLANCE SPATIO-TEMPORAL FEATURE & SALIENCY MAP PARAMETERS
+    """Self resemblance spatio-temporal feature and saliency map parameters."""
 
-    # USING THE LARK PARAMETERES
-    WSIZE = 3   # LARK spatial window size
-    WSIZE_T = 3 # LARK temporal window size
-    LARK_ALPHA = 0.42 # LARK sensitivity parameter
-    LARK_H = 1  # smoothing parameter for LARK
-    LARK_SIGMA = 0.7 # fall-off parameter for self-resemblamnce
+    """LARK Spatial Window Size."""
+    WSIZE = 3
 
-    #if we perform a pyramid decomposition for efficiency
-    sLevels=4; #levels of piramid decomp
+    """LARK Temporal Window Size."""
+    WSIZE_T = 3
+
+    """LARK Sensitivity Parameter."""
+    LARK_ALPHA = 0.42
+
+    """LARK Smoothing Parameter."""
+    LARK_H = 1
+
+    """Lark fall-off parameter for self-resemblance."""
+    LARK_SIGMA = 0.7
+
+    """Levels of the pyramid decomposition (if we perform such)."""
+    S_LEVELS = 4
 
 class ProtoConfig:
-    # PROTO-OBJECTS PARAMETERS
-    PROTO = 1 #using a proto-object representation
-    N_BEST_PROTO = 8 #num max of retrieved proto-object
+    """Proto-object parameters."""
+
+    """Using a proto-object representation."""
+    PROTO = 1
+
+    """Maximum number of proto-objects."""
+    N_BEST_PROTO = 8
 
 class IPConfig:
-    #-------------------------------------------------------------------------
-    # INTEREST POINT SAMPLER
-    #-------------------------------------------------------------------------
-    # Type of interest operator to use
+    """Interest point sampler configuration."""
+
+    """Type of interest operator to use."""
     TYPE = 'SelfResemblance'
 
-    # Scales at which features are extracted (radius of region in pixels).
+
+    """Scales at which features are extracted (radius of region in pixels)."""
     SCALE = np.arange(10, 30)
 
-    # Maximum number of interest points allowed per image
+    """Maximun number of IPs allowed per image."""
     MAX_POINTS = 80 #30 original
 
-    # Parameters for particular type of detector
-    WEIGHTED_SAMPLING = 1 #1= saliency weighted density, 0 = random sampling
+
+    """If true perform weighted density, false perform random sampling"""
+    WEIGHTED_SAMPLING = 1
+
     WEIGHTED_SCALE = 0
-    N_POINTS = 0 # Only used on non-weighted sampling.
 
-    WINDOW_SIZE = 7 #spatial resolution of IP: this should be set as a function of the scale at which IP has been detected
+    """Number of points used on non-weighted sampling."""
+    N_POINTS = 0
 
-    WITH_PERTURBATION = True # Adds some other IPs by sampling directly from the salience
-                            # landscape
+    """Spatial Resolution of IPs. Should be set as a function of the sacle of IP detection."""
+    WINDOW_SIZE = 7
+
+    """Flag to sample e other IPs directly from the salience landscape."""
+    WITH_PERTURBATION = True
 
     #-------------------------------------------------------------------------
     # HISTOGRAM OPERATOR FOR IPs EMPIRICAL DISTRIBUTION
@@ -108,33 +125,29 @@ class IPConfig:
 
 
 class ComplexityConfig:
+    """Complexity parameters configuration."""
 
-    TYPE = 'SDL';  # Shiner-Davison-Landsberg (SDL) complexity
-    # complexity_type  = 'LMC'; # Lòpez-Ruiz, Mancini, and Calbet complexity
-    # complexity_type  = 'FC';  # Feldman and Crutchfield?s amendment replaces D with
-                                # the Kullback-Leibler divergence
+    """Complexity parameters. Available only 'SDL', 'LMC', 'FC'."""
+    TYPE = 'SDL'
+
+    """ """
     EPS = 0.004 # 0.002
 
 
 class GazeConfig:
-    #-------------------------------------------------------------------------
-    # GAZE SAMPLING SETTINGS
-    #-------------------------------------------------------------------------
+    """Gaze sampling settings."""
 
-    FIRST_FOA_ON_CENTER = 1; # If == 1 sets the first Foa on frame center
+    """Sets the first Foa on frame center if true."""
+    FIRST_FOA_ON_CENTER = True # If == 1
 
-    SIMPLE_ATTRACTOR = False; # If == 1 using one point attractor in the potential
-                        # otherwise using multipoints
+    """Using one point attractor in the potential if true, otherwise using multipoints."""
+    SIMPLE_ATTRACTOR = False # If == 1
 
-    # NMAX number of potential FOAS to determine the total attractor potential in
-    # LANGEVIN:
-    #    HI...HNMAX. H=(X-X0)^2 , dH/dX=2(X-X0)
-    #  the data
-    NMAX = 10; # This is used if SIMPLE_ATTRACTOR=0;
+    """Number of potention FOAS to determine the total attractor portential in Langevin."""
+    NMAX = 10
 
     # Internal simulation: somehow related to visibility: the more the points
-    # that can be sampled the higher the visibility of the field
-
+    # that can be sampled the higher the visibility of the field of view.
     NUM_INTERNALSIM = 100; # Maximum allowed number of candidate new gaze position r_new
     # If anything goes wrong retry:
     MAX_NUMATTEMPTS = 5; # Maximum allowed tries for sampling e new valid gaze position

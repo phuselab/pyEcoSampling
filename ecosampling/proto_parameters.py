@@ -41,7 +41,7 @@ class ProtoParameters:
         show_proto (np.ndarray): Visual representation of proto objects.
         n_best_proto (int): Maximum ammount of best proto objects to sample.
         area_proto (np.ndarray): Area of proto objects ellipses.
-        nV (int): Number of vertices.
+        nV (int): Number of best patches to sample.
         proto_centers (np.ndarray): Centers of proto objects.
     """
 
@@ -125,7 +125,6 @@ class ProtoParameters:
             for p in range(0, nV):
                 # Aea of the fitting ellipse/area of the saliency map
                 area_proto[p] = self.r1[p]*self.r2[p]*np.pi
-
         self.nV = nV
         self.proto_centers = proto_object_centers
         self.area_proto = area_proto
@@ -150,6 +149,7 @@ class ProtoParameters:
         feat_map_img = mt_map * 255
         _, thresh = cv2.threshold(cv2.convertScaleAbs(feat_map_img),0,255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
         B = measure.find_contours(thresh, 0.5)
+
         # The actual patch number
         num_proto = len(B)
 
@@ -222,8 +222,7 @@ class ProtoParameters:
         proto_map_raw[ind[:,0], ind[:,1]] = 1
 
         # Samples the N_V best patches
-        opening_window=7
-        mt_map = self._sample_best_patches(proto_map_raw, opening_window)
+        mt_map = self._sample_best_patches(proto_map_raw)
 
         proto_map = np.logical_not(mt_map)
 
@@ -242,10 +241,12 @@ class ProtoParameters:
         Returns:
             mt_map (matrix): the patch map M(t)
         """
-        contours, _ = cv2.findContours(cv2.convertScaleAbs(proto_map_raw),cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+        contours, _ = cv2.findContours(cv2.convertScaleAbs(proto_map_raw),
+                                       cv2.RETR_TREE,
+                                       cv2.CHAIN_APPROX_SIMPLE)
 
         size_c = []
-        for i,c in enumerate(contours):
+        for i, c in enumerate(contours):
             size_c.append(c.shape[0])
         sort_idx = np.argsort(np.array(size_c))[::-1]
 

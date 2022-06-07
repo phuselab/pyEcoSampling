@@ -81,7 +81,6 @@ class Complexity:
 
         return order, disorder, complexity
 
-
     def _shiner_davison_landsberg(self, H, n_bins):
         """Shiner-Davison-Landsberg (SDL) complexity.
 
