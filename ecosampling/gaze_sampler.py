@@ -205,7 +205,7 @@ class GazeSampler:
 
             # Now we have at least 1 potential candidate FOA
             # simple one point attractor: use the candidate FOA
-            foa_attractors = [foa_x, foa_y]
+            foa_attractors = np.array([foa_x, foa_y])
         else:
             # Multipoint attractor
             if self.num_proto > 0:

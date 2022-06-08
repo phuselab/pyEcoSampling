@@ -41,22 +41,34 @@ class GeneralConfig:
 
     RESULTS_DIR = os.path.join(BASE_DIR, 'results/')
 
-    #-------------------------------------------------------------------------
-    # FOR VISUALIZATION AND FILE SAVING
-    #-------------------------------------------------------------------------
-    VERBOSE = False # Comment visualization
+    """Flag to log verbose information."""
+    VERBOSE = False
+
+    """Flag for visualizing results on runtime."""
     VISUALIZE_RESULTS = 1
 
-    # For saving need to set VISUALIZE_RESULTS=1
-    SAVE_FOV_IMG = True  # If = 1, saving the foveated image
-    SAVE_SAL_IMG = True  # If = 1, saving the salience map
-    SAVE_PROTO_IMG = True  # If = 1, saving the proto-object map
-    SAVE_IP_IMG = True  # If = 1, saving the interest point map
-    SAVE_HISTO_IMG = True  # If = 1, saving the histogram map
-    SAVE_FOA_IMG = True  # If = 1, saving the FOA image
+    """Flag for saving foveated images."""
+    SAVE_FOV_IMG = True
 
-    # Saving data
+    """Flag for saving saliency maps."""
+    SAVE_SAL_IMG = True
+
+    """Flag for saving the proto-objects maps."""
+    SAVE_PROTO_IMG = True
+
+    """Flag for saving the interest point map."""
+    SAVE_IP_IMG = True
+
+    """Flag for saving the 2d histogram."""
+    SAVE_HISTO_IMG = True
+
+    """Flag for saving the foa images."""
+    SAVE_FOA_IMG = True
+
+    """Flag for saving coordinates of FOA on file."""
     SAVE_FOA_ONFILE = True
+
+    """Flag for saving complexity values and plots."""
     SAVE_COMPLEXITY_ONFILE = True
 
 class SaliencyConfig:
@@ -92,9 +104,9 @@ class ProtoConfig:
 class IPConfig:
     """Interest point sampler configuration."""
 
+
     """Type of interest operator to use."""
     TYPE = 'SelfResemblance'
-
 
     """Scales at which features are extracted (radius of region in pixels)."""
     SCALE = np.arange(10, 30)
@@ -130,17 +142,17 @@ class ComplexityConfig:
     TYPE = 'SDL'
 
     """ """
-    EPS = 0.004 # 0.002
+    EPS = 0.004
 
 
 class GazeConfig:
     """Gaze sampling settings."""
 
     """Sets the first Foa on frame center if true."""
-    FIRST_FOA_ON_CENTER = True # If == 1
+    FIRST_FOA_ON_CENTER = True
 
     """Using one point attractor in the potential if true, otherwise using multipoints."""
-    SIMPLE_ATTRACTOR = False # If == 1
+    SIMPLE_ATTRACTOR = False
 
     """Number of potention FOAS to determine the total attractor portential in Langevin."""
     NMAX = 10

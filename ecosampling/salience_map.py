@@ -148,11 +148,8 @@ class SalienceMap:
                     temp = np.sum(np.multiply(center, lark_reshaped), axis=1)
                     # Compute inner product between a center and surrounding matrices
                     new_shape[1] = 1
-                    # norm_S(i:i+size(LARK,1)-1,j:j+size(LARK,2)-1,l:l+size(LARK,3)-1)
                     norm_s_reshaped = np.reshape(norm_S[i:i+ls0, j:j+ls1, l:l+ls2], new_shape)
-
                     temp = np.divide(np.expand_dims(temp, axis=1), np.multiply(norm_C, norm_s_reshaped))
-
                     # compute self-resemblance using matrix cosine similarity
                     saliency_map = np.add(saliency_map, np.exp(np.divide((-1+temp), np.square(sigma))))
 
