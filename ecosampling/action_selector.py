@@ -1,3 +1,14 @@
+"""Class file for the Action Selector.
+
+Authors:
+    - Giuseppe Boccignone <giuseppe.boccignone@unimi.it>
+    - Renato Nobre <renato.avellarnobre@studenti.unimi.it>
+
+Changes:
+    - 12/12/2012  First Edition Matlab
+    - 31/05/2022  Python Edition
+"""
+
 import pymc3 as pm
 
 from config import ComplexityConfig
@@ -10,7 +21,7 @@ logger = Logger(__name__)
 class ActionSelector:
 
     def __init__(self, disorder, order, complexity):
-        """_summary_
+        """Select the new
 
         Args:
             disorder (float):  disorder parameter

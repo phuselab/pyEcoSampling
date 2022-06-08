@@ -10,11 +10,9 @@ Changes:
 """
 
 import os
-
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
-
 
 from matplotlib.patches import Ellipse, Circle
 
@@ -45,46 +43,6 @@ class Plotter:
         for i in range(2):
             for j in range(5):
                 self.axes[i, j].clear()
-
-    def _save_imgs(self, data, frame_num):
-
-        fig, ax = plt.subplots()
-
-        if GeneralConfig.SAVE_FOV_IMG:
-            path = self.create_result_folder('results', 'foveated')
-            self.plot_foveated_frame(ax, data["foveated_frame"], title=f'Foveated Frame #{frame_num}')
-            fig.savefig(path + f'/Foveated_{frame_num}.png')
-            ax.clear()
-
-        if GeneralConfig.SAVE_SAL_IMG:
-            path = self.create_result_folder('results', 'salience')
-            self.plot_saliency_map(ax, data["saliency_map"], title=f'Salience #{frame_num}')
-            fig.savefig(path + f'/Salience_{frame_num}.png')
-            ax.clear()
-
-        if GeneralConfig.SAVE_PROTO_IMG:
-            path = self.create_result_folder('results', 'proto_objects')
-            self.plot_proto_objects(ax, data["original_frame"],
-                                    data["proto_params"], data["num_proto"],
-                                    title=f"Proto-Objects #{frame_num}")
-            fig.savefig(path + f'/Proto_{frame_num}.png')
-            ax.clear()
-
-        if GeneralConfig.SAVE_IP_IMG:
-            path = self.create_result_folder('results', 'interest_points')
-            self.plot_interest_points(ax, data["original_frame"], data["circle_coords"],
-                                      data["gaze_sampler"],
-                                      title=f"Sampled Interest Points (IP) #{frame_num}")
-            fig.savefig(path + f'/IP_{frame_num}.png')
-            ax.clear()
-
-        if GeneralConfig.SAVE_HISTO_IMG:
-            path = self.create_result_folder('results', 'emprical_distribution')
-            self.plot_empirical_dists(ax, data["hist_mat"], title=f"IP Empirical Distribution #{frame_num}")
-            fig.savefig(path + f'/Histo_{frame_num}.png')
-            ax.clear()
-
-        plt.close(fig)
 
     @classmethod
     def _configure_axis(cls, ax, title, keep_axis=False):
@@ -119,6 +77,30 @@ class Plotter:
         ax_image = ax.imshow(image, cmap=cmap, interpolation=interpol)
         return ax_image
 
+    def save_foa_values(self, foa_values):
+        if GeneralConfig.SAVE_FOA_ONFILE:
+            path = self.create_result_folder('')
+            with open(path + '/foa_values.npy', 'wb') as f:
+                np.save(f, foa_values)
+
+    def save_complexity(self, data):
+        if GeneralConfig.SAVE_COMPLEXITY_ONFILE:
+            path = self.create_result_folder('')
+            fig, ax = plt.subplots()
+            self.plot_order_disorder(ax, data["order"], data["disorder"])
+            fig.savefig(path + '/order_disorder_plot.png')
+            plt.close(fig)
+            fig, ax = plt.subplots()
+            self.plot_complexity(ax, data["complexity"])
+            fig.savefig(path + '/complexity_plot.png')
+            plt.close(fig)
+
+            with open(path + '/order.npy', 'wb') as f:
+                np.save(f, data["order"])
+            with open(path + '/disorder.npy', 'wb') as f:
+                np.save(f, data["disorder"])
+            with open(path + '/complexity.npy', 'wb') as f:
+                np.save(f, data["complexity"])
 
     def plot_visualization(self, data, frame_num, pause_time=0.001):
         """Plot complete visualization for instance.
@@ -143,7 +125,7 @@ class Plotter:
         self.plot_order_disorder(self.axes[1, 2], data["order"], data["disorder"])
         self.plot_complexity(self.axes[1, 3], data["complexity"])
         self.plot_sampled_FOA(self.axes[1, 4], data["original_frame"],
-                              data["foa_center"], data["foa_radius"], title="Final FOA")
+                              data["foa_mask"], title="Final FOA")
 
         plt.tight_layout()
         self._save_imgs(data, frame_num)
@@ -250,7 +232,6 @@ class Plotter:
         sns.heatmap(hist_mat, linewidth=0.2, cbar=False, cmap='jet', ax=axes)
 
 
-
     def plot_order_disorder(cls, axes, order_series, disorder_series, lw=2):
         """Plot order/disorder.
 
@@ -278,16 +259,17 @@ class Plotter:
         axes.plot(complexity_series, label='Complexity', linewidth=lw)
 
 
-    def create_result_folder(cls, results_folder, plot_type_folder):
+    def create_result_folder(cls, plot_type_folder, experiment=GeneralConfig.VIDEO_NAME):
         """Create result folder.
 
         Args:
-            results_folder (str): Path to the results folder.
+            experiment (str, optional): Experiment name. Defaults to GeneralConfig.VIDEO_NAME.
             plot_type_folder (str): Plot type folder.
 
         Returns:
             str: Path to the result folder.
         """
+        results_folder = 'results/'+experiment
         # Create result folder
         if not os.path.exists(results_folder):
             os.makedirs(results_folder)
@@ -298,22 +280,58 @@ class Plotter:
 
         return results_folder + '/' + plot_type_folder
 
-    def plot_sampled_FOA(cls, axes, current_frame, foa_center, foa_radius, title="Final FOA"):
+    def plot_sampled_FOA(cls, axes, current_frame, foa_mask, title="Final FOA"):
         cls._image_plot(axes, current_frame, title)
-        foa_mask = cls._create_circular_mask(current_frame.shape[0], current_frame.shape[1], foa_center, foa_radius)
-        cls._image_plot(axes, foa_mask, title,
-                        cmap='gray', interpol='nearest')
-#         if SAVE_FOA_IMG
-#             [X,MAP]= frame2im(getframe);
-#             FILENAME=[RESULT_DIR VIDEO_NAME '/FOA/FOA' imglist(iFrame).name];
-#             imwrite(X,FILENAME,'jpeg');
+        cls._image_plot(axes, foa_mask, title, cmap='gray', interpol='nearest')
 
-    def _create_circular_mask(cls, h, w, center, radius):
+    def _save_imgs(self, data, frame_num):
 
-        Y, X = np.ogrid[:h, :w]
-        dist_from_center = np.sqrt((X - center[0])**2 + (Y-center[1])**2)
+        fig, ax = plt.subplots()
 
-        mask = dist_from_center <= radius
-        mask = np.ma.masked_where(mask == 1, mask)
+        if GeneralConfig.SAVE_FOV_IMG:
+            cmap = plt.cm.gray
+            path = self.create_result_folder('foveated')
+            image_data = data["foveated_frame"]
+            norm = plt.Normalize(vmin=image_data.min(), vmax=image_data.max())
+            image = cmap(norm(image_data))
+            plt.imsave(path + f'/fov_{frame_num}.png', image)
 
-        return mask
+        if GeneralConfig.SAVE_SAL_IMG:
+            cmap = plt.cm.jet
+            path = self.create_result_folder('salience')
+            image_data = data["saliency_map"]
+            norm = plt.Normalize(vmin=image_data.min(), vmax=image_data.max())
+            image = cmap(norm(image_data))
+            plt.imsave(path + f'/sal_{frame_num}.png', image)
+
+        if GeneralConfig.SAVE_PROTO_IMG:
+            path = self.create_result_folder('proto_objects')
+            self.plot_proto_objects(ax, data["original_frame"],
+                                    data["proto_params"], data["num_proto"],
+                                    title=f"Proto-Objects #{frame_num}")
+            fig.savefig(path + f'/proto_{frame_num}.png')
+            ax.clear()
+
+        if GeneralConfig.SAVE_IP_IMG:
+            path = self.create_result_folder('interest_points')
+            self.plot_interest_points(ax, data["original_frame"],
+                                      data["circle_coords"], data["gaze_sampler"],
+                                      title=f"Sampled Interest Points (IP) #{frame_num}")
+            fig.savefig(path + f'/ip_{frame_num}.png')
+            ax.clear()
+
+        if GeneralConfig.SAVE_HISTO_IMG:
+            path = self.create_result_folder('empirical_distribution')
+            self.plot_empirical_dists(ax, data["hist_mat"],
+                                      title=f"IP Empirical Distribution #{frame_num}")
+            fig.savefig(path + f'/histo_{frame_num}.png')
+            ax.clear()
+
+        if GeneralConfig.SAVE_FOA_IMG:
+            path = self.create_result_folder('foa')
+            self.plot_sampled_FOA(ax, data["original_frame"], data["foa_mask"], title=f"FOA #{frame_num}")
+            fig.savefig(path + f'/foa_{frame_num}.png')
+            ax.clear()
+
+        plt.close(fig)
+

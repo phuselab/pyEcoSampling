@@ -37,7 +37,7 @@ References
     <https://ieeexplore.ieee.org/abstract/document/6502674>`_
 """
 
-
+import numpy as np
 
 from config import (GeneralConfig, ProtoConfig)
 from complexity import Complexity
@@ -53,17 +53,6 @@ from utils.plotter import Plotter
 from action_selector import ActionSelector
 
 logger = Logger(__name__)
-
-
-# % Inputs ([]s are optional)
-# %   (string) config_file  the name of a configuration file in the .\config
-# %                         directory to be evaluated for setting the
-# %                         experiment parameters
-# %
-# % Example:
-# %
-# %   esGenerateScanpath('config');
-# %
 
 
 def generate_scanpath(config_file,  n_obs):
@@ -83,6 +72,7 @@ def generate_scanpath(config_file,  n_obs):
 
     # Previous gaze shift direction
     dir_old = 0
+    all_foa = np.array([])
     pred_foa = gaze_sampler.start_foa
     nu = gaze_sampler.start_nu
 
@@ -132,7 +122,6 @@ def generate_scanpath(config_file,  n_obs):
         pred_foa = final_foa
         dir_old = dir_new
 
-
         if GeneralConfig.VISUALIZE_RESULTS:
             data = {
                 "original_frame": frame_sampling.show_frame,
@@ -146,20 +135,13 @@ def generate_scanpath(config_file,  n_obs):
                 "order": complexity_evaluator.order,
                 "disorder": complexity_evaluator.disorder,
                 "complexity": complexity_evaluator.complexity,
-                "foa_center": final_foa.T,
-                "foa_radius": gaze_sampler.foa_size,
+                "foa_mask": gaze_sampler.show,
                 "gaze_sampler": gaze_sampler
             }
             # Displaying relevant steps of the process.
             plt.plot_visualization(data, frame)
 
-# % Save some results if configured
-# if SAVE_COMPLEXITY_ONFILE
-#     outfilenameord=[RESULT_DIR VIDEO_NAME 'order.mat']
-#     save(outfilenameord,'Orderplot');
-#     outfilenameord=[RESULT_DIR VIDEO_NAME 'disorder.mat']
-#     save(outfilenameord,'Disorderplot');
+        all_foa = np.vstack((all_foa, final_foa)) if all_foa.size else final_foa
 
-# if SAVE_FOA_ONFILE
-#     outfilename=[RESULT_DIR VIDEO_NAME '_FOA.mat']
-#     save(outfilename,'allFOA');
+    plt.save_complexity(data)
+    plt.save_foa_values(all_foa)

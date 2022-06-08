@@ -56,8 +56,8 @@ class GeneralConfig:
     SAVE_FOA_IMG = True  # If = 1, saving the FOA image
 
     # Saving data
-    SAVE_FOA_ONFILE = 0
-    SAVE_COMPLEXITY_ONFILE = 0
+    SAVE_FOA_ONFILE = True
+    SAVE_COMPLEXITY_ONFILE = True
 
 class SaliencyConfig:
     """Self resemblance spatio-temporal feature and saliency map parameters."""
@@ -87,7 +87,7 @@ class ProtoConfig:
     PROTO = 1
 
     """Maximum number of proto-objects."""
-    N_BEST_PROTO = 8
+    N_BEST_PROTO = 15
 
 class IPConfig:
     """Interest point sampler configuration."""
@@ -100,8 +100,7 @@ class IPConfig:
     SCALE = np.arange(10, 30)
 
     """Maximun number of IPs allowed per image."""
-    MAX_POINTS = 80 #30 original
-
+    MAX_POINTS = 80
 
     """If true perform weighted density, false perform random sampling"""
     WEIGHTED_SAMPLING = 1

@@ -57,6 +57,7 @@ class GazeSampler:
         candidate_foa (np.array): candidate FOA coordinates.
         candx (np.array): candidate FOA x coordinates.
         candy (np.array): candidate FOA y coordinates.
+        show (np.ndarray): visualization mask of the FOA.
 
     Parameters:
         frame_sampling (FrameSampling): frame sampling object
@@ -97,6 +98,7 @@ class GazeSampler:
         self.candidate_foa = None
         self.candx = None
         self.candy = None
+        self.show = None
 
         # Landscape Configuration
         self.landscape = {}
@@ -133,6 +135,8 @@ class GazeSampler:
         foa_attractors = self._get_gaze_attractors(pred_foa)
         logger.verbose(f"FOA attractors: {foa_attractors}")
         final_foa, dir_new = self._gaze_sampling(z, foa_attractors, pred_foa, dir_old)
+
+        self.show = self._create_circular_mask(final_foa)
 
         # if set, save the FOA coordinates on file
         # if SAVE_FOA_ONFILE:
@@ -234,10 +238,10 @@ class GazeSampler:
 
         Function computing the actual  gaze relocation by using a
         Langevin like stochastic differential equation,
-        whose noise source is sampled from a mixture of $$\alpha$$-stable distributions.
+        whose noise source is sampled from a mixture of alpha-stable distributions.
         By using NUM_INTERNALSIM generates an equal number of candidate
         parameters, that is of candidate new possible shifts which are then
-        passed to the esLangevinSimSampling() function, which executes the
+        passed to the _langevin_sampling() function, which executes the
         Langevin step
 
         Note:
@@ -311,11 +315,11 @@ class GazeSampler:
         if not accept:
             # For normal regime simple choice on most salient point
             mv_normal_dist = pm.MvNormal.dist(mu=candidate_foa.conj().T,
-                                              cov=np.eye(2)@s, shape=(2, ))
+                                              cov=np.eye(2)*s, shape=(2, ))
             new = mv_normal_dist.random(size=1)
             new = new.conj().T
-            validcord = np.nonzero((new[0] >= 1) and (new[0] < nrow) and
-                                   (new[1] >= 1) and (new[1] < ncol))
+            validcord = np.nonzero((new[0] >= 1) & (new[0] < nrow) &
+                                   (new[1] >= 1) & (new[1] < ncol))[0]
 
             logger.verbose(f'Sampled {validcord.size} valid candidate FOAs from normal')
 
@@ -331,6 +335,16 @@ class GazeSampler:
             logger.warn('BACKUP SOLUTION!!!!!!\nKeeping OLD FOA')
 
         self.candidate_foa = candidate_foa
+
+        logger.verbose(f"Current FOA {pred_foa[0]}, {pred_foa[1]}")
+        logger.verbose(f"Candidate Max FOA {candidate_foa[0]}, {candidate_foa[1]}")
+        logger.verbose(f"Old dir {np.rad2deg(dir_old)}")
+        logger.verbose(f"New dir {np.rad2deg(dir_new)}")
+        logger.verbose(f"Final FOA {final_foa[0]}, {final_foa[1]}")
+        dis = np.sqrt(np.square(final_foa[0]- candidate_foa[0]) + np.square(final_foa[1]- candidate_foa[1]))
+        logger.verbose(f'Distance from candidate FOA {dis}')
+        logger.verbose('-----FOA SAMPLING TERMINATED \n')
+
         return final_foa, dir_new
 
     def _langevin_sampling(self, sde_param, pred_foa):
@@ -353,7 +367,7 @@ class GazeSampler:
                     "h": SDE integration step
                 }
 
-            pred_foa (_type_): _description_
+            pred_foa (np.ndarray): Previous FOA coordinates
 
         Returns:
             final_foa (np.ndarray): (1, 2) vector representing the new FoA coordinates
@@ -390,7 +404,8 @@ class GazeSampler:
         tryFOA_y = (pred_foa[1] + dy).round().squeeze()
 
         # Verifies if the candidate shift is located within the image
-        validcord = np.nonzero(((tryFOA_x >= 0) & (tryFOA_x < nrow) & (tryFOA_y >= 0) & (tryFOA_y < ncol)))[0]
+        validcord = np.nonzero(((tryFOA_x >= 0) & (tryFOA_x < nrow) &
+                                (tryFOA_y >= 0) & (tryFOA_y < ncol)))[0]
         logger.verbose(f"Sampled {len(validcord)} valid candidate FOAs")
 
         if len(validcord) > 0:
@@ -438,3 +453,24 @@ class GazeSampler:
         self.candx = candx
         self.candy = candy
         return final_foa, dir_new, accept
+
+    def _create_circular_mask(self, center):
+        """Creates a circular mask visualization of the FOA.
+
+        Args:
+            center (np.ndarray): (1, 2) vector representing the center of the FOA
+
+        Returns:
+            mask (np.ndarray): (h, w) binary mask
+        """
+        h = self.frame_sampling.n_rows
+        w = self.frame_sampling.n_cols
+        radius = self.foa_size
+
+        Y, X = np.ogrid[:h, :w]
+        dist_from_center = np.sqrt((X - center[0])**2 + (Y-center[1])**2)
+
+        mask = dist_from_center <= radius
+        mask = np.ma.masked_where(mask == 1, mask)
+
+        return mask
