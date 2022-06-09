@@ -1,5 +1,7 @@
 # Ecological Sampling Python
 
+<img src="https://raw.githubusercontent.com/phuselab/INMCA_Nobre/main/docs/source/_static/logo.svg?token=GHSAT0AAAAAABUT73UR3IGPVZ6SA4HE2SFGYVBYNTQ">
+
 The code is a simple demo of the Ecological Sampling (ES) method, which generates gaze shifts on video clips (frame sequences). It is a baseline implementation of the Ecological Sampling model described in
 ```Boccignone & Ferraro [1]```, a stochastic model of eye guidance
 The gaze shift mechanism is conceived as  an active random sampling that
