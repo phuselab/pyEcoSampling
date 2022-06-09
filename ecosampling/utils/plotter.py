@@ -26,6 +26,14 @@ class Plotter:
         you want to plot the entire visualization with
         ``plot_visualization``.
 
+    Args:
+        num_line (int, optional): Number of lines to plot.
+            Defaults to 2.
+        num_pics_line (int, optional): Number of pictures to plot in each line.
+            Defaults to 5.
+        fig_size (tuple, optional): Size of the figure.
+            Defaults to (15, 5).
+
     Attributes:
         fig (plt.figure.Figure): Figure to plot the visualization.
         axes (plt.axes.Axes): Axes to plot the visualization.
@@ -78,29 +86,46 @@ class Plotter:
         return ax_image
 
     def save_foa_values(self, foa_values):
+        """Save foa numpy values.
+
+        Args:
+            foa_values (np.ndarray): Foa values to save.
+        """
+
+        # Save foa numpy values
         if GeneralConfig.SAVE_FOA_ONFILE:
-            path = self.create_result_folder('')
+            path = self._create_result_folder('')
             with open(path + '/foa_values.npy', 'wb') as f:
                 np.save(f, foa_values)
 
-    def save_complexity(self, data):
+    def save_complexity(self, complexity):
+        """Save complexy data plots an numpy values.
+
+        Args:
+            data (dict): Data dictionary
+        """
         if GeneralConfig.SAVE_COMPLEXITY_ONFILE:
-            path = self.create_result_folder('')
-            fig, ax = plt.subplots()
-            self.plot_order_disorder(ax, data["order"], data["disorder"])
+            path = self._create_result_folder('')
+
+            # Plot Final Order/Disorder
+            fig, ax = plt.subplots(figsize=(12,6), dpi=100)
+            self.plot_order_disorder(ax, complexity)
             fig.savefig(path + '/order_disorder_plot.png')
             plt.close(fig)
-            fig, ax = plt.subplots()
-            self.plot_complexity(ax, data["complexity"])
+
+            # Plot final complexity
+            fig, ax = plt.subplots(figsize=(12,6), dpi=100)
+            self.plot_complexity(ax, complexity)
             fig.savefig(path + '/complexity_plot.png')
             plt.close(fig)
 
+            # Save numpy values
             with open(path + '/order.npy', 'wb') as f:
-                np.save(f, data["order"])
+                np.save(f, complexity.order)
             with open(path + '/disorder.npy', 'wb') as f:
-                np.save(f, data["disorder"])
+                np.save(f, complexity.disorder)
             with open(path + '/complexity.npy', 'wb') as f:
-                np.save(f, data["complexity"])
+                np.save(f, complexity.complexity)
 
     def plot_visualization(self, data, frame_num, pause_time=0.001):
         """Plot complete visualization for instance.
@@ -108,84 +133,79 @@ class Plotter:
         Plot all 10 plots for every frame.
 
         Args:
-            data (dict): _description_
+            data (dict): Data dictionary
             pause_time (float, optional): Time to visualize the plot.
                 Defaults to 0.001 (for GPU issues).
         """
         self._clean_axes()
-        self.plot_original_frame(self.axes[0, 0], data["original_frame"])
-        self.plot_foveated_frame(self.axes[0, 1], data["foveated_frame"])
+        self.plot_original_frame(self.axes[0, 0], data["frame_sampling"])
+        self.plot_foveated_frame(self.axes[0, 1], data["frame_sampling"])
         self.plot_feature_map(self.axes[0, 2], data["feature_map"])
         self.plot_saliency_map(self.axes[0, 3], data["saliency_map"])
-        self.plot_proto_objects(self.axes[0, 4], data["original_frame"],
+        self.plot_proto_objects(self.axes[0, 4], data["frame_sampling"],
                                 data["proto_params"], data["num_proto"])
-        self.plot_interest_points(self.axes[1, 0], data["original_frame"],
+        self.plot_interest_points(self.axes[1, 0], data["frame_sampling"],
                                   data["circle_coords"], data["gaze_sampler"])
         self.plot_empirical_dists(self.axes[1, 1], data["hist_mat"])
-        self.plot_order_disorder(self.axes[1, 2], data["order"], data["disorder"])
+        self.plot_order_disorder(self.axes[1, 2], data["complexity"])
         self.plot_complexity(self.axes[1, 3], data["complexity"])
-        self.plot_sampled_FOA(self.axes[1, 4], data["original_frame"],
-                              data["foa_mask"], title="Final FOA")
+        self.plot_sampled_FOA(self.axes[1, 4], data["frame_sampling"],
+                              data["gaze_sampler"])
 
         plt.tight_layout()
         self._save_imgs(data, frame_num)
         plt.pause(pause_time)
 
 
-    def plot_original_frame(cls, axes, original_frame, title='Current frame'):
+    def plot_original_frame(cls, axes, frame_sampling):
         """Plot original frame.
 
         Args:
             axes (axes.Axes): Axes to plot the image
-            original_frame (np.ndarray): Original frame to plot.
-            title (str, optional): Title of the plot. Defaults to 'Current frame'.
+            frame_sampling (obj): Frame sampling object.
         """
-        cls._image_plot(axes, original_frame, title)
+        cls._image_plot(axes, frame_sampling.show_frame, 'Current frame')
 
-    def plot_foveated_frame(cls, axes, foveated_frame, title='Foveated frame'):
+    def plot_foveated_frame(cls, axes, frame_sampling):
         """Plot foveated frame.
 
         Args:
             axes (axes.Axes): Axes to plot the image
-            foveated_frame (np.ndarray): Fovelated frame to plot.
-            title (str, optional): Title of the plot. Defaults to 'Foveated frame'.
+            frame_sampling (obj): Frame sampling object.
         """
-        cls._image_plot(axes, foveated_frame, title, cmap='gray')
+        cls._image_plot(axes, frame_sampling.show_foveated_frame, 'Foveated frame', cmap='gray')
 
-    def plot_feature_map(cls, axes, feature_map, title='Feature map'):
+    def plot_feature_map(cls, axes, feature_map):
         """Plot feature map.
 
         Args:
             axes (axes.Axes): Axes to plot the image
             feature_map (np.ndarray): Feature map frame to plot.
-            title (str, optional): Title of the plot. Defaults to 'Feature map'.
         """
-        cls._image_plot(axes, feature_map, title, cmap='gray')
+        cls._image_plot(axes, feature_map, 'Feature map', cmap='gray')
 
-    def plot_saliency_map(cls, axes, saliency_map, title='Salience map'):
+    def plot_saliency_map(cls, axes, saliency_map):
         """Plot saliency map.
 
         Args:
             axes (axes.Axes): Axes to plot the image
             saliency_map (np.ndarray): Salience map frame to plot.
-            title (str, optional): Title of the plot. Defaults to 'Salience map'.
         """
-        cls._image_plot(axes, saliency_map, title, cmap='jet')
+        cls._image_plot(axes, saliency_map, 'Salience map', cmap='jet')
 
-    def plot_proto_objects(cls, axes, current_frame, proto_params, num_proto, title='Proto-Objects'):
+    def plot_proto_objects(cls, axes, frame_sampler, proto_params, num_proto):
         """Plot Proto Objects.
 
         Args:
             axes (axes.Axes): Axes to plot the image
-            current_frame (np.ndarray): Original frame to plot.
+            frame_sampler (obj): Frame sampling object.
             proto_params (obj): protoparams objetcs to plot.
             num_proto (int): Number of protoparameres.
-            title (str, optional): Title of the plot. Defaults to 'Proto-Objects'.
         """
 
         if num_proto > 0:
-            cls._image_plot(axes, current_frame, title)
-            cls._image_plot(axes, proto_params.show_proto, title,
+            cls._image_plot(axes, frame_sampler.show_frame, 'Proto-Objects')
+            cls._image_plot(axes, proto_params.show_proto, 'Proto-Objects',
                             cmap='gray', interpol='nearest')
 
             for p in range(proto_params.nV):
@@ -196,16 +216,16 @@ class Plotter:
                 axes.add_artist(elli)
 
 
-    def plot_interest_points(cls, axes, current_frame, circle_coords, gaze_sampler, title="Sampled Interest Points (IP)"):
+    def plot_interest_points(cls, axes, frame_sampler, circle_coords, gaze_sampler):
         """Plot Interest points.
 
         Args:
             axes (axes.Axes): Axes to plot the image
-            current_frame (np.ndarray): Current frame
+            frame_sampler (obj): Frame sampling object.
             circle_coords (np.ndarray): Coordinates of interest points
-            title (str, optional): Title of the plot. Defaults to "Sampled Interest Points (IP)".
+            gaze_sampler (obj): gaze_sampler object
         """
-        cls._image_plot(axes, current_frame, title)
+        cls._image_plot(axes, frame_sampler.show_frame, "Sampled Interest Points (IP)")
         # Show image with region marked
         xCoord, yCoord = circle_coords
         candx, candy = gaze_sampler.candx, gaze_sampler.candy
@@ -220,46 +240,55 @@ class Plotter:
         circle = Circle((gaze_sampler.candidate_foa[0], gaze_sampler.candidate_foa[1]), 10, color='g', lw=6)
         axes.add_artist(circle)
 
-    def plot_empirical_dists(cls, axes, hist_mat, title="IP Empirical Distribution"):
+    def plot_empirical_dists(cls, axes, hist_mat):
         """Plot IP Empirical distribution.
 
         Args:
             axes (axes.Axes): Axes to plot the image
             hist_mat (np.ndarray): 2D histogram array, already transposed to original
-            title (str, optional): Title of the plot. Defaults to 'IP Empirical Distribution'.
         """
-        cls._configure_axis(axes, title)
+        cls._configure_axis(axes, "IP Empirical Distribution")
         sns.heatmap(hist_mat, linewidth=0.2, cbar=False, cmap='jet', ax=axes)
 
 
-    def plot_order_disorder(cls, axes, order_series, disorder_series, lw=2):
+    def plot_order_disorder(cls, axes, complexity, lw=2):
         """Plot order/disorder.
 
         Args:
             axes (axes.Axes): Axes to plot the image
-            order_series (vector): Order series vector.
-            disorder_series (vector): Disorder series vector.
+            complexity (obj): Complexity object.
             lw (int, optional): Line width. Defaults to 2.
         """
         cls._configure_axis(axes, "Order/Disorder", keep_axis=True)
-        axes.plot(disorder_series, 'r--', label='Disorder', linewidth=lw)
-        axes.plot(order_series, 'g-', label='Order', linewidth=lw)
+        axes.plot(complexity.disorder, 'r--', label='Disorder', linewidth=lw)
+        axes.plot(complexity.order, 'g-', label='Order', linewidth=lw)
         axes.legend(loc='upper right')
 
 
-    def plot_complexity(cls, axes, complexity_series, lw=2):
+    def plot_complexity(cls, axes, complexity, lw=2):
         """Plot complexity curves.
 
         Args:
             axes (axes.Axes): Axes to plot the image
-            complexity_series (vector): Complexity series vector.
+            complexity (obj): Complexity object.
             lw (int, optional): Line width. Defaults to 2.
         """
         cls._configure_axis(axes, "Complexity" , keep_axis=True)
-        axes.plot(complexity_series, label='Complexity', linewidth=lw)
+        axes.plot(complexity.complexity, label='Complexity', linewidth=lw)
+
+    def plot_sampled_FOA(cls, axes, frame_sampler, gaze_sampler):
+        """Plot final FOA.
+
+        Args:
+            axes (axes.Axes): Axes to plot the image
+            frame_sampler (obj): Frame sampling object.
+            gaze_sampler (obj): Gaze sampler object.
+        """
+        cls._image_plot(axes, frame_sampler.show_frame, "Final FOA")
+        cls._image_plot(axes, gaze_sampler.show, "Final FOA", cmap='gray', interpol='nearest')
 
 
-    def create_result_folder(cls, plot_type_folder):
+    def _create_result_folder(cls, plot_type_folder):
         """Create result folder.
 
         Args:
@@ -279,58 +308,57 @@ class Plotter:
 
         return results_folder + plot_type_folder
 
-    def plot_sampled_FOA(cls, axes, current_frame, foa_mask, title="Final FOA"):
-        cls._image_plot(axes, current_frame, title)
-        cls._image_plot(axes, foa_mask, title, cmap='gray', interpol='nearest')
+
+    def _configure_axis_save(cls, fig, ax, save_name, frame_num):
+        """Configure axis to save a clean image.
+
+        Args:
+            fig (obj): Matplotlib figure
+            ax (axes.Axes): Axes to plot the image
+            save_name (string): Name of the image to save and path to create.
+            frame_num (int): Number of the frame
+        """
+        path = cls._create_result_folder(f'{save_name}')
+        plt.axis('off')
+        ax.set_title('')
+        fig.savefig(path + f'/{save_name}_{frame_num}.png', bbox_inches='tight', pad_inches = 0)
+        ax.clear()
 
     def _save_imgs(self, data, frame_num):
+        """"Save images to disk.
 
-        fig, ax = plt.subplots()
+        Args:
+            data (dict): Data dictionary
+            frame_num (int): Number of the frame
+        """
+
+        fig, ax = plt.subplots(figsize=(12,6), dpi=100)
 
         if GeneralConfig.SAVE_FOV_IMG:
-            cmap = plt.cm.gray
-            path = self.create_result_folder('foveated')
-            image_data = data["foveated_frame"]
-            norm = plt.Normalize(vmin=image_data.min(), vmax=image_data.max())
-            image = cmap(norm(image_data))
-            plt.imsave(path + f'/fov_{frame_num}.png', image)
+            self.plot_foveated_frame(ax, data["frame_sampling"])
+            self._configure_axis_save(fig, ax, 'foveated', frame_num)
 
         if GeneralConfig.SAVE_SAL_IMG:
-            cmap = plt.cm.jet
-            path = self.create_result_folder('salience')
-            image_data = data["saliency_map"]
-            norm = plt.Normalize(vmin=image_data.min(), vmax=image_data.max())
-            image = cmap(norm(image_data))
-            plt.imsave(path + f'/sal_{frame_num}.png', image)
+            self.plot_saliency_map(ax, data["saliency_map"])
+            self._configure_axis_save(fig, ax, 'salience', frame_num)
 
         if GeneralConfig.SAVE_PROTO_IMG:
-            path = self.create_result_folder('proto_objects')
-            self.plot_proto_objects(ax, data["original_frame"],
-                                    data["proto_params"], data["num_proto"],
-                                    title=f"Proto-Objects #{frame_num}")
-            fig.savefig(path + f'/proto_{frame_num}.png')
-            ax.clear()
+            self.plot_proto_objects(ax, data["frame_sampling"],
+                                    data["proto_params"], data["num_proto"])
+            self._configure_axis_save(fig, ax, 'protos', frame_num)
 
         if GeneralConfig.SAVE_IP_IMG:
-            path = self.create_result_folder('interest_points')
-            self.plot_interest_points(ax, data["original_frame"],
-                                      data["circle_coords"], data["gaze_sampler"],
-                                      title=f"Sampled Interest Points (IP) #{frame_num}")
-            fig.savefig(path + f'/ip_{frame_num}.png')
-            ax.clear()
+            self.plot_interest_points(ax, data["frame_sampling"],
+                                      data["circle_coords"], data["gaze_sampler"])
+            self._configure_axis_save(fig, ax, 'ips', frame_num)
 
         if GeneralConfig.SAVE_HISTO_IMG:
-            path = self.create_result_folder('empirical_distribution')
-            self.plot_empirical_dists(ax, data["hist_mat"],
-                                      title=f"IP Empirical Distribution #{frame_num}")
-            fig.savefig(path + f'/histo_{frame_num}.png')
-            ax.clear()
+            self.plot_empirical_dists(ax, data["hist_mat"])
+            self._configure_axis_save(fig, ax, 'empirical_dists', frame_num)
 
         if GeneralConfig.SAVE_FOA_IMG:
-            path = self.create_result_folder('foa')
-            self.plot_sampled_FOA(ax, data["original_frame"], data["foa_mask"], title=f"FOA #{frame_num}")
-            fig.savefig(path + f'/foa_{frame_num}.png')
-            ax.clear()
+            self.plot_sampled_FOA(ax, data["frame_sampling"], data["gaze_sampler"])
+            self._configure_axis_save(fig, ax, 'foa', frame_num)
 
         plt.close(fig)
 

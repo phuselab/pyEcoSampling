@@ -126,24 +126,20 @@ def generate_scanpath(n_obs):
 
         if GeneralConfig.VISUALIZE_RESULTS:
             data = {
-                "original_frame": frame_sampling.show_frame,
-                "foveated_frame": frame_sampling.show_foveated_frame,
+                "frame_sampling": frame_sampling,
                 "feature_map": feature_map.show,
                 "saliency_map": saliency_map,
                 "num_proto": num_proto,
                 "proto_params": proto_params,
                 "circle_coords": sampled_points_coord,
                 "hist_mat": ip_sampler.show_hist,
-                "order": complexity_evaluator.order,
-                "disorder": complexity_evaluator.disorder,
-                "complexity": complexity_evaluator.complexity,
-                "foa_mask": gaze_sampler.show,
-                "gaze_sampler": gaze_sampler
+                "complexity": complexity_evaluator,
+                "gaze_sampler": gaze_sampler,
             }
             # Displaying relevant steps of the process.
             plt.plot_visualization(data, frame)
 
         all_foa = np.vstack((all_foa, final_foa)) if all_foa.size else final_foa
 
-    plt.save_complexity(data)
+    plt.save_complexity(data['complexity'])
     plt.save_foa_values(all_foa)
