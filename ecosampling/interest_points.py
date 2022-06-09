@@ -14,10 +14,9 @@ Changes:
 """
 
 import numpy as np
-import pymc3 as pm
 
 from config import IPConfig
-from utils.statistics import discrete_sampler
+from utils.statistics import discrete_sampler, sample_multivariate
 from utils.logger import Logger
 
 logger = Logger(__name__)
@@ -127,10 +126,7 @@ class IPSampler:
                 cov_proto = np.array([[(5*proto_params.r2[p]) , 0],
                                      [0, (5*proto_params.r1[p])]])
                 mu_proto = proto_params.proto_centers[p]
-                # PYMC
-                mv_normal_dist = pm.MvNormal.dist(mu=mu_proto, cov=cov_proto, shape=(2, ))
-
-                r_p = mv_normal_dist.random(size=n)
+                r_p = sample_multivariate(mu_proto, cov_proto, (2, ), n)
                 all_points = np.vstack((all_points, r_p))
 
 

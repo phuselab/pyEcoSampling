@@ -10,7 +10,9 @@ The actual gaze relocation is driven by a stochastic differential equation
 whose noise source is sampled from a mixture of alpha-stable distributions.
 The sampling strategy allows to mimic a fundamental property of eye guidance:
 where we choose to look next at any given moment in time is not completely deterministic,
-but neither is it completely random
+but neither is it completely random.
+
+For further information, see also [1]_ and [2]_.
 
 
 Notes:
@@ -55,7 +57,7 @@ from action_selector import ActionSelector
 logger = Logger(__name__)
 
 
-def generate_scanpath(config_file,  n_obs):
+def generate_scanpath(n_obs):
 
     # Initialization
     frame_sampling = FrameProcessor()

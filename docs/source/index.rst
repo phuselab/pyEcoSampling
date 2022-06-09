@@ -6,13 +6,15 @@
 Welcome to Eco Sampling's documentation!
 ========================================
 
+.. image:: _static/logo.svg
+
 .. toctree::
   :maxdepth: 2
   :caption: User Documentation
 
-  user/intro
-  user/install
-  user/usage
+  user/introduction
+  user/api_usage
+  user/config.rst
 
 .. toctree::
   :maxdepth: 2

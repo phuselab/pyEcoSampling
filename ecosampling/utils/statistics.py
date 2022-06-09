@@ -10,13 +10,15 @@ Changes:
 """
 
 import numpy as np
+import pymc3 as pm
+from scipy.stats import levy_stable
 
 def discrete_sampler(density, num_samples, replacement_option=True):
     """Function that draws samples from a discrete density.
 
     Args:
         density (vector): discrete probability density (should sum to 1)
-        num_samples (_type_): number of samples to draw
+        num_samples (int): number of samples to draw
         replacement_option (bool, optional): True for sampling with replacement
             False for non replacement. Defaults to True.
 
@@ -52,12 +54,23 @@ def discrete_sampler(density, num_samples, replacement_option=True):
     return np.squeeze(samples_out).astype(int)
 
 
-# function M = sample_discrete(prob, r, c)
-# % SAMPLE_DISCRETE Like the built in 'rand', except we draw from a non-uniform discrete distrib.
-# % M = sample_discrete(prob, r, c)
-# % Example: sample_discrete([0.8 0.2], 1, 10) generates a row vector of 10 random integers from {1,2},
-# % where the prob. of being 1 is 0.8 and the prob of being 2 is 0.2.
 def sample_discrete(prob, r=1, c=None):
+    """Draw from a non-uniform discrete distribution
+
+    Example:
+
+        sample_discrete([0.8, 0.2], 1, 10) generates a row vector of 10 random integers from {1,2},
+        where the prob. of being 1 is 0.8 and the prob of being 2 is 0.2.
+
+    Args:
+        prob (np.array): Vector of probabilities.
+        r (int, optional): Starting value of the random integer.
+            Defaults to 1.
+        c (int, optional): Ammount of integers to sample. Defaults to None.
+
+    Returns:
+        M (np.ndarray): (r, c) Sampled data.
+    """
 
     n = len(prob)
 
@@ -72,11 +85,55 @@ def sample_discrete(prob, r=1, c=None):
         for i  in range(n):
             M = M + (R > cumprob[i])
     else:
-
-        # loop over the smaller index - can be much faster if length(prob) >> r*c
         cumprob2 = cumprob.flatten('F')
         for i in range(r):
             for j in range(c):
                 M[i, j] = np.sum(R[i, j] > cumprob2)
 
     return M
+
+def sample_dirchlet(nu, size):
+    """Sample from a Dirchlet distribution.
+
+    Args:
+        nu (np.array): Concentration parameters.
+        size (int): Amount of samples to draw.
+
+    Returns:
+        Drawn samples from a Dirchlet distribution.
+    """
+    dirchlet_dist = pm.Dirichlet.dist(nu)
+    sampled_values = dirchlet_dist.random(size=size)
+    return sampled_values
+
+def sample_multivariate(mu, cov, shape, sample_size):
+    """Sample from a multivariate distribution.
+
+    Args:
+        mu (np.ndarray): Vector of means
+        cov (np.ndarray): Covariance matrix.
+        shape (tuple): Shape of the samples.
+        sample_size (int): Amount of samples to draw.
+
+    Returns:
+        Samples drawn from a multivariate normal distribution.
+    """
+    mv_normal_dist = pm.MvNormal.dist(mu=mu, cov=cov, shape=shape)
+    sampled_values = mv_normal_dist.random(size=sample_size)
+    return sampled_values
+
+def sample_levy_stable(alpha, beta, scale, loc, size):
+    """Sample from a Levy-stable distribution.
+
+    Args:
+        alpha (float): Stability parameter.
+        beta (float): Symmetry parameter.
+        scale (float): Scale parameter.
+        loc (float): Location parameter.
+        size (int): Amount of samples to draw.
+
+    Returns:
+        Sample drawn from a Levy-stable distribution.
+    """
+    samples = levy_stable.rvs(alpha, beta, scale=scale, loc=loc, size=size)
+    return samples

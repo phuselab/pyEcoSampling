@@ -9,11 +9,9 @@ Changes:
     - 31/05/2022  Python Edition
 """
 
-import pymc3 as pm
-
 from config import ComplexityConfig
 from utils.logger import Logger
-from utils.statistics import sample_discrete
+from utils.statistics import sample_discrete, sample_dirchlet
 
 logger = Logger(__name__)
 
@@ -21,7 +19,7 @@ logger = Logger(__name__)
 class ActionSelector:
 
     def __init__(self, disorder, order, complexity):
-        """Select the new
+        """Select the new gaze action index based on the complexity.
 
         Args:
             disorder (float):  disorder parameter
@@ -58,8 +56,7 @@ class ActionSelector:
 
         # Sampling the \pi parameter that is the probability of an order event
         # $$\pi ~ %Dir(\pi | \nu)$$
-        dirchlet_dist = pm.Dirichlet.dist(nu)
-        pi_prob = dirchlet_dist.random(size=1)
+        pi_prob = sample_dirchlet(nu, 1)
 
         # Sampling the kind of gaze-shift regime:
         # $$ z ~ Mult(z | \pi) $$
@@ -71,12 +68,10 @@ class ActionSelector:
     def _dirichlet_hyper_param_update(self, nu):
         """Dirichlet hyper-parameter update.
 
-        Computes the new Dirichlet hyper-parameter $$\nu_{k}(t)$$
-        Given the complexity $\mathcal{C}(t)$, we partition the complexity range in order to define
-        $K$ possible complexity events $\{E_{\mathcal{C}(t)}=k\}_{k=1}^{K}$.
-        This way the hyper-parameter update can be rewritten as the recursion.
-
-        $$\nu_{k}(t)= \nu_k(t-1) +\left[ E_{\mathcal{C}(t)} = k \right], k=1,\cdots,K$$.
+        Computes the new Dirichlet hyper-parameter nu. Given the complexity Ct,
+        we partition the complexity range in order to define K possible
+        complexity events. This way the hyper-parameter update can be rewritten
+        as the recursion. For further information, see [1]_ and [2]_.
 
         Args:
             nu (vector): old Dirichlet Hyperparameters

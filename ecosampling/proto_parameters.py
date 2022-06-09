@@ -65,7 +65,7 @@ class ProtoParameters:
         the visual representation of the proto-objects.
 
         Using the proto-object representation which is the base of method
-        described in [1].
+        described in [1]_.
 
         Note:
             The proto-parameters and its visual representation are stored in the object,
@@ -190,7 +190,7 @@ class ProtoParameters:
 
         In a first step generates the raw patch map by thresholding the normalized salience map
         so as to achieve 95% significance level for deciding whether the given saliency values are
-        in the extreme tails.
+        in the extreme tails. For further information, see also [2]_.
 
         Args:
             s_map (matrix): the salience map, 0/1 overlay representation
@@ -204,7 +204,7 @@ class ProtoParameters:
 
         References
         ----------
-        .. [1] `Boccignone, G., & Ferraro, M. (2013). Ecological sampling of gaze shifts.
+        .. [2] `Boccignone, G., & Ferraro, M. (2013). Ecological sampling of gaze shifts.
            IEEE transactions on cybernetics, 44(2), 266-279.
            <https://ieeexplore.ieee.org/abstract/document/6502674>`_
         """

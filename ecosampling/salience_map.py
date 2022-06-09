@@ -92,7 +92,7 @@ class SalienceMap:
         """Compute Space-time Self-Resemblance.
 
         Note:
-            Adapted from Matlab's version by Hae Jong on Apr 25, 2011 [1]
+            Adapted from Matlab's version by Hae Jong on Apr 25, 2011 [1]_.
 
         Args:
             lark (np.array): 3D LARK descriptors

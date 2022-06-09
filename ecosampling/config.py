@@ -4,11 +4,11 @@ Holds all settings used in all parts of the code, enabling the exact
 reproduction of the experiment at some future date.
 
 Single most important setting - the overall experiment type
-used by esGenerateScanpath.m
+used by generate_scanpath.m
 
 Authors:
-    Giuseppe Boccignone <Giuseppe.Boccignone(at)unimi.it>
-    Renato A Nobre <renato.avellarnobre(at)unimi.it>
+    - Giuseppe Boccignone <Giuseppe.Boccignone(at)unimi.it>
+    - Renato A Nobre <renato.avellarnobre(at)unimi.it>
 
 Changes:
     - 20/05/2022  Python Edition
@@ -20,26 +20,37 @@ import numpy as np
 
 
 class GeneralConfig:
+    """General configuration class."""
 
     """Identifies Feature Extraction and Salience Map methods."""
     EXPERIMENT_TYPE = '3DLARK_SELFRESEMBLANCE'
 
-    # General Parameters
+    """Start offset from the data folder. Skip ``OFFSET`` first images."""
     OFFSET = 1
-    FRAME_STEP = 2  # setting the frames to skip
 
-    PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
-    BASE_DIR = os.path.dirname(PROJECT_ROOT)
-    FRAME_DIR = os.path.join(BASE_DIR, 'data/demo/')
+    FRAME_STEP = 2
+    """Frames to skip at each step.
 
-    # % Video name:
-    VIDEO_NAME = 'beverly01' # From CNRS dataset: clip beverly01
-    DIR_OFFSET = 310 # First numbered frame of the directory
-    # Select frames
+    Note:
+        Instead of looping through all the frames, the step is two because
+        at each step, we process the previous and the current frame and future
+        frames.
+    """
+
+    """Name of the video to be processed. Must match your data frame names."""
+    VIDEO_NAME = 'beverly01'
+
+    """Number of the first frame in the directory."""
+    DIR_OFFSET = 310
+
+    """Name of the experiment folder inside data."""
+    EXPERIMENT_DATA_FOLDER = 'demo/'
+
+    """Select the start frames to be used in the experiment."""
     NN_IMG_START = 311 - DIR_OFFSET
-    NN_IMG_END = 400 - DIR_OFFSET
 
-    RESULTS_DIR = os.path.join(BASE_DIR, 'results/')
+    """Select the end frames to be used in the experiment."""
+    NN_IMG_END = 400 - DIR_OFFSET
 
     """Flag to log verbose information."""
     VERBOSE = False
@@ -70,6 +81,21 @@ class GeneralConfig:
 
     """Flag for saving complexity values and plots."""
     SAVE_COMPLEXITY_ONFILE = True
+
+    """Project root folder. Don't change this."""
+    PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+
+    """Project base folder. Don't change this."""
+    BASE_DIR = os.path.dirname(PROJECT_ROOT)
+
+    """Data dir folder. Don't change this."""
+    DATA_DIR = os.path.join(BASE_DIR, 'data/')
+
+    """Frame dir folder. Don't change this."""
+    FRAME_DIR = os.path.join(DATA_DIR, EXPERIMENT_DATA_FOLDER)
+
+    """Name of the folder where the results will be saved."""
+    RESULTS_DIR = os.path.join(BASE_DIR, 'results/' + VIDEO_NAME + '/')
 
 class SaliencyConfig:
     """Self resemblance spatio-temporal feature and saliency map parameters."""
@@ -104,7 +130,6 @@ class ProtoConfig:
 class IPConfig:
     """Interest point sampler configuration."""
 
-
     """Type of interest operator to use."""
     TYPE = 'SelfResemblance'
 
@@ -117,6 +142,7 @@ class IPConfig:
     """If true perform weighted density, false perform random sampling"""
     WEIGHTED_SAMPLING = 1
 
+    """Scale in case of weighted sampling."""
     WEIGHTED_SCALE = 0
 
     """Number of points used on non-weighted sampling."""
@@ -128,10 +154,10 @@ class IPConfig:
     """Flag to sample e other IPs directly from the salience landscape."""
     WITH_PERTURBATION = True
 
-    #-------------------------------------------------------------------------
-    # HISTOGRAM OPERATOR FOR IPs EMPIRICAL DISTRIBUTION
-    #-------------------------------------------------------------------------
+    """Number of X bins for the IPs Empirical Distribution 2D histogram."""
     X_BIN_SIZE = 20
+
+    """Number of Y bins for the IPs Empirical Distribution 2D histogram."""
     Y_BIN_SIZE = 20
 
 
@@ -141,12 +167,25 @@ class ComplexityConfig:
     """Complexity parameters. Available only 'SDL', 'LMC', 'FC'."""
     TYPE = 'SDL'
 
-    """ """
     EPS = 0.004
+    """Simulated epsilon of the machine.
+
+    Note:
+        Epsilon is the minimum distance that a floating point arithmetic
+        program can recognize between two numbers x and y.
+    """
 
 
 class GazeConfig:
-    """Gaze sampling settings."""
+    """Gaze sampling settings.
+
+    For the alpha-stable distribution parameters, the following
+    indexes represtent the following parameters:
+
+        - Position 0 corresponds to Normal Gaze
+        - Position 1 corresponds to Levy Flight 1
+        - Position 2 corresponds to Levy Flight 2
+    """
 
     """Sets the first Foa on frame center if true."""
     FIRST_FOA_ON_CENTER = True
@@ -157,24 +196,22 @@ class GazeConfig:
     """Number of potention FOAS to determine the total attractor portential in Langevin."""
     NMAX = 10
 
-    # Internal simulation: somehow related to visibility: the more the points
-    # that can be sampled the higher the visibility of the field of view.
-    NUM_INTERNALSIM = 100; # Maximum allowed number of candidate new gaze position r_new
-    # If anything goes wrong retry:
-    MAX_NUMATTEMPTS = 5; # Maximum allowed tries for sampling e new valid gaze position
+    """Maximum number of candidates new gaze positions"""
+    NUM_INTERNALSIM = 100
 
-    # Setting the parameters of the alpha-stable components
-    # -alpha is the exponent (alpha=2 for gaussian, alpha=1 for cauchian)
-    # -gamma is the standard deviation
-    # -beta  is symmetry parameter
-    # -delta  is location parameter (for no drift, set to 0)
+    """Number of retries to find a valid new gaze position."""
+    MAX_NUMATTEMPTS = 5
 
-    # Vector pos 0 is the 'normal gaze';
-    # Vector pos 1 is the 'Levy flight 1';
-    # Vector  pos 2 is the 'Levy flight 2'
+    """Possible exponents of the alpha-stable distribution."""
     ALPHA_STABLE = [2.0, 1.6, 1.4]
+
+    """Possible standard deviation of the alpha-stable distribution."""
     GAMMA_STABLE = [3.78, 22, 60]
+
+    """Possible symmetry of the alpha-stable distribution."""
     BETA_STABLE = [1, 1, 1]
+
+    """Possible locations of the alpha-stable distribution."""
     DELTA_STABLE = [9, 60, 250]
 
 

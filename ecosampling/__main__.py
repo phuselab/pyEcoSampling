@@ -6,12 +6,12 @@ on a given video. All paremeters defining the experiment are
 defined in the config.py script file
 
 Authors:
-    Giuseppe Boccignone <giuseppe.boccignone@unimi.it>
-    Renato Nobre <renato.avellarnobre@studenti.unimi.it>
+    - Giuseppe Boccignone <giuseppe.boccignone@unimi.it>
+    - Renato Nobre <renato.avellarnobre@studenti.unimi.it>
 
 Changes:
-    12/12/2012  First Edition Matlab
-    31/05/2022  Python Edition
+    - 12/12/2012  First Edition Matlab
+    - 31/05/2022  Python Edition
 
 References
 ----------
@@ -29,8 +29,6 @@ from generate_scanpath import generate_scanpath
 if __name__ == "__main__":
     # Set here the total number of observers / scanpaths to be simulated
     total_observers = 1
-    # Set the configuration filename (parameters) of the experiment
-    configFileName = 'config_demo'
 
     for n_obs in range(total_observers):
-       generate_scanpath(configFileName,  n_obs)
+       generate_scanpath(n_obs)

@@ -259,26 +259,25 @@ class Plotter:
         axes.plot(complexity_series, label='Complexity', linewidth=lw)
 
 
-    def create_result_folder(cls, plot_type_folder, experiment=GeneralConfig.VIDEO_NAME):
+    def create_result_folder(cls, plot_type_folder):
         """Create result folder.
 
         Args:
-            experiment (str, optional): Experiment name. Defaults to GeneralConfig.VIDEO_NAME.
             plot_type_folder (str): Plot type folder.
 
         Returns:
             str: Path to the result folder.
         """
-        results_folder = 'results/'+experiment
+        results_folder = GeneralConfig.RESULTS_DIR
         # Create result folder
         if not os.path.exists(results_folder):
             os.makedirs(results_folder)
 
         # Create subfolders
-        if not os.path.exists(results_folder + '/' + plot_type_folder):
-            os.makedirs(results_folder + '/' + plot_type_folder)
+        if not os.path.exists(results_folder + plot_type_folder):
+            os.makedirs(results_folder + plot_type_folder)
 
-        return results_folder + '/' + plot_type_folder
+        return results_folder + plot_type_folder
 
     def plot_sampled_FOA(cls, axes, current_frame, foa_mask, title="Final FOA"):
         cls._image_plot(axes, current_frame, title)

@@ -84,6 +84,8 @@ class Complexity:
     def _shiner_davison_landsberg(self, H, n_bins):
         """Shiner-Davison-Landsberg (SDL) complexity.
 
+        For more information, see the reference below [1]_.
+
         Args:
             H (float): Shannon Entropy (Boltzman-Gibbs entropy).
             n_bins (int): number of bins.
@@ -108,6 +110,7 @@ class Complexity:
 
         D is called Disequilibrium. This quantity is a measure of the
         divergence of the given probability distribution from the uniform one.
+        For more information, see the reference below [2]_.
 
         Args:
             H (float): Shannon Entropy (Boltzman-Gibbs entropy)
@@ -120,7 +123,7 @@ class Complexity:
 
         References
         ----------
-        .. [1] `Lopez-Ruiz, R., Mancini, H. L., & Calbet, X. (1995). A statistical measure of complexity.
+        .. [2] `Lopez-Ruiz, R., Mancini, H. L., & Calbet, X. (1995). A statistical measure of complexity.
            Physics letters A, 209(5-6), 321-326.
            <https://www.sciencedirect.com/science/article/abs/pii/0375960195008675>`_
         """
@@ -133,7 +136,8 @@ class Complexity:
         """Feldman and Crutchfield's amendment replaces Order with the Kullback-Leibler divergence.
 
         For the purpose of serving as a component of complexity, one of the
-        compared distributions is taken to be uniform
+        compared distributions is taken to be uniform.
+        For more information, see the reference below [3]_.
 
         Args:
             H (float): Shannon Entropy (Boltzman-Gibbs entropy)
@@ -146,7 +150,7 @@ class Complexity:
 
         References
         ----------
-        .. [1] `Feldman, D. P., & Crutchfield, J. P. (1998). Measures of statistical complexity: Why?.
+        .. [3] `Feldman, D. P., & Crutchfield, J. P. (1998). Measures of statistical complexity: Why?.
            Physics Letters A, 238(4-5), 244-252.
            <https://www.sciencedirect.com/science/article/abs/pii/S0375960197008554>`_
         """

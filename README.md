@@ -74,12 +74,7 @@ If you want to plasy around, change parameters, or try with your personalized da
 
 If you want in-depth understanding of how the project is organized or on the functioning of the API read the documentation provided as an Read the Docs website.
 
-To open the documentation an shortcut is provided on the project root folder:
-```
-ecosampling_documentation
-```
-
-If the alias fails to work you can open it directly on ``docs/build/index.html``.
+To open the web documentation, open the file on the directly: ``docs/build/index.html``.
 
 
 ## Citing

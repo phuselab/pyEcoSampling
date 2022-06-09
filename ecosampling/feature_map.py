@@ -60,8 +60,8 @@ class FeatureMap:
 
         Note:
             Here for simplicity only the Self Resemblance method has been considered.
-            If other methods need to be experimented, then you should extend the if...elseif...end
-            control structure.
+            If other methods need to be experimented, then you should extend the
+            if...elif... control structure. For further information, see also [1]_.
 
         Args:
             fov_seq (matrix): the foveated sequence of frames.
@@ -96,7 +96,7 @@ class FeatureMap:
         """Compute 3-D LARK descriptors.
 
         Note:
-            Adapted from Matlab's version by Hae Jong on Apr 25, 2011 [1]
+            Adapted from Matlab's version by Hae Jong on Apr 25, 2011 [2]_.
 
         Args:
             fov_seq (np.ndarray): Foveated Map Sequence.
@@ -106,7 +106,7 @@ class FeatureMap:
 
         References
         ----------
-        .. [1] `Seo, H. J., & Milanfar, P. (2009). Static and space-time visual saliency detection
+        .. [2] `Seo, H. J., & Milanfar, P. (2009). Static and space-time visual saliency detection
            by self-resemblance. Journal of vision, 9(12), 15-15.
            <https://jov.arvojournals.org/article.aspx?articleid=2122209>`_
         """

@@ -18,7 +18,7 @@ def EdgeMirror3(x, width):
     on the first and last values of the vector along each axis.
 
     Note:
-        Adapted from Matlab's version by Hae Jong on Apr 25, 2011 [1]
+        Adapted from Matlab's version by Hae Jong on Apr 25, 2011 [1]_.
 
     Args:
         x (np.ndarray): Image to be reflected.
@@ -48,7 +48,7 @@ def mk_gaussian(size, cov=None, mean=None, amplitude='norm'):
 
     Compute a matrix with dimensions ``size`` (a [Y X] 2-vector, or a
     scalar) containing a Gaussian function, centered at pixel position
-    specified by MEAN (default = (size+1)/2), with given COVARIANCE (can
+    specified by ``mean`` (default = (size+1)/2), with given ``cov`` (can
     be a scalar, 2-vector, or 2x2 matrix.  Default = (min(size)/6)^2),
     and ``amplitude``. ``amplitude='norm'`` (default) will produce a
     probability-normalized function.

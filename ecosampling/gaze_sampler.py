@@ -1,5 +1,7 @@
 """File for the GazeSampler class.
 
+For further information, see also [1]_ and [2]_.
+
 Authors:
     - Giuseppe Boccignone <giuseppe.boccignone@unimi.it>
     - Renato Nobre <renato.avellarnobre@studenti.unimi.it>
@@ -22,10 +24,8 @@ References
 import numpy as np
 from config import GazeConfig, IPConfig
 from utils.logger import Logger
-from scipy.spatial import KDTree
-import pymc3 as pm
-from scipy.stats import levy_stable
-from scipy.spatial import cKDTree
+from scipy.spatial import KDTree, cKDTree
+from utils.statistics import sample_multivariate, sample_levy_stable
 
 logger = Logger(__name__)
 
@@ -138,10 +138,6 @@ class GazeSampler:
 
         self.show = self._create_circular_mask(final_foa)
 
-        # if set, save the FOA coordinates on file
-        # if SAVE_FOA_ONFILE:
-        #     allFOA.append([allFOA ;final_foa];
-
         return final_foa, dir_new
 
 
@@ -253,7 +249,7 @@ class GazeSampler:
             z (int): Kind of gaze shift
             foa_attractors (np.ndarray): (N_V, 2) matrix representing the FoA attractors
             pred_foa (np.ndarray): (1, 2) vector representing the previous FoA coordinatesxs
-            dir_old (_type_): _description_
+            dir_old (float): Value of the previous direction
 
         Returns:
             final_foa (np.ndarray): (1, 2) vector representing the new FoA coordinates
@@ -297,9 +293,9 @@ class GazeSampler:
         while (not accept) and (count_attempts < self.max_numattempts):
             # setting alpha-stable distribution parameters according to the
             # regime specified by rv z
-            xi = levy_stable.rvs(self.alpha[z], self.beta[z],
-                                scale=self.gamma[z], loc=self.delta[z],
-                                size=self.num_internalsim)
+            xi = sample_levy_stable(self.alpha[z], self.beta[z],
+                                    scale=self.gamma[z], loc=self.delta[z],
+                                    size=self.num_internalsim)
 
             # Setting Langevin SDE parameters
             # SDE alpha-stable component
@@ -314,9 +310,7 @@ class GazeSampler:
         # if something didn't work for some reason use a perturbed argmax solution
         if not accept:
             # For normal regime simple choice on most salient point
-            mv_normal_dist = pm.MvNormal.dist(mu=candidate_foa.conj().T,
-                                              cov=np.eye(2)*s, shape=(2, ))
-            new = mv_normal_dist.random(size=1)
+            new = sample_multivariate(candidate_foa.conj().T, np.eye(2)*s, (2, ), 1)
             new = new.conj().T
             validcord = np.nonzero((new[0] >= 1) & (new[0] < nrow) &
                                    (new[1] >= 1) & (new[1] < ncol))[0]
