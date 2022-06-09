@@ -85,7 +85,7 @@ class Plotter:
         ax_image = ax.imshow(image, cmap=cmap, interpolation=interpol)
         return ax_image
 
-    def save_foa_values(self, foa_values):
+    def save_foa_values(self, foa_values, n_obs):
         """Save foa numpy values.
 
         Args:
@@ -94,18 +94,18 @@ class Plotter:
 
         # Save foa numpy values
         if GeneralConfig.SAVE_FOA_ONFILE:
-            path = self._create_result_folder('')
+            path = self._create_result_folder('', n_obs)
             with open(path + '/foa_values.npy', 'wb') as f:
                 np.save(f, foa_values)
 
-    def save_complexity(self, complexity):
+    def save_complexity(self, complexity, n_obs):
         """Save complexy data plots an numpy values.
 
         Args:
             data (dict): Data dictionary
         """
         if GeneralConfig.SAVE_COMPLEXITY_ONFILE:
-            path = self._create_result_folder('')
+            path = self._create_result_folder('', n_obs)
 
             # Plot Final Order/Disorder
             fig, ax = plt.subplots(figsize=(12,6), dpi=100)
@@ -153,7 +153,6 @@ class Plotter:
                               data["gaze_sampler"])
 
         plt.tight_layout()
-        self._save_imgs(data, frame_num)
         plt.pause(pause_time)
 
 
@@ -288,7 +287,7 @@ class Plotter:
         cls._image_plot(axes, gaze_sampler.show, "Final FOA", cmap='gray', interpol='nearest')
 
 
-    def _create_result_folder(cls, plot_type_folder):
+    def _create_result_folder(cls, plot_type_folder, n_obs):
         """Create result folder.
 
         Args:
@@ -297,7 +296,12 @@ class Plotter:
         Returns:
             str: Path to the result folder.
         """
+
         results_folder = GeneralConfig.RESULTS_DIR
+
+        if GeneralConfig.TOTAL_OBSERVERS > 1:
+            results_folder = results_folder + f"/obs_{n_obs+1}/"
+
         # Create result folder
         if not os.path.exists(results_folder):
             os.makedirs(results_folder)
@@ -309,7 +313,7 @@ class Plotter:
         return results_folder + plot_type_folder
 
 
-    def _configure_axis_save(cls, fig, ax, save_name, frame_num):
+    def _configure_axis_save(cls, fig, ax, save_name, frame_num, n_obs):
         """Configure axis to save a clean image.
 
         Args:
@@ -318,13 +322,13 @@ class Plotter:
             save_name (string): Name of the image to save and path to create.
             frame_num (int): Number of the frame
         """
-        path = cls._create_result_folder(f'{save_name}')
+        path = cls._create_result_folder(f'{save_name}', n_obs)
         plt.axis('off')
         ax.set_title('')
         fig.savefig(path + f'/{save_name}_{frame_num}.png', bbox_inches='tight', pad_inches = 0)
         ax.clear()
 
-    def _save_imgs(self, data, frame_num):
+    def save_imgs(self, data, frame_num, n_obs):
         """"Save images to disk.
 
         Args:
@@ -336,29 +340,29 @@ class Plotter:
 
         if GeneralConfig.SAVE_FOV_IMG:
             self.plot_foveated_frame(ax, data["frame_sampling"])
-            self._configure_axis_save(fig, ax, 'foveated', frame_num)
+            self._configure_axis_save(fig, ax, 'foveated', frame_num, n_obs)
 
         if GeneralConfig.SAVE_SAL_IMG:
             self.plot_saliency_map(ax, data["saliency_map"])
-            self._configure_axis_save(fig, ax, 'salience', frame_num)
+            self._configure_axis_save(fig, ax, 'salience', frame_num, n_obs)
 
         if GeneralConfig.SAVE_PROTO_IMG:
             self.plot_proto_objects(ax, data["frame_sampling"],
                                     data["proto_params"], data["num_proto"])
-            self._configure_axis_save(fig, ax, 'protos', frame_num)
+            self._configure_axis_save(fig, ax, 'protos', frame_num, n_obs)
 
         if GeneralConfig.SAVE_IP_IMG:
             self.plot_interest_points(ax, data["frame_sampling"],
                                       data["circle_coords"], data["gaze_sampler"])
-            self._configure_axis_save(fig, ax, 'ips', frame_num)
+            self._configure_axis_save(fig, ax, 'ips', frame_num, n_obs)
 
         if GeneralConfig.SAVE_HISTO_IMG:
             self.plot_empirical_dists(ax, data["hist_mat"])
-            self._configure_axis_save(fig, ax, 'empirical_dists', frame_num)
+            self._configure_axis_save(fig, ax, 'empirical_dists', frame_num, n_obs)
 
         if GeneralConfig.SAVE_FOA_IMG:
             self.plot_sampled_FOA(ax, data["frame_sampling"], data["gaze_sampler"])
-            self._configure_axis_save(fig, ax, 'foa', frame_num)
+            self._configure_axis_save(fig, ax, 'foa', frame_num, n_obs)
 
         plt.close(fig)
 

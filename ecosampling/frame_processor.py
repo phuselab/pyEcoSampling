@@ -138,7 +138,7 @@ class FrameProcessor:
         foa_filter = mk_gaussian(size, cov, conjugate_T_foa, 1)
 
         self.foveated_I[:,:,0] = np.multiply(I[:,:,0].astype('double'),
-                                            foa_filter)
+                                             foa_filter)
         self.foveated_I[:,:,1] = np.multiply(I[:,:,1].astype('double'),
                                              foa_filter)
         self.foveated_I[:,:,2] = np.multiply(I[:,:,2].astype('double'),

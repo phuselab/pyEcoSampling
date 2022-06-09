@@ -24,11 +24,18 @@ References
    <https://ieeexplore.ieee.org/abstract/document/6502674>`_
 """
 
+from config import SaliencyConfig, GeneralConfig
 from generate_scanpath import generate_scanpath
 
-if __name__ == "__main__":
-    # Set here the total number of observers / scanpaths to be simulated
-    total_observers = 1
+from utils.logger import Logger
 
-    for n_obs in range(total_observers):
-       generate_scanpath(n_obs)
+logger = Logger(__name__)
+
+if __name__ == "__main__":
+
+    if SaliencyConfig.WSIZE != 3 or SaliencyConfig.WSIZE_T != 3:
+        raise NotImplementedError("WSIZE and WSIZE_T must be 3")
+
+    for n_obs in range(GeneralConfig.TOTAL_OBSERVERS):
+        logger.info(f"Generating scanpath for observer {n_obs+1}")
+        generate_scanpath(n_obs)

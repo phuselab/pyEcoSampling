@@ -103,10 +103,10 @@ def generate_scanpath(n_obs):
         if ProtoConfig.PROTO:
             # A.4 SAMPLE PROTO-OBJECTS
             num_proto = proto_params.sample_proto_objects(saliency_map)
-            # A.5 SAMPLE INTEREST POINTS / PREYS
-            ip_sampler = IPSampler()
-            sampled_points_coord = ip_sampler.interest_point_sample(num_proto, proto_params, saliency_map)
 
+        # A.5 SAMPLE INTEREST POINTS / PREYS
+        ip_sampler = IPSampler()
+        sampled_points_coord = ip_sampler.interest_point_sample(num_proto, proto_params, saliency_map)
         # B. SAMPLING THE APPROPRIATE OCULOMOTOR ACTION
         # B.1 EVALUATING THE COMPLEXITY OF THE SCENE
         hist_mat, n_samples, n_bins = ip_sampler.histogram_ips(frame_sampling, sampled_points_coord)
@@ -124,22 +124,24 @@ def generate_scanpath(n_obs):
         pred_foa = final_foa
         dir_old = dir_new
 
-        if GeneralConfig.VISUALIZE_RESULTS:
-            data = {
-                "frame_sampling": frame_sampling,
-                "feature_map": feature_map.show,
-                "saliency_map": saliency_map,
-                "num_proto": num_proto,
-                "proto_params": proto_params,
-                "circle_coords": sampled_points_coord,
-                "hist_mat": ip_sampler.show_hist,
-                "complexity": complexity_evaluator,
-                "gaze_sampler": gaze_sampler,
-            }
-            # Displaying relevant steps of the process.
-            plt.plot_visualization(data, frame)
-
         all_foa = np.vstack((all_foa, final_foa)) if all_foa.size else final_foa
 
-    plt.save_complexity(data['complexity'])
-    plt.save_foa_values(all_foa)
+        data = {
+            "frame_sampling": frame_sampling,
+            "feature_map": feature_map.show,
+            "saliency_map": saliency_map,
+            "num_proto": num_proto,
+            "proto_params": proto_params,
+            "circle_coords": sampled_points_coord,
+            "hist_mat": ip_sampler.show_hist,
+            "complexity": complexity_evaluator,
+            "gaze_sampler": gaze_sampler,
+        }
+
+        if GeneralConfig.VISUALIZE_RESULTS:
+            # Displaying relevant steps of the process.
+            plt.plot_visualization(data, frame)
+        plt.save_imgs(data, frame, n_obs)
+
+    plt.save_complexity(data['complexity'], n_obs)
+    plt.save_foa_values(all_foa, n_obs)

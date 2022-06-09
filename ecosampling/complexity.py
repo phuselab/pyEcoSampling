@@ -9,7 +9,6 @@ Changes:
     - 31/05/2022  Python Edition
 """
 
-
 import numpy as np
 
 from config import ComplexityConfig

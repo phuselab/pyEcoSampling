@@ -260,16 +260,19 @@ class GazeSampler:
 
         s = self.foa_size / 4
 
-        # Set the center of mass of attractors as a potential candidate FOA
-        candidate_foa = (np.sum(foa_attractors, axis=0)/foa_attractors.shape[0]).round()
-
         # Direction Sampling - Uniform random sampling
         dir_new = 2*np.pi*np.random.rand(1, self.num_internalsim)
 
         # Shaping the potential of Langevin equation
-        # clearly the sum is over one term if SIMPLE_ATTRACTOR=1
-        dhx = -(pred_foa[0]-foa_attractors[:,0])
-        dhy = -(pred_foa[1]-foa_attractors[:,1])
+        if self.simple_attractors:
+            candidate_foa = foa_attractors.round()
+            dhx = -(pred_foa[0]-foa_attractors[0])
+            dhy = -(pred_foa[1]-foa_attractors[1])
+        else:
+            # Set the center of mass of attractors as a potential candidate FOA
+            candidate_foa = (np.sum(foa_attractors, axis=0)/foa_attractors.shape[0]).round()
+            dhx = -(pred_foa[0]-foa_attractors[:,0])
+            dhy = -(pred_foa[1]-foa_attractors[:,1])
         T = 1 # Maximum time
         N = 30
 
@@ -326,7 +329,7 @@ class GazeSampler:
         if not accept:
             final_foa = pred_foa
             accept = 1
-            logger.warn('BACKUP SOLUTION!!!!!!\nKeeping OLD FOA')
+            logger.warn('BACKUP SOLUTION!!!!!! Keeping OLD FOA')
 
         self.candidate_foa = candidate_foa
 

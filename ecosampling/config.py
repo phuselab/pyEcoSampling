@@ -28,6 +28,9 @@ class GeneralConfig:
     """Start offset from the data folder. Skip ``OFFSET`` first images."""
     OFFSET = 1
 
+    """Number of times to execute the scanpath experiment."""
+    TOTAL_OBSERVERS = 1
+
     FRAME_STEP = 2
     """Frames to skip at each step.
 
@@ -56,7 +59,7 @@ class GeneralConfig:
     VERBOSE = False
 
     """Flag for visualizing results on runtime."""
-    VISUALIZE_RESULTS = 1
+    VISUALIZE_RESULTS = True
 
     """Flag for saving foveated images."""
     SAVE_FOV_IMG = True
@@ -122,7 +125,7 @@ class ProtoConfig:
     """Proto-object parameters."""
 
     """Using a proto-object representation."""
-    PROTO = 1
+    PROTO = True
 
     """Maximum number of proto-objects."""
     N_BEST_PROTO = 15
@@ -140,7 +143,7 @@ class IPConfig:
     MAX_POINTS = 80
 
     """If true perform weighted density, false perform random sampling"""
-    WEIGHTED_SAMPLING = 1
+    WEIGHTED_SAMPLING = True
 
     """Scale in case of weighted sampling."""
     WEIGHTED_SCALE = 0
@@ -148,7 +151,7 @@ class IPConfig:
     """Number of points used on non-weighted sampling."""
     N_POINTS = 0
 
-    """Spatial Resolution of IPs. Should be set as a function of the sacle of IP detection."""
+    """Spatial Resolution of IPs. Should be set as a function of the scale of IP detection."""
     WINDOW_SIZE = 7
 
     """Flag to sample e other IPs directly from the salience landscape."""
@@ -191,7 +194,7 @@ class GazeConfig:
     FIRST_FOA_ON_CENTER = True
 
     """Using one point attractor in the potential if true, otherwise using multipoints."""
-    SIMPLE_ATTRACTOR = False
+    SIMPLE_ATTRACTOR =  False
 
     """Number of potention FOAS to determine the total attractor portential in Langevin."""
     NMAX = 10

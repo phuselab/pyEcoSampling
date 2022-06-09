@@ -13,7 +13,6 @@ Changes:
     - 31/05/2022  Python Edition
 """
 
-
 from config import ProtoConfig
 from utils.logger import Logger
 import cv2
@@ -21,7 +20,6 @@ from skimage import measure
 import numpy as np
 
 logger = Logger(__name__)
-
 
 class ProtoParameters:
     """Handle creation of the proto-objects its visualizations.
@@ -86,7 +84,7 @@ class ProtoParameters:
         """
         # Sampling the patch or proto-object map M(t)
         logger.verbose('Sampling the proto-object map')
-        mt_map, proto_map, saliency_norm = self._sample_proto_map(salience_map)
+        mt_map, proto_map, _ = self._sample_proto_map(salience_map)
 
         # Create show version of proto-objects
         self.show_proto = np.ma.masked_where(proto_map == 0, proto_map)
@@ -117,7 +115,7 @@ class ProtoParameters:
         cx = self.cx
         cy = self.cy
         if num_proto > 0:
-            proto_object_centers = np.array([list(cx.values()), list(cy.values())]).T
+            proto_object_centers = np.array([cx, cy]).T
             nV = proto_object_centers.shape[0]
             logger.verbose(f"Number of proto_object_centers: {proto_object_centers.shape[0]}")
 
@@ -154,21 +152,32 @@ class ProtoParameters:
         num_proto = len(B)
 
         if num_proto != 0:
-            a = {}
-            r1 = {}
-            r2 = {}
-            cx = {}
-            cy = {}
-            theta = {}
+            a = []
+            r1 = []
+            r2 = []
+            cx = []
+            cy = []
+            theta = []
 
+            invalid = 0
+            # invalid_p = []
             for p in range(num_proto):
-                boundary = np.flip(np.array(B[p]),1).astype(int)
-                a[p] = cv2.fitEllipse(boundary)
-                r1[p] = a[p][1][0] / 2.
-                r2[p] = a[p][1][1] / 2.
-                cx[p] = a[p][0][0]
-                cy[p] = a[p][0][1]
-                theta[p] = a[p][2]
+                try:
+                    boundary = np.flip(np.array(B[p]),1).astype(int)
+                    a.append(cv2.fitEllipse(boundary))
+                    r1.append(a[p][1][0] / 2.)
+                    r2.append(a[p][1][1] / 2.)
+                    cx.append(a[p][0][0])
+                    cy.append(a[p][0][1])
+                    theta.append(a[p][2])
+                except:
+                    print("Invalid boundary")
+                    # invalid_p.append(p)
+                    invalid += 1
+
+            num_proto -= invalid
+            # for p in invalid_p:
+            #     B.remove(p)
 
             # Assign the new parameters
 
