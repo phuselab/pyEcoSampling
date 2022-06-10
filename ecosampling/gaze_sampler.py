@@ -232,7 +232,7 @@ class GazeSampler:
     def _gaze_sampling(self, z, foa_attractors, pred_foa, dir_old):
         """Samples the new gaze position
 
-        Function computing the actual  gaze relocation by using a
+        Function computing the actual gaze relocation by using a
         Langevin like stochastic differential equation,
         whose noise source is sampled from a mixture of alpha-stable distributions.
         By using NUM_INTERNALSIM generates an equal number of candidate

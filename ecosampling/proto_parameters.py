@@ -171,16 +171,11 @@ class ProtoParameters:
                     cy.append(a[p][0][1])
                     theta.append(a[p][2])
                 except:
-                    print("Invalid boundary")
-                    # invalid_p.append(p)
                     invalid += 1
 
             num_proto -= invalid
-            # for p in invalid_p:
-            #     B.remove(p)
 
             # Assign the new parameters
-
             self.B = B
             # The proto-objects fitting ellipses parameters:
             self.a = a

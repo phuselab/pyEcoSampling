@@ -41,9 +41,9 @@ References
 
 import numpy as np
 
-from config import (GeneralConfig, ProtoConfig)
+from action_selector import ActionSelector
 from complexity import Complexity
-from gaze_sampler import GazeSampler
+from config import GeneralConfig, ProtoConfig
 from feature_map import FeatureMap
 from frame_processor import FrameProcessor
 from gaze_sampler import GazeSampler
@@ -52,7 +52,6 @@ from proto_parameters import ProtoParameters
 from salience_map import SalienceMap
 from utils.logger import Logger
 from utils.plotter import Plotter
-from action_selector import ActionSelector
 
 logger = Logger(__name__)
 

@@ -10,9 +10,10 @@ Changes:
 """
 
 
+import numpy as np
+
 from config import GeneralConfig, SaliencyConfig
 from utils.helper import EdgeMirror3
-import numpy as np
 from utils.logger import Logger
 
 logger = Logger(__name__)

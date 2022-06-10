@@ -16,8 +16,8 @@ Changes:
 import numpy as np
 
 from config import IPConfig
-from utils.statistics import discrete_sampler, sample_multivariate
 from utils.logger import Logger
+from utils.statistics import discrete_sampler, sample_multivariate
 
 logger = Logger(__name__)
 

@@ -56,8 +56,6 @@ class FeatureMap:
         of feature extraction algorithm which is defined from the
         ``feature_type`` by calling the appropriate function.
 
-        See also: ThreeDLARK
-
         Note:
             Here for simplicity only the Self Resemblance method has been considered.
             If other methods need to be experimented, then you should extend the

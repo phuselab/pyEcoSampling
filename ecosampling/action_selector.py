@@ -80,7 +80,7 @@ class ActionSelector:
             nu (vector): new Dirichlet Hyperparameters
 
         Examples:
-            >>> nu = esHyperParamUpdate(nu_old, disorder, order, compl, COMPL_EDGE)
+            >>> nu = _dirichlet_hyper_param_update(nu_old, disorder, order, compl, COMPL_EDGE)
 
         References
         ----------

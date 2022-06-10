@@ -56,7 +56,7 @@ The folder that you add need to have the video as a sequence of ordered frames. 
 
 ## Usage
 
-Ecosampling might be used as a application stand alone or as an API to write your onw gaze sampling script. Following are the methods for both execution kinds
+Ecosampling might be used as a application stand alone or as an API to write your own gaze sampling script. Following are the methods for execution the application
 
 ### Running as an Application
 
@@ -68,9 +68,6 @@ python ecosampling
 This should be enough to generate all the gaze sampling and the fields of attention for your application.
 
 If you want to plasy around, change parameters, or try with your personalized data set, try changing the ``ecosampling/config.py`` file. Different gaze shifting behaviors can be obtained by playing with parameters in the configuration script.
-
-### Using the code as an API
-
 
 ## Documentation - Read More
 
