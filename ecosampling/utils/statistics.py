@@ -9,8 +9,12 @@ Changes:
     - 31/05/2022  Python Edition
 """
 
+from re import S
 import numpy as np
-import pymc3 as pm
+
+from scipy.stats import multivariate_normal
+from scipy.stats import dirichlet
+from scipy.stats import multinomial
 from scipy.stats import levy_stable
 
 def discrete_sampler(density, num_samples, replacement_option=True):
@@ -54,8 +58,10 @@ def discrete_sampler(density, num_samples, replacement_option=True):
     return np.squeeze(samples_out).astype(int)
 
 
-def sample_discrete(prob, r=1, c=None):
+def sample_discrete(prob, n=1):
     """Draw from a non-uniform discrete distribution
+
+    Multinomial.
 
     Example:
 
@@ -66,31 +72,12 @@ def sample_discrete(prob, r=1, c=None):
         prob (np.array): Vector of probabilities.
         r (int, optional): Starting value of the random integer.
             Defaults to 1.
-        c (int, optional): Ammount of integers to sample. Defaults to None.
 
     Returns:
-        M (np.ndarray): (r, c) Sampled data.
+       Sampled data.
     """
-
-    n = len(prob)
-
-    if c is None:
-        c = r
-
-    R = np.random.rand(r, c)
-    M = np.ones((r, c))
-    cumprob = np.cumsum(prob.flatten('F'))
-
-    if n < r*c:
-        for i  in range(n):
-            M = M + (R > cumprob[i])
-    else:
-        cumprob2 = cumprob.flatten('F')
-        for i in range(r):
-            for j in range(c):
-                M[i, j] = np.sum(R[i, j] > cumprob2)
-
-    return M
+    sampled_values = multinomial.rvs(n, prob[0])
+    return np.where(sampled_values == 1)[0]
 
 def sample_dirchlet(nu, size):
     """Sample from a Dirchlet distribution.
@@ -102,11 +89,10 @@ def sample_dirchlet(nu, size):
     Returns:
         Drawn samples from a Dirchlet distribution.
     """
-    dirchlet_dist = pm.Dirichlet.dist(nu)
-    sampled_values = dirchlet_dist.random(size=size)
+    sampled_values = dirichlet.rvs(nu, size=size)
     return sampled_values
 
-def sample_multivariate(mu, cov, shape, sample_size):
+def sample_multivariate(mu, cov, sample_size):
     """Sample from a multivariate distribution.
 
     Args:
@@ -118,8 +104,7 @@ def sample_multivariate(mu, cov, shape, sample_size):
     Returns:
         Samples drawn from a multivariate normal distribution.
     """
-    mv_normal_dist = pm.MvNormal.dist(mu=mu, cov=cov, shape=shape)
-    sampled_values = mv_normal_dist.random(size=sample_size)
+    sampled_values = multivariate_normal.rvs(mean=mu, cov=cov, size=sample_size)
     return sampled_values
 
 def sample_levy_stable(alpha, beta, scale, loc, size):

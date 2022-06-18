@@ -10,9 +10,11 @@ Changes:
 """
 
 import os
+import io
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
+import cv2
 
 from matplotlib.patches import Ellipse, Circle
 
@@ -39,8 +41,10 @@ class Plotter:
         axes (plt.axes.Axes): Axes to plot the visualization.
     """
 
-    def __init__(self, num_line=2, num_pics_line=5, fig_size=(15, 5)):
+    def __init__(self, num_line=2, num_pics_line=5, fig_size=(15, 5), n_obs=1):
         fig, ax = plt.subplots(num_line, num_pics_line, figsize=fig_size)
+        self.gif_path = self._create_result_folder('', n_obs)
+        self.gif_images = []
         self.fig = fig
         self.axes = ax
         plt.ion()
@@ -127,7 +131,7 @@ class Plotter:
             with open(path + '/complexity.npy', 'wb') as f:
                 np.save(f, complexity.complexity)
 
-    def plot_visualization(self, data, frame_num, pause_time=0.001):
+    def plot_visualization(self, data, pause_time=0.001):
         """Plot complete visualization for instance.
 
         Plot all 10 plots for every frame.
@@ -155,7 +159,18 @@ class Plotter:
         plt.tight_layout()
         plt.pause(pause_time)
 
+        if GeneralConfig.GENERATE_GIF:
+            buf = io.BytesIO()
+            self.fig.savefig(buf, format="png")
+            buf.seek(0)
+            img_arr = np.frombuffer(buf.getvalue(), dtype=np.uint8)
+            buf.close()
+            img = cv2.imdecode(img_arr, 1)
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            self.gif_images.append(img)
+            plt.pause(pause_time)
 
+    @classmethod
     def plot_original_frame(cls, axes, frame_sampling):
         """Plot original frame.
 
@@ -165,6 +180,7 @@ class Plotter:
         """
         cls._image_plot(axes, frame_sampling.show_frame, 'Current frame')
 
+    @classmethod
     def plot_foveated_frame(cls, axes, frame_sampling):
         """Plot foveated frame.
 
@@ -174,6 +190,7 @@ class Plotter:
         """
         cls._image_plot(axes, frame_sampling.show_foveated_frame, 'Foveated frame', cmap='gray')
 
+    @classmethod
     def plot_feature_map(cls, axes, feature_map):
         """Plot feature map.
 
@@ -181,8 +198,9 @@ class Plotter:
             axes (axes.Axes): Axes to plot the image
             feature_map (np.ndarray): Feature map frame to plot.
         """
-        cls._image_plot(axes, feature_map, 'Feature map', cmap='gray')
+        cls._image_plot(axes, feature_map.show, 'Feature map', cmap='gray')
 
+    @classmethod
     def plot_saliency_map(cls, axes, saliency_map):
         """Plot saliency map.
 
@@ -192,6 +210,7 @@ class Plotter:
         """
         cls._image_plot(axes, saliency_map, 'Salience map', cmap='jet')
 
+    @classmethod
     def plot_proto_objects(cls, axes, frame_sampler, proto_params, num_proto):
         """Plot Proto Objects.
 
@@ -214,8 +233,8 @@ class Plotter:
                 elli.set_fill(False)
                 axes.add_artist(elli)
 
-
-    def plot_interest_points(cls, axes, frame_sampler, circle_coords, gaze_sampler):
+    @classmethod
+    def plot_interest_points(cls, axes, frame_sampler, circle_coords, gaze_sampler=None):
         """Plot Interest points.
 
         Args:
@@ -227,18 +246,21 @@ class Plotter:
         cls._image_plot(axes, frame_sampler.show_frame, "Sampled Interest Points (IP)")
         # Show image with region marked
         xCoord, yCoord = circle_coords
-        candx, candy = gaze_sampler.candx, gaze_sampler.candy
+
         for b in range(yCoord.shape[0]):
             circle = Circle((xCoord[b],yCoord[b]), 4, color='r', lw=1)
             axes.add_artist(circle)
 
-        for idc in range(len(candx)):
-            circle = Circle((candx[idc], candy[idc]), 4, color='y', lw=2)
+        if gaze_sampler is not None:
+            candx, candy = gaze_sampler.candx, gaze_sampler.candy
+            for idc in range(len(candx)):
+                circle = Circle((candx[idc], candy[idc]), 4, color='y', lw=2)
+                axes.add_artist(circle)
+
+            circle = Circle((gaze_sampler.candidate_foa[0], gaze_sampler.candidate_foa[1]), 10, color='g', lw=6)
             axes.add_artist(circle)
 
-        circle = Circle((gaze_sampler.candidate_foa[0], gaze_sampler.candidate_foa[1]), 10, color='g', lw=6)
-        axes.add_artist(circle)
-
+    @classmethod
     def plot_empirical_dists(cls, axes, hist_mat):
         """Plot IP Empirical distribution.
 
@@ -249,7 +271,7 @@ class Plotter:
         cls._configure_axis(axes, "IP Empirical Distribution")
         sns.heatmap(hist_mat, linewidth=0.2, cbar=False, cmap='jet', ax=axes)
 
-
+    @classmethod
     def plot_order_disorder(cls, axes, complexity, lw=2):
         """Plot order/disorder.
 
@@ -264,6 +286,7 @@ class Plotter:
         axes.legend(loc='upper right')
 
 
+    @classmethod
     def plot_complexity(cls, axes, complexity, lw=2):
         """Plot complexity curves.
 
@@ -275,6 +298,7 @@ class Plotter:
         cls._configure_axis(axes, "Complexity" , keep_axis=True)
         axes.plot(complexity.complexity, label='Complexity', linewidth=lw)
 
+    @classmethod
     def plot_sampled_FOA(cls, axes, frame_sampler, gaze_sampler):
         """Plot final FOA.
 

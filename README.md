@@ -1,6 +1,6 @@
 # Ecological Sampling Python
 
-<img src="https://raw.githubusercontent.com/phuselab/INMCA_Nobre/main/docs/source/_static/logo.svg?token=GHSAT0AAAAAABUT73UR3IGPVZ6SA4HE2SFGYVBYNTQ">
+![logo](logo.svg "PyEcosampling logo")
 
 The code is a simple demo of the Ecological Sampling (ES) method, which generates gaze shifts on video clips (frame sequences). It is a baseline implementation of the Ecological Sampling model described in
 ```Boccignone & Ferraro [1]```, a stochastic model of eye guidance
@@ -16,6 +16,8 @@ but neither is it completely random
 The experiment consists in putting into action an artificial observer, generating a visual scanpath
 (a sequence of fixations, saccades or smooth pursuit) on an image sequence using a simple implementation of the
 ES method described in ```Boccignone & Ferraro [1] & [2]```.
+
+![simulation](simulation.gif "Model Simulation")
 
 ## Requirements
 
@@ -35,7 +37,7 @@ sudo apt-get install python3-tk
 
 - **macOS via Brew**
 ```bash
-sudo apt-get install python3-tk
+brew install python-tk
 ```
 
 ## Installation
@@ -68,6 +70,10 @@ python ecosampling
 This should be enough to generate all the gaze sampling and the fields of attention for your application.
 
 If you want to plasy around, change parameters, or try with your personalized data set, try changing the ``ecosampling/config.py`` file. Different gaze shifting behaviors can be obtained by playing with parameters in the configuration script.
+
+### Running as an API
+
+Take a look on the notebook at ``notebook/demo_api.ipynb``, to understand how to use the code as an API.
 
 ## Documentation - Read More
 

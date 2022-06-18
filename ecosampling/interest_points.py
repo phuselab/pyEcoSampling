@@ -75,10 +75,7 @@ class IPSampler:
         return [self.xCoord, self.yCoord]
 
     def histogram_ips(self, frame_sampling, sampled_points_coord):
-        """Time-varying configurational complexity of interest points.
-
-        :math:`C(t)` captures the time-varying configurational complexity of
-        interest points within the landscape
+        """Create representation of IP as an Empirical Distribution.
 
         Args:
             sampled_points_coord (np.array): (N, 2) array containing data points coordinated.
@@ -126,7 +123,7 @@ class IPSampler:
                 cov_proto = np.array([[(5*proto_params.r2[p]) , 0],
                                      [0, (5*proto_params.r1[p])]])
                 mu_proto = proto_params.proto_centers[p]
-                r_p = sample_multivariate(mu_proto, cov_proto, (2, ), n)
+                r_p = sample_multivariate(mu_proto, cov_proto, n)
                 all_points = np.vstack((all_points, r_p))
 
 

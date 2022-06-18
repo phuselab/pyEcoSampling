@@ -70,7 +70,7 @@ class GazeSampler:
         NotImplementedError: No methods defined for setting the first FOA
     """
 
-    def __init__(self, frame_sampling, proto_params, ip_sampler, hist_mat, num_proto):
+    def __init__(self, frame_sampling, proto_params=None, ip_sampler=None, hist_mat=None, num_proto=0):
 
         # Starting Values
         self.start_nu = np.ones(3)
@@ -313,7 +313,7 @@ class GazeSampler:
         # if something didn't work for some reason use a perturbed argmax solution
         if not accept:
             # For normal regime simple choice on most salient point
-            new = sample_multivariate(candidate_foa.conj().T, np.eye(2)*s, (2, ), 1)
+            new = sample_multivariate(candidate_foa.conj().T, np.eye(2)*s, 1)
             new = new.conj().T
             validcord = np.nonzero((new[0] >= 1) & (new[0] < nrow) &
                                    (new[1] >= 1) & (new[1] < ncol))[0]

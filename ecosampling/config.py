@@ -31,7 +31,7 @@ class GeneralConfig:
     """Number of times to execute the scanpath experiment."""
     TOTAL_OBSERVERS = 1
 
-    FRAME_STEP = 2
+    FRAME_STEP = 2 # 2
     """Frames to skip at each step.
 
     Note:
@@ -100,6 +100,9 @@ class GeneralConfig:
     """Name of the folder where the results will be saved."""
     RESULTS_DIR = os.path.join(BASE_DIR, 'results/' + VIDEO_NAME + '/')
 
+    """Generat GIF is heavyweighted."""
+    GENERATE_GIF = False
+
 class SaliencyConfig:
     """Self resemblance spatio-temporal feature and saliency map parameters."""
 
@@ -137,7 +140,7 @@ class IPConfig:
     TYPE = 'SelfResemblance'
 
     """Scales at which features are extracted (radius of region in pixels)."""
-    SCALE = np.arange(10, 30)
+    SCALE = np.arange(10, 31)
 
     """Maximun number of IPs allowed per image."""
     MAX_POINTS = 80

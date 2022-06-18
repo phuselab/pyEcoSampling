@@ -13,6 +13,7 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath('../../ecosampling'))
+sys.path.insert(0, os.path.abspath('../../notebook'))
 
 
 # -- Project information -----------------------------------------------------
@@ -36,7 +37,8 @@ extensions = ["sphinx_rtd_theme",
               "sphinx.ext.viewcode",
               "sphinx.ext.autodoc",
               "sphinx.ext.mathjax",
-              'sphinx_mdinclude']
+              'sphinx_mdinclude',
+              'nbsphinx']
 
 napoleon_include_private_with_doc = True
 napoleon_custom_sections = [('Returns', 'params_style')]

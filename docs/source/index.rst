@@ -32,6 +32,12 @@ Welcome to Eco Sampling's documentation!
 
 .. toctree::
   :maxdepth: 2
+  :caption: Salience Backends
+
+  ecosampling/self_resemblance
+
+.. toctree::
+  :maxdepth: 2
   :caption: Utils
 
   utils/statistics

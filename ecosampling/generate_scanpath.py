@@ -41,6 +41,8 @@ References
 
 import numpy as np
 
+import imageio
+
 from action_selector import ActionSelector
 from complexity import Complexity
 from config import GeneralConfig, ProtoConfig
@@ -57,7 +59,6 @@ logger = Logger(__name__)
 
 
 def generate_scanpath(n_obs):
-
     # Initialization
     frame_sampling = FrameProcessor()
     proto_params = ProtoParameters()
@@ -69,7 +70,9 @@ def generate_scanpath(n_obs):
     else:
         raise NotImplementedError("EXPERIMENT_TYPE not defined")
     gaze_sampler = GazeSampler(frame_sampling, proto_params, ip_sampler, None, 0)
-    plt = Plotter()
+
+    if GeneralConfig.GENERATE_GIF or GeneralConfig.VISUALIZE_RESULTS:
+        plt = Plotter(n_obs=n_obs)
 
     # Previous gaze shift direction
     dir_old = 0
@@ -106,6 +109,7 @@ def generate_scanpath(n_obs):
         # A.5 SAMPLE INTEREST POINTS / PREYS
         ip_sampler = IPSampler()
         sampled_points_coord = ip_sampler.interest_point_sample(num_proto, proto_params, saliency_map)
+
         # B. SAMPLING THE APPROPRIATE OCULOMOTOR ACTION
         # B.1 EVALUATING THE COMPLEXITY OF THE SCENE
         hist_mat, n_samples, n_bins = ip_sampler.histogram_ips(frame_sampling, sampled_points_coord)
@@ -127,7 +131,7 @@ def generate_scanpath(n_obs):
 
         data = {
             "frame_sampling": frame_sampling,
-            "feature_map": feature_map.show,
+            "feature_map": feature_map,
             "saliency_map": saliency_map,
             "num_proto": num_proto,
             "proto_params": proto_params,
@@ -139,8 +143,12 @@ def generate_scanpath(n_obs):
 
         if GeneralConfig.VISUALIZE_RESULTS:
             # Displaying relevant steps of the process.
-            plt.plot_visualization(data, frame)
-        plt.save_imgs(data, frame, n_obs)
+            plt.plot_visualization(data)
+            plt.save_imgs(data, frame, n_obs)
 
-    plt.save_complexity(data['complexity'], n_obs)
-    plt.save_foa_values(all_foa, n_obs)
+    if GeneralConfig.VISUALIZE_RESULTS:
+        plt.save_complexity(data['complexity'], n_obs)
+        plt.save_foa_values(all_foa, n_obs)
+
+    if GeneralConfig.GENERATE_GIF:
+        imageio.mimsave(plt.gif_path + f'simulation_{n_obs}.gif', plt.gif_images, fps=5)

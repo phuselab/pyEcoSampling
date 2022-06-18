@@ -11,38 +11,6 @@ Changes:
 
 import numpy as np
 
-def EdgeMirror3(x, width):
-    """Pad with mirroring the edges of the image.s
-
-    Pads with the reflection of the vector mirrored
-    on the first and last values of the vector along each axis.
-
-    Note:
-        Adapted from Matlab's version by Hae Jong on Apr 25, 2011 [1]_.
-
-    Args:
-        x (np.ndarray): Image to be reflected.
-        width (vector): Width for each axis of the padding.
-
-    Returns:
-        z: Mirror padded image.
-
-    References
-    ----------
-    .. [1] `Seo, H. J., & Milanfar, P. (2009). Static and space-time visual saliency detection
-        by self-resemblance. Journal of vision, 9(12), 15-15.
-        <https://jov.arvojournals.org/article.aspx?articleid=2122209>`_
-    """
-    width = width.astype(int)
-    end = -1
-    y = np.concatenate((x[:, 2:width[1]:-1,:], x, x[: ,end:end-width[1]:-1,:]), axis=1)
-    y = np.concatenate((y[2:width[0]:-1, :,:], y, y[end:end-width[0]:-1, :,:]), axis=0)
-    z = np.concatenate((y[:, :, 2:width[2]:-1], y, y[:, :, end:end-width[2]:-1]), axis=2)
-    return z
-
-
-import numpy as np
-
 def mk_gaussian(size, cov=None, mean=None, amplitude='norm'):
     """Create a gaussian filter matrix.
 

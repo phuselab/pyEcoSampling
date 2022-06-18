@@ -60,7 +60,8 @@ class ActionSelector:
 
         # Sampling the kind of gaze-shift regime:
         # $$ z ~ Mult(z | \pi) $$
-        z = sample_discrete(pi_prob, 1, 1)
+        z = sample_discrete(pi_prob, 1)
+
         logger.verbose(f"Action sampled: z = {z}")
 
         return nu, z
