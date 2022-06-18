@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>interest_points &mdash; Eco Sampling 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html">
+            <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user/introduction.html">Ecological Sampling Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/config.html">Configuration file</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">EcoSampling Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/generate_scanpath.html">Generate Scanpath</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/frame_processor.html">Frame Processor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/salience_map.html">Salience Map</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/feature_map.html">Feature Map</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/proto_parameters.html">Proto Parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/interest_points.html">Interest Points</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/complexity.html">Complexity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/action_selector.html">Action Selector</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/gaze_sampler.html">Gaze Sampler</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Salience Backends</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/self_resemblance.html">Self-Resemblance</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Utils</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../utils/statistics.html">Statistics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/helper.html">Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/logger.html">Logger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/plotter.html">Plotter</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Eco Sampling</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Module code</a> &raquo;</li>
+      <li>interest_points</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for interest_points</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Generate Interest Points and captures complexity within the landscape.</span>
+
+<span class="sd">Sample points from set of points, weighted according to their salience and</span>
+<span class="sd">captures the time-varying configurational complexity of interest points</span>
+<span class="sd">within the landscape, generating a 2D Histogram of IPs.</span>
+
+<span class="sd">Authors:</span>
+<span class="sd">    - Giuseppe Boccignone &lt;giuseppe.boccignone@unimi.it&gt;</span>
+<span class="sd">    - Renato Nobre &lt;renato.avellarnobre@studenti.unimi.it&gt;</span>
+
+<span class="sd">Changes:</span>
+<span class="sd">    - 12/12/2012  First Edition Matlab</span>
+<span class="sd">    - 31/05/2022  Python Edition</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">config</span> <span class="kn">import</span> <span class="n">IPConfig</span>
+<span class="kn">from</span> <span class="nn">utils.logger</span> <span class="kn">import</span> <span class="n">Logger</span>
+<span class="kn">from</span> <span class="nn">utils.statistics</span> <span class="kn">import</span> <span class="n">discrete_sampler</span><span class="p">,</span> <span class="n">sample_multivariate</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">Logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<div class="viewcode-block" id="IPSampler"><a class="viewcode-back" href="../ecosampling/interest_points.html#interest_points.IPSampler">[docs]</a><span class="k">class</span> <span class="nc">IPSampler</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Generate Interest Points and captures complexity within the landscape.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        xCoord (np.array): X Coordinates of sampled points.</span>
+<span class="sd">        yCoord (np.array): Y Coordinates of sampled points.</span>
+<span class="sd">        show_hist (np.array): 2D histogram of IPs for visualization.</span>
+<span class="sd">        N (int): Number of sampled points.</span>
+<span class="sd">        num_samples (int): Number of samples in the 2D histogram.</span>
+<span class="sd">        num_bins (int): Number of bins in the 2D histogram.</span>
+<span class="sd">        max_points (int): Maximum number of points to sample. Value is set in</span>
+<span class="sd">            `config.py`</span>
+<span class="sd">        landscape_sampling (bool): Landscape sampligling flag. If True,</span>
+<span class="sd">            sample also from the landscape. Value is set in `config.py`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xCoord</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">yCoord</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_hist</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">N</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_samples</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_bins</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_points</span> <span class="o">=</span> <span class="n">IPConfig</span><span class="o">.</span><span class="n">MAX_POINTS</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">landscape_sampling</span> <span class="o">=</span> <span class="n">IPConfig</span><span class="o">.</span><span class="n">WITH_PERTURBATION</span>
+
+<div class="viewcode-block" id="IPSampler.interest_point_sample"><a class="viewcode-back" href="../ecosampling/interest_points.html#interest_points.IPSampler.interest_point_sample">[docs]</a>    <span class="k">def</span> <span class="nf">interest_point_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_proto</span><span class="p">,</span> <span class="n">proto_params</span><span class="p">,</span> <span class="n">saliency_map</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sample Interest points from proto-objects and/or from the landscape.</span>
+
+<span class="sd">        Control the sampling of interest points. If there is no proto-objects,</span>
+<span class="sd">        sample only from the landscape. If there are proto-objects, sample from both</span>
+<span class="sd">        if `self.landscape_sampling` is True, otherwise only from proto-objects.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            num_proto (int): Ammount of proto-objects.</span>
+<span class="sd">            proto_params (obj): ProtoParameters object.</span>
+<span class="sd">            saliency_map (np.ndarray): Frame saliency map.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Vector of XCoord and YCoord</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Sampling from proto-object</span>
+        <span class="k">if</span> <span class="n">num_proto</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_proto_objects_sampling</span><span class="p">(</span><span class="n">proto_params</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">landscape_sampling</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_landscape_sampling</span><span class="p">(</span><span class="n">saliency_map</span><span class="p">)</span>
+        <span class="c1"># Sampling from the map if there are no proto-objects</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;No patches detected: Sampling interest points&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_landscape_sampling</span><span class="p">(</span><span class="n">saliency_map</span><span class="p">,</span> <span class="n">only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">xCoord</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">yCoord</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="IPSampler.histogram_ips"><a class="viewcode-back" href="../ecosampling/interest_points.html#interest_points.IPSampler.histogram_ips">[docs]</a>    <span class="k">def</span> <span class="nf">histogram_ips</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame_sampling</span><span class="p">,</span> <span class="n">sampled_points_coord</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create representation of IP as an Empirical Distribution.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            sampled_points_coord (np.array): (N, 2) array containing data points coordinated.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            histmat (nd.array): 2D histogram array (rows represent X, columns represent Y)</span>
+<span class="sd">            num_samples (int): Number of sample points in the 2D histogram</span>
+<span class="sd">            num_bins (int): Number of bins in the 2D histogram</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">verbose</span><span class="p">(</span><span class="s2">&quot;Histogramming interest points&quot;</span><span class="p">)</span>
+
+        <span class="n">n_bins_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">frame_sampling</span><span class="o">.</span><span class="n">n_rows</span> <span class="o">/</span> <span class="n">IPConfig</span><span class="o">.</span><span class="n">X_BIN_SIZE</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        <span class="n">n_bins_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">frame_sampling</span><span class="o">.</span><span class="n">n_cols</span> <span class="o">/</span> <span class="n">IPConfig</span><span class="o">.</span><span class="n">Y_BIN_SIZE</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        <span class="c1"># Step 1. Computing the 2D histogram of IPs</span>
+        <span class="n">hist_mat</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram2d</span><span class="p">(</span><span class="n">sampled_points_coord</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">sampled_points_coord</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                                        <span class="n">bins</span><span class="o">=</span><span class="p">[</span><span class="n">n_bins_x</span><span class="p">,</span> <span class="n">n_bins_y</span><span class="p">])</span>
+
+        <span class="n">num_samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">hist_mat</span><span class="p">))</span>
+        <span class="n">num_bins</span> <span class="o">=</span> <span class="n">hist_mat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">hist_mat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_hist</span> <span class="o">=</span> <span class="n">hist_mat</span><span class="o">.</span><span class="n">T</span>
+
+        <span class="k">return</span> <span class="n">hist_mat</span><span class="p">,</span> <span class="n">num_samples</span><span class="p">,</span> <span class="n">num_bins</span></div>
+
+
+<div class="viewcode-block" id="IPSampler._proto_objects_sampling"><a class="viewcode-back" href="../ecosampling/interest_points.html#interest_points.IPSampler._proto_objects_sampling">[docs]</a>    <span class="k">def</span> <span class="nf">_proto_objects_sampling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">proto_params</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sample points from the proto-objects.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            proto_params (obj): Sampled proto parameters for the frame</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            Update `self.xCoord` and `self.yCoord` with the sampled points</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Random sampling from proto-objects</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">verbose</span><span class="p">(</span><span class="s2">&quot;Sample interest points from proto-objects&quot;</span><span class="p">)</span>
+        <span class="n">total_area</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">proto_params</span><span class="o">.</span><span class="n">area_proto</span><span class="p">)</span>
+
+        <span class="n">all_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="nb">float</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">proto_params</span><span class="o">.</span><span class="n">nV</span><span class="p">):</span>
+            <span class="c1"># Finds the number of IPs per patch</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_points</span> <span class="o">*</span> <span class="n">proto_params</span><span class="o">.</span><span class="n">area_proto</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">/</span> <span class="n">total_area</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">N</span> <span class="o">+=</span> <span class="n">n</span>
+                <span class="n">cov_proto</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[(</span><span class="mi">5</span><span class="o">*</span><span class="n">proto_params</span><span class="o">.</span><span class="n">r2</span><span class="p">[</span><span class="n">p</span><span class="p">])</span> <span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                                     <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">5</span><span class="o">*</span><span class="n">proto_params</span><span class="o">.</span><span class="n">r1</span><span class="p">[</span><span class="n">p</span><span class="p">])]])</span>
+                <span class="n">mu_proto</span> <span class="o">=</span> <span class="n">proto_params</span><span class="o">.</span><span class="n">proto_centers</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
+                <span class="n">r_p</span> <span class="o">=</span> <span class="n">sample_multivariate</span><span class="p">(</span><span class="n">mu_proto</span><span class="p">,</span> <span class="n">cov_proto</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+                <span class="n">all_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">all_points</span><span class="p">,</span> <span class="n">r_p</span><span class="p">))</span>
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">xCoord</span> <span class="o">=</span> <span class="n">all_points</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">yCoord</span> <span class="o">=</span> <span class="n">all_points</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="IPSampler._landscape_sampling"><a class="viewcode-back" href="../ecosampling/interest_points.html#interest_points.IPSampler._landscape_sampling">[docs]</a>    <span class="k">def</span> <span class="nf">_landscape_sampling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">saliency_map</span><span class="p">,</span> <span class="n">only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sample points from the landscape.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            Update `self.xCoord` and `self.yCoord` with the sampled points</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            saliency_map (np.ndarray): Frame saliency map</span>
+<span class="sd">            only (bool, optional): Flag indicating if we are only sampling</span>
+<span class="sd">                landscape or if the data will be appended to other</span>
+<span class="sd">                previously sampled points. Defaults to False.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">xCoord</span><span class="p">,</span> <span class="n">yCoord</span><span class="p">,</span> <span class="n">scale</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_boccignone_ferraro_ip_sampling</span><span class="p">(</span><span class="n">saliency_map</span><span class="p">)</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">scale</span><span class="p">)</span> <span class="c1"># Number of points</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">only</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">N</span> <span class="o">+=</span> <span class="n">N</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">xCoord</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xCoord</span><span class="p">,</span> <span class="n">xCoord</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">yCoord</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">yCoord</span><span class="p">,</span> <span class="n">yCoord</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">N</span> <span class="o">=</span> <span class="n">N</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">xCoord</span> <span class="o">=</span> <span class="n">xCoord</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">yCoord</span> <span class="o">=</span> <span class="n">yCoord</span></div>
+
+
+<div class="viewcode-block" id="IPSampler._boccignone_ferraro_ip_sampling"><a class="viewcode-back" href="../ecosampling/interest_points.html#interest_points.IPSampler._boccignone_ferraro_ip_sampling">[docs]</a>    <span class="k">def</span> <span class="nf">_boccignone_ferraro_ip_sampling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">saliency_map</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Boccignone-Ferraro&#39;s backend function for the IP sampling method.</span>
+
+<span class="sd">        1. Sample Interest_Point.Max_Points points from set of points</span>
+<span class="sd">           weighted according to their salience</span>
+<span class="sd">        2. For each sample, set scale by drawing from uniform distribution</span>
+<span class="sd">           over Interest_Point.Scale</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            saliency_map (np.ndarray): Frame saliency map</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            xCoord (np.array): X Coordinates of IPs</span>
+<span class="sd">            yCoord (np.array): Y Coordinates of IPs</span>
+<span class="sd">            scale (np.array): Scale of points (radius, inpixels)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">xx</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">yy</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">strength</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">scale</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">yy</span><span class="p">,</span> <span class="n">xx</span><span class="p">,</span> <span class="n">strength</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_points</span><span class="p">(</span><span class="n">saliency_map</span><span class="p">)</span>
+        <span class="c1"># Total nomber of salient points extracted from image</span>
+        <span class="n">n_sal_points</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">strength</span><span class="p">)</span>
+
+        <span class="c1"># Check that some points were found in the image</span>
+        <span class="k">if</span> <span class="n">n_sal_points</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># Obtain sampling density choose between uniform</span>
+            <span class="c1"># and weighted towards those points with a stronger saliency strength</span>
+            <span class="k">if</span> <span class="n">IPConfig</span><span class="o">.</span><span class="n">WEIGHTED_SAMPLING</span><span class="p">:</span>
+                <span class="n">sample_density</span> <span class="o">=</span> <span class="n">strength</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">strength</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">sample_density</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">IPConfig</span><span class="o">.</span><span class="n">N_POINTS</span><span class="p">))</span> <span class="o">/</span> <span class="n">IPConfig</span><span class="o">.</span><span class="n">N_POINTS</span>
+
+            <span class="c1"># Choose how many points to sample</span>
+            <span class="n">n_points_to_sample</span> <span class="o">=</span> <span class="n">IPConfig</span><span class="o">.</span><span class="n">MAX_POINTS</span>
+
+            <span class="c1"># Draw samples from density</span>
+            <span class="n">sample_density</span> <span class="o">=</span> <span class="n">sample_density</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;double&#39;</span><span class="p">)</span>
+            <span class="n">samples</span> <span class="o">=</span> <span class="n">discrete_sampler</span><span class="p">(</span><span class="n">sample_density</span><span class="p">,</span> <span class="n">n_points_to_sample</span><span class="p">)</span>
+
+            <span class="c1"># Lookup points corresponding to samples</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">xx</span><span class="p">[</span><span class="n">samples</span><span class="p">]</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">yy</span><span class="p">[</span><span class="n">samples</span><span class="p">]</span>
+
+            <span class="c1"># Now draw scales from uniform</span>
+            <span class="n">ip_scale</span> <span class="o">=</span> <span class="n">IPConfig</span><span class="o">.</span><span class="n">SCALE</span>
+            <span class="n">scale</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_points_to_sample</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">ip_scale</span><span class="p">)</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">ip_scale</span><span class="p">))</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">ip_scale</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># No salient points found in image at all</span>
+            <span class="c1"># Set all output variables for the frame to be empty</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">scale</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">xCoord</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="n">yCoord</span> <span class="o">=</span> <span class="n">y</span>
+
+        <span class="k">return</span> <span class="n">xCoord</span><span class="p">,</span> <span class="n">yCoord</span><span class="p">,</span> <span class="n">scale</span></div>
+
+
+<div class="viewcode-block" id="IPSampler._get_points"><a class="viewcode-back" href="../ecosampling/interest_points.html#interest_points.IPSampler._get_points">[docs]</a>    <span class="k">def</span> <span class="nf">_get_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">salience_map</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Extract salient points from the saliency map.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            saliency_map (np.ndarray): Frame saliency map</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            yy: Y coordinates of salient points</span>
+<span class="sd">            xx: X coordinates of salient points</span>
+<span class="sd">            strength: Saliency strength of salient points</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">mean_salience</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">salience_map</span><span class="p">))</span>
+        <span class="n">indexes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">salience_map</span> <span class="o">&gt;</span> <span class="n">mean_salience</span><span class="p">)</span>
+        <span class="n">xx</span> <span class="o">=</span> <span class="n">indexes</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="n">yy</span> <span class="o">=</span> <span class="n">indexes</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">strength</span> <span class="o">=</span> <span class="n">salience_map</span><span class="p">[</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">yy</span><span class="p">,</span> <span class="n">xx</span><span class="p">,</span> <span class="n">strength</span></div></div>
+
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Giuseppe Boccignone, Renato Nobre.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

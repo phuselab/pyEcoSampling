@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Self-Resemblance &mdash; Eco Sampling 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Statistics" href="../utils/statistics.html" />
+    <link rel="prev" title="Gaze Sampler" href="gaze_sampler.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html">
+            <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user/introduction.html">Ecological Sampling Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/config.html">Configuration file</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">EcoSampling Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="generate_scanpath.html">Generate Scanpath</a></li>
+<li class="toctree-l1"><a class="reference internal" href="frame_processor.html">Frame Processor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="salience_map.html">Salience Map</a></li>
+<li class="toctree-l1"><a class="reference internal" href="feature_map.html">Feature Map</a></li>
+<li class="toctree-l1"><a class="reference internal" href="proto_parameters.html">Proto Parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interest_points.html">Interest Points</a></li>
+<li class="toctree-l1"><a class="reference internal" href="complexity.html">Complexity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="action_selector.html">Action Selector</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gaze_sampler.html">Gaze Sampler</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Salience Backends</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Self-Resemblance</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Utils</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../utils/statistics.html">Statistics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/helper.html">Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/logger.html">Logger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/plotter.html">Plotter</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Eco Sampling</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Self-Resemblance</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/ecosampling/self_resemblance.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="module-backends.self_resemblance">
+<span id="self-resemblance"></span><h1>Self-Resemblance<a class="headerlink" href="#module-backends.self_resemblance" title="Permalink to this headline"></a></h1>
+<p>Static and space-time visual saliency detection by self-resemblance..</p>
+<p>Seo’s et al. present a novel unified framework for both static and space-time
+saliency detection. Their method is a bottom-up approach and computes so-called
+local regression kernels (i.e., local descriptors) from the given image (or a video),
+which measure the likeness of a pixel (or voxel) to its surroundings. Visual saliency
+is then computed using the said “self-resemblance” measure. The framework results in a
+saliency map where each pixel (or voxel) indicates the statistical likelihood of saliency
+of a feature matrix given its surrounding feature matrices. As a similarity measure,
+matrix cosine similarity (a generalization of cosine similarity) is employed.
+State of the art performance is demonstrated on commonly used human eye fixation data
+(static scenes (N. Bruce &amp; J. Tsotsos, 2006) and dynamic scenes (L. Itti &amp; P. Baldi, 2006))
+and some psychological patterns.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Adapted from Matlab’s version by Hae Jong on Apr 25, 2011 <a class="footnote-reference brackets" href="#id2" id="id1">1</a>.</p>
+</div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id2"><span class="brackets">1</span><span class="fn-backref">(<a href="#id1">1</a>,<a href="#id3">2</a>,<a href="#id4">3</a>)</span></dt>
+<dd><p><a class="reference external" href="https://jov.arvojournals.org/article.aspx?articleid=2122209">Seo, H. J., &amp; Milanfar, P. (2009). Static and space-time visual saliency detection
+by self-resemblance. Journal of vision, 9(12), 15-15.</a></p>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="backends.self_resemblance.SelfRessemblance">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">backends.self_resemblance.</span></span><span class="sig-name descname"><span class="pre">SelfRessemblance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wsize</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wsize_t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/backends/self_resemblance.html#SelfRessemblance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backends.self_resemblance.SelfRessemblance" title="Permalink to this definition"></a></dt>
+<dd><p>Static and space-time visual saliency detection by self-resemblance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>wsize</strong> (<em>int</em>) – window size</p></li>
+<li><p><strong>wsize_t</strong> (<em>int</em>) – window size for time</p></li>
+<li><p><strong>alpha</strong> (<em>float</em>) – alpha parameter</p></li>
+<li><p><strong>sigma</strong> (<em>float</em>) – sigma parameter</p></li>
+<li><p><strong>h</strong> (<em>float</em>) – h parameter</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="backends.self_resemblance.SelfRessemblance.wsize">
+<span class="sig-name descname"><span class="pre">wsize</span></span><a class="headerlink" href="#backends.self_resemblance.SelfRessemblance.wsize" title="Permalink to this definition"></a></dt>
+<dd><p>window size</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="backends.self_resemblance.SelfRessemblance.wsize_t">
+<span class="sig-name descname"><span class="pre">wsize_t</span></span><a class="headerlink" href="#backends.self_resemblance.SelfRessemblance.wsize_t" title="Permalink to this definition"></a></dt>
+<dd><p>window size for time</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="backends.self_resemblance.SelfRessemblance.alpha">
+<span class="sig-name descname"><span class="pre">alpha</span></span><a class="headerlink" href="#backends.self_resemblance.SelfRessemblance.alpha" title="Permalink to this definition"></a></dt>
+<dd><p>alpha parameter</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="backends.self_resemblance.SelfRessemblance.sigma">
+<span class="sig-name descname"><span class="pre">sigma</span></span><a class="headerlink" href="#backends.self_resemblance.SelfRessemblance.sigma" title="Permalink to this definition"></a></dt>
+<dd><p>sigma parameter</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="backends.self_resemblance.SelfRessemblance.h">
+<span class="sig-name descname"><span class="pre">h</span></span><a class="headerlink" href="#backends.self_resemblance.SelfRessemblance.h" title="Permalink to this definition"></a></dt>
+<dd><p>h parameter</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backends.self_resemblance.SelfRessemblance.three_D_LARK">
+<span class="sig-name descname"><span class="pre">three_D_LARK</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fov_seq</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/backends/self_resemblance.html#SelfRessemblance.three_D_LARK"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backends.self_resemblance.SelfRessemblance.three_D_LARK" title="Permalink to this definition"></a></dt>
+<dd><p>Compute 3-D LARK descriptors.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Adapted from Matlab’s version by Hae Jong on Apr 25, 2011 <a class="footnote-reference brackets" href="#id2" id="id3">1</a>.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fov_seq</strong> (<em>np.ndarray</em>) – Foveated Map Sequence.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>lark</strong> (<em>np.ndarray</em>) – 3D LARK descriptors</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backends.self_resemblance.SelfRessemblance.space_time_saliency_map">
+<span class="sig-name descname"><span class="pre">space_time_saliency_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lark</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/backends/self_resemblance.html#SelfRessemblance.space_time_saliency_map"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backends.self_resemblance.SelfRessemblance.space_time_saliency_map" title="Permalink to this definition"></a></dt>
+<dd><p>Compute Space-time Self-Resemblance.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Adapted from Matlab’s version by Hae Jong on Apr 25, 2011 <a class="footnote-reference brackets" href="#id2" id="id4">1</a>.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>lark</strong> (<em>np.array</em>) – 3D LARK descriptors</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Space-time Saliency Map</strong></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backends.self_resemblance.SelfRessemblance._edge_mirror">
+<span class="sig-name descname"><span class="pre">_edge_mirror</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/backends/self_resemblance.html#SelfRessemblance._edge_mirror"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backends.self_resemblance.SelfRessemblance._edge_mirror" title="Permalink to this definition"></a></dt>
+<dd><p>Pad with mirroring the edges of the image.</p>
+<p>Pads with the reflection of the vector mirrored
+on the first and last values of the vector along each axis.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Adapted from Matlab’s version by Hae Jong on Apr 25, 2011.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>np.ndarray</em>) – Image to be reflected.</p></li>
+<li><p><strong>width</strong> (<em>vector</em>) – Width for each axis of the padding.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>z</strong> – Mirror padded image.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="gaze_sampler.html" class="btn btn-neutral float-left" title="Gaze Sampler" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../utils/statistics.html" class="btn btn-neutral float-right" title="Statistics" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Giuseppe Boccignone, Renato Nobre.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

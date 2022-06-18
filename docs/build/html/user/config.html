@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Configuration file &mdash; Eco Sampling 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Generate Scanpath" href="../ecosampling/generate_scanpath.html" />
+    <link rel="prev" title="Ecological Sampling Python" href="introduction.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html">
+            <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Ecological Sampling Python</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Configuration file</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">EcoSampling Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/generate_scanpath.html">Generate Scanpath</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/frame_processor.html">Frame Processor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/salience_map.html">Salience Map</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/feature_map.html">Feature Map</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/proto_parameters.html">Proto Parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/interest_points.html">Interest Points</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/complexity.html">Complexity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/action_selector.html">Action Selector</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/gaze_sampler.html">Gaze Sampler</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Salience Backends</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/self_resemblance.html">Self-Resemblance</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Utils</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../utils/statistics.html">Statistics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/helper.html">Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/logger.html">Logger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/plotter.html">Plotter</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Eco Sampling</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Configuration file</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/user/config.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="module-config">
+<span id="configuration-file"></span><h1>Configuration file<a class="headerlink" href="#module-config" title="Permalink to this headline"></a></h1>
+<p>Global configuration script.</p>
+<p>Holds all settings used in all parts of the code, enabling the exact
+reproduction of the experiment at some future date.</p>
+<p>Single most important setting - the overall experiment type
+used by generate_scanpath.m</p>
+<dl class="simple">
+<dt>Authors:</dt><dd><ul class="simple">
+<li><p>Giuseppe Boccignone &lt;Giuseppe.Boccignone(at)unimi.it&gt;</p></li>
+<li><p>Renato A Nobre &lt;renato.avellarnobre(at)unimi.it&gt;</p></li>
+</ul>
+</dd>
+<dt>Changes:</dt><dd><ul class="simple">
+<li><p>20/05/2022  Python Edition</p></li>
+<li><p>20/01/2012  Matlab Edition</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="config.GeneralConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">config.</span></span><span class="sig-name descname"><span class="pre">GeneralConfig</span></span><a class="reference internal" href="../_modules/config.html#GeneralConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#config.GeneralConfig" title="Permalink to this definition"></a></dt>
+<dd><p>General configuration class.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.GeneralConfig.EXPERIMENT_TYPE">
+<span class="sig-name descname"><span class="pre">EXPERIMENT_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'3DLARK_SELFRESEMBLANCE'</span></em><a class="headerlink" href="#config.GeneralConfig.EXPERIMENT_TYPE" title="Permalink to this definition"></a></dt>
+<dd><p>Start offset from the data folder. Skip <code class="docutils literal notranslate"><span class="pre">OFFSET</span></code> first images.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.GeneralConfig.OFFSET">
+<span class="sig-name descname"><span class="pre">OFFSET</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#config.GeneralConfig.OFFSET" title="Permalink to this definition"></a></dt>
+<dd><p>Number of times to execute the scanpath experiment.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.GeneralConfig.FRAME_STEP">
+<span class="sig-name descname"><span class="pre">FRAME_STEP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#config.GeneralConfig.FRAME_STEP" title="Permalink to this definition"></a></dt>
+<dd><p>Frames to skip at each step.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Instead of looping through all the frames, the step is two because
+at each step, we process the previous and the current frame and future
+frames.</p>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.GeneralConfig.VIDEO_NAME">
+<span class="sig-name descname"><span class="pre">VIDEO_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'beverly01'</span></em><a class="headerlink" href="#config.GeneralConfig.VIDEO_NAME" title="Permalink to this definition"></a></dt>
+<dd><p>Number of the first frame in the directory.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.GeneralConfig.DIR_OFFSET">
+<span class="sig-name descname"><span class="pre">DIR_OFFSET</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">310</span></em><a class="headerlink" href="#config.GeneralConfig.DIR_OFFSET" title="Permalink to this definition"></a></dt>
+<dd><p>Name of the experiment folder inside data.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.GeneralConfig.EXPERIMENT_DATA_FOLDER">
+<span class="sig-name descname"><span class="pre">EXPERIMENT_DATA_FOLDER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'demo/'</span></em><a class="headerlink" href="#config.GeneralConfig.EXPERIMENT_DATA_FOLDER" title="Permalink to this definition"></a></dt>
+<dd><p>Select the start frames to be used in the experiment.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.GeneralConfig.NN_IMG_START">
+<span class="sig-name descname"><span class="pre">NN_IMG_START</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#config.GeneralConfig.NN_IMG_START" title="Permalink to this definition"></a></dt>
+<dd><p>Select the end frames to be used in the experiment.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.GeneralConfig.NN_IMG_END">
+<span class="sig-name descname"><span class="pre">NN_IMG_END</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">90</span></em><a class="headerlink" href="#config.GeneralConfig.NN_IMG_END" title="Permalink to this definition"></a></dt>
+<dd><p>Flag to log verbose information.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.GeneralConfig.VERBOSE">
+<span class="sig-name descname"><span class="pre">VERBOSE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#config.GeneralConfig.VERBOSE" title="Permalink to this definition"></a></dt>
+<dd><p>Flag for visualizing results on runtime.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.GeneralConfig.VISUALIZE_RESULTS">
+<span class="sig-name descname"><span class="pre">VISUALIZE_RESULTS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#config.GeneralConfig.VISUALIZE_RESULTS" title="Permalink to this definition"></a></dt>
+<dd><p>Flag for saving foveated images.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.GeneralConfig.SAVE_FOV_IMG">
+<span class="sig-name descname"><span class="pre">SAVE_FOV_IMG</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#config.GeneralConfig.SAVE_FOV_IMG" title="Permalink to this definition"></a></dt>
+<dd><p>Flag for saving saliency maps.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.GeneralConfig.SAVE_SAL_IMG">
+<span class="sig-name descname"><span class="pre">SAVE_SAL_IMG</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#config.GeneralConfig.SAVE_SAL_IMG" title="Permalink to this definition"></a></dt>
+<dd><p>Flag for saving the proto-objects maps.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.GeneralConfig.SAVE_PROTO_IMG">
+<span class="sig-name descname"><span class="pre">SAVE_PROTO_IMG</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#config.GeneralConfig.SAVE_PROTO_IMG" title="Permalink to this definition"></a></dt>
+<dd><p>Flag for saving the interest point map.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.GeneralConfig.SAVE_IP_IMG">
+<span class="sig-name descname"><span class="pre">SAVE_IP_IMG</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#config.GeneralConfig.SAVE_IP_IMG" title="Permalink to this definition"></a></dt>
+<dd><p>Flag for saving the 2d histogram.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.GeneralConfig.SAVE_HISTO_IMG">
+<span class="sig-name descname"><span class="pre">SAVE_HISTO_IMG</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#config.GeneralConfig.SAVE_HISTO_IMG" title="Permalink to this definition"></a></dt>
+<dd><p>Flag for saving the foa images.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.GeneralConfig.SAVE_FOA_IMG">
+<span class="sig-name descname"><span class="pre">SAVE_FOA_IMG</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#config.GeneralConfig.SAVE_FOA_IMG" title="Permalink to this definition"></a></dt>
+<dd><p>Flag for saving coordinates of FOA on file.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.GeneralConfig.SAVE_FOA_ONFILE">
+<span class="sig-name descname"><span class="pre">SAVE_FOA_ONFILE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#config.GeneralConfig.SAVE_FOA_ONFILE" title="Permalink to this definition"></a></dt>
+<dd><p>Flag for saving complexity values and plots.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.GeneralConfig.SAVE_COMPLEXITY_ONFILE">
+<span class="sig-name descname"><span class="pre">SAVE_COMPLEXITY_ONFILE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#config.GeneralConfig.SAVE_COMPLEXITY_ONFILE" title="Permalink to this definition"></a></dt>
+<dd><p>Project root folder. Don’t change this.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.GeneralConfig.PROJECT_ROOT">
+<span class="sig-name descname"><span class="pre">PROJECT_ROOT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/Users/renatonobre/Desktop/Projects/AC_NI/INMCA_Nobre/ecosampling'</span></em><a class="headerlink" href="#config.GeneralConfig.PROJECT_ROOT" title="Permalink to this definition"></a></dt>
+<dd><p>Project base folder. Don’t change this.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.GeneralConfig.BASE_DIR">
+<span class="sig-name descname"><span class="pre">BASE_DIR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/Users/renatonobre/Desktop/Projects/AC_NI/INMCA_Nobre'</span></em><a class="headerlink" href="#config.GeneralConfig.BASE_DIR" title="Permalink to this definition"></a></dt>
+<dd><p>Data dir folder. Don’t change this.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.GeneralConfig.DATA_DIR">
+<span class="sig-name descname"><span class="pre">DATA_DIR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/Users/renatonobre/Desktop/Projects/AC_NI/INMCA_Nobre/data/'</span></em><a class="headerlink" href="#config.GeneralConfig.DATA_DIR" title="Permalink to this definition"></a></dt>
+<dd><p>Frame dir folder. Don’t change this.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.GeneralConfig.FRAME_DIR">
+<span class="sig-name descname"><span class="pre">FRAME_DIR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/Users/renatonobre/Desktop/Projects/AC_NI/INMCA_Nobre/data/demo/'</span></em><a class="headerlink" href="#config.GeneralConfig.FRAME_DIR" title="Permalink to this definition"></a></dt>
+<dd><p>Name of the folder where the results will be saved.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.GeneralConfig.RESULTS_DIR">
+<span class="sig-name descname"><span class="pre">RESULTS_DIR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/Users/renatonobre/Desktop/Projects/AC_NI/INMCA_Nobre/results/beverly01/'</span></em><a class="headerlink" href="#config.GeneralConfig.RESULTS_DIR" title="Permalink to this definition"></a></dt>
+<dd><p>Generat GIF is heavyweighted.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="config.SaliencyConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">config.</span></span><span class="sig-name descname"><span class="pre">SaliencyConfig</span></span><a class="reference internal" href="../_modules/config.html#SaliencyConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#config.SaliencyConfig" title="Permalink to this definition"></a></dt>
+<dd><p>Self resemblance spatio-temporal feature and saliency map parameters.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.SaliencyConfig.WSIZE">
+<span class="sig-name descname"><span class="pre">WSIZE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#config.SaliencyConfig.WSIZE" title="Permalink to this definition"></a></dt>
+<dd><p>LARK Temporal Window Size.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.SaliencyConfig.WSIZE_T">
+<span class="sig-name descname"><span class="pre">WSIZE_T</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#config.SaliencyConfig.WSIZE_T" title="Permalink to this definition"></a></dt>
+<dd><p>LARK Sensitivity Parameter.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.SaliencyConfig.LARK_ALPHA">
+<span class="sig-name descname"><span class="pre">LARK_ALPHA</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.42</span></em><a class="headerlink" href="#config.SaliencyConfig.LARK_ALPHA" title="Permalink to this definition"></a></dt>
+<dd><p>LARK Smoothing Parameter.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.SaliencyConfig.LARK_H">
+<span class="sig-name descname"><span class="pre">LARK_H</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#config.SaliencyConfig.LARK_H" title="Permalink to this definition"></a></dt>
+<dd><p>Lark fall-off parameter for self-resemblance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.SaliencyConfig.LARK_SIGMA">
+<span class="sig-name descname"><span class="pre">LARK_SIGMA</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.7</span></em><a class="headerlink" href="#config.SaliencyConfig.LARK_SIGMA" title="Permalink to this definition"></a></dt>
+<dd><p>Levels of the pyramid decomposition (if we perform such).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="config.ProtoConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">config.</span></span><span class="sig-name descname"><span class="pre">ProtoConfig</span></span><a class="reference internal" href="../_modules/config.html#ProtoConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#config.ProtoConfig" title="Permalink to this definition"></a></dt>
+<dd><p>Proto-object parameters.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.ProtoConfig.PROTO">
+<span class="sig-name descname"><span class="pre">PROTO</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#config.ProtoConfig.PROTO" title="Permalink to this definition"></a></dt>
+<dd><p>Maximum number of proto-objects.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="config.IPConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">config.</span></span><span class="sig-name descname"><span class="pre">IPConfig</span></span><a class="reference internal" href="../_modules/config.html#IPConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#config.IPConfig" title="Permalink to this definition"></a></dt>
+<dd><p>Interest point sampler configuration.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.IPConfig.TYPE">
+<span class="sig-name descname"><span class="pre">TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SelfResemblance'</span></em><a class="headerlink" href="#config.IPConfig.TYPE" title="Permalink to this definition"></a></dt>
+<dd><p>Scales at which features are extracted (radius of region in pixels).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.IPConfig.SCALE">
+<span class="sig-name descname"><span class="pre">SCALE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">array([10,</span> <span class="pre">11,</span> <span class="pre">12,</span> <span class="pre">13,</span> <span class="pre">14,</span> <span class="pre">15,</span> <span class="pre">16,</span> <span class="pre">17,</span> <span class="pre">18,</span> <span class="pre">19,</span> <span class="pre">20,</span> <span class="pre">21,</span> <span class="pre">22,</span> <span class="pre">23,</span> <span class="pre">24,</span> <span class="pre">25,</span> <span class="pre">26,</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">27,</span> <span class="pre">28,</span> <span class="pre">29,</span> <span class="pre">30])</span></em><a class="headerlink" href="#config.IPConfig.SCALE" title="Permalink to this definition"></a></dt>
+<dd><p>Maximun number of IPs allowed per image.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.IPConfig.MAX_POINTS">
+<span class="sig-name descname"><span class="pre">MAX_POINTS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">80</span></em><a class="headerlink" href="#config.IPConfig.MAX_POINTS" title="Permalink to this definition"></a></dt>
+<dd><p>If true perform weighted density, false perform random sampling</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.IPConfig.WEIGHTED_SAMPLING">
+<span class="sig-name descname"><span class="pre">WEIGHTED_SAMPLING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#config.IPConfig.WEIGHTED_SAMPLING" title="Permalink to this definition"></a></dt>
+<dd><p>Scale in case of weighted sampling.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.IPConfig.WEIGHTED_SCALE">
+<span class="sig-name descname"><span class="pre">WEIGHTED_SCALE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#config.IPConfig.WEIGHTED_SCALE" title="Permalink to this definition"></a></dt>
+<dd><p>Number of points used on non-weighted sampling.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.IPConfig.N_POINTS">
+<span class="sig-name descname"><span class="pre">N_POINTS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#config.IPConfig.N_POINTS" title="Permalink to this definition"></a></dt>
+<dd><p>Spatial Resolution of IPs. Should be set as a function of the scale of IP detection.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.IPConfig.WINDOW_SIZE">
+<span class="sig-name descname"><span class="pre">WINDOW_SIZE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">7</span></em><a class="headerlink" href="#config.IPConfig.WINDOW_SIZE" title="Permalink to this definition"></a></dt>
+<dd><p>Flag to sample e other IPs directly from the salience landscape.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.IPConfig.WITH_PERTURBATION">
+<span class="sig-name descname"><span class="pre">WITH_PERTURBATION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#config.IPConfig.WITH_PERTURBATION" title="Permalink to this definition"></a></dt>
+<dd><p>Number of X bins for the IPs Empirical Distribution 2D histogram.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.IPConfig.X_BIN_SIZE">
+<span class="sig-name descname"><span class="pre">X_BIN_SIZE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">20</span></em><a class="headerlink" href="#config.IPConfig.X_BIN_SIZE" title="Permalink to this definition"></a></dt>
+<dd><p>Number of Y bins for the IPs Empirical Distribution 2D histogram.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="config.ComplexityConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">config.</span></span><span class="sig-name descname"><span class="pre">ComplexityConfig</span></span><a class="reference internal" href="../_modules/config.html#ComplexityConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#config.ComplexityConfig" title="Permalink to this definition"></a></dt>
+<dd><p>Complexity parameters configuration.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.ComplexityConfig.EPS">
+<span class="sig-name descname"><span class="pre">EPS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.004</span></em><a class="headerlink" href="#config.ComplexityConfig.EPS" title="Permalink to this definition"></a></dt>
+<dd><p>Simulated epsilon of the machine.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Epsilon is the minimum distance that a floating point arithmetic
+program can recognize between two numbers x and y.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="config.GazeConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">config.</span></span><span class="sig-name descname"><span class="pre">GazeConfig</span></span><a class="reference internal" href="../_modules/config.html#GazeConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#config.GazeConfig" title="Permalink to this definition"></a></dt>
+<dd><p>Gaze sampling settings.</p>
+<p>For the alpha-stable distribution parameters, the following
+indexes represtent the following parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Position 0 corresponds to Normal Gaze</p></li>
+<li><p>Position 1 corresponds to Levy Flight 1</p></li>
+<li><p>Position 2 corresponds to Levy Flight 2</p></li>
+</ul>
+</div></blockquote>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.GazeConfig.FIRST_FOA_ON_CENTER">
+<span class="sig-name descname"><span class="pre">FIRST_FOA_ON_CENTER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#config.GazeConfig.FIRST_FOA_ON_CENTER" title="Permalink to this definition"></a></dt>
+<dd><p>Using one point attractor in the potential if true, otherwise using multipoints.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.GazeConfig.SIMPLE_ATTRACTOR">
+<span class="sig-name descname"><span class="pre">SIMPLE_ATTRACTOR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#config.GazeConfig.SIMPLE_ATTRACTOR" title="Permalink to this definition"></a></dt>
+<dd><p>Number of potention FOAS to determine the total attractor portential in Langevin.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.GazeConfig.NMAX">
+<span class="sig-name descname"><span class="pre">NMAX</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10</span></em><a class="headerlink" href="#config.GazeConfig.NMAX" title="Permalink to this definition"></a></dt>
+<dd><p>Maximum number of candidates new gaze positions</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.GazeConfig.NUM_INTERNALSIM">
+<span class="sig-name descname"><span class="pre">NUM_INTERNALSIM</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">100</span></em><a class="headerlink" href="#config.GazeConfig.NUM_INTERNALSIM" title="Permalink to this definition"></a></dt>
+<dd><p>Number of retries to find a valid new gaze position.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.GazeConfig.MAX_NUMATTEMPTS">
+<span class="sig-name descname"><span class="pre">MAX_NUMATTEMPTS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="headerlink" href="#config.GazeConfig.MAX_NUMATTEMPTS" title="Permalink to this definition"></a></dt>
+<dd><p>Possible exponents of the alpha-stable distribution.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.GazeConfig.ALPHA_STABLE">
+<span class="sig-name descname"><span class="pre">ALPHA_STABLE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[2.0,</span> <span class="pre">1.6,</span> <span class="pre">1.4]</span></em><a class="headerlink" href="#config.GazeConfig.ALPHA_STABLE" title="Permalink to this definition"></a></dt>
+<dd><p>Possible standard deviation of the alpha-stable distribution.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.GazeConfig.GAMMA_STABLE">
+<span class="sig-name descname"><span class="pre">GAMMA_STABLE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[3.78,</span> <span class="pre">22,</span> <span class="pre">60]</span></em><a class="headerlink" href="#config.GazeConfig.GAMMA_STABLE" title="Permalink to this definition"></a></dt>
+<dd><p>Possible symmetry of the alpha-stable distribution.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.GazeConfig.BETA_STABLE">
+<span class="sig-name descname"><span class="pre">BETA_STABLE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[1,</span> <span class="pre">1,</span> <span class="pre">1]</span></em><a class="headerlink" href="#config.GazeConfig.BETA_STABLE" title="Permalink to this definition"></a></dt>
+<dd><p>Possible locations of the alpha-stable distribution.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="introduction.html" class="btn btn-neutral float-left" title="Ecological Sampling Python" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../ecosampling/generate_scanpath.html" class="btn btn-neutral float-right" title="Generate Scanpath" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Giuseppe Boccignone, Renato Nobre.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

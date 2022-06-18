@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>utils.helper &mdash; Eco Sampling 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html">
+            <img src="../../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../user/introduction.html">Ecological Sampling Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/config.html">Configuration file</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">EcoSampling Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../ecosampling/generate_scanpath.html">Generate Scanpath</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../ecosampling/frame_processor.html">Frame Processor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../ecosampling/salience_map.html">Salience Map</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../ecosampling/feature_map.html">Feature Map</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../ecosampling/proto_parameters.html">Proto Parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../ecosampling/interest_points.html">Interest Points</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../ecosampling/complexity.html">Complexity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../ecosampling/action_selector.html">Action Selector</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../ecosampling/gaze_sampler.html">Gaze Sampler</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Salience Backends</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../ecosampling/self_resemblance.html">Self-Resemblance</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Utils</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../utils/statistics.html">Statistics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../utils/helper.html">Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../utils/logger.html">Logger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../utils/plotter.html">Plotter</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Eco Sampling</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      <li>utils.helper</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for utils.helper</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Collection of non-specific helper functions.</span>
+
+<span class="sd">Authors:</span>
+<span class="sd">    - Giuseppe Boccignone &lt;giuseppe.boccignone@unimi.it&gt;</span>
+<span class="sd">    - Renato Nobre &lt;renato.avellarnobre@studenti.unimi.it&gt;</span>
+
+<span class="sd">Changes:</span>
+<span class="sd">    - 12/12/2012  First Edition Matlab</span>
+<span class="sd">    - 31/05/2022  Python Edition</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<div class="viewcode-block" id="mk_gaussian"><a class="viewcode-back" href="../../utils/helper.html#utils.helper.mk_gaussian">[docs]</a><span class="k">def</span> <span class="nf">mk_gaussian</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">cov</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mean</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">amplitude</span><span class="o">=</span><span class="s1">&#39;norm&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create a gaussian filter matrix.</span>
+
+<span class="sd">    Compute a matrix with dimensions ``size`` (a [Y X] 2-vector, or a</span>
+<span class="sd">    scalar) containing a Gaussian function, centered at pixel position</span>
+<span class="sd">    specified by ``mean`` (default = (size+1)/2), with given ``cov`` (can</span>
+<span class="sd">    be a scalar, 2-vector, or 2x2 matrix.  Default = (min(size)/6)^2),</span>
+<span class="sd">    and ``amplitude``. ``amplitude=&#39;norm&#39;`` (default) will produce a</span>
+<span class="sd">    probability-normalized function.</span>
+
+<span class="sd">    Notes:</span>
+<span class="sd">        Function adapted from Matlab&#39;s Eero Simoncelli, 6/96.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        size (np.ndarray): Dimensions of the matrix.</span>
+<span class="sd">        cov (np.ndarray, optional): Covariance of the matrix. Defaults to None.</span>
+<span class="sd">        mean (_type_, optional): Mean of the matrix. Defaults to None.</span>
+<span class="sd">        amplitude (str, optional): Amplitude type. Defaults to &#39;norm&#39;.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Matrix with gausian function centered.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">size</span> <span class="o">=</span> <span class="n">size</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="s1">&#39;F&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">size</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">size</span><span class="p">,</span> <span class="n">size</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="n">cov</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">cov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">size</span><span class="p">)</span><span class="o">/</span><span class="mi">6</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">mean</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">mean</span> <span class="o">=</span> <span class="p">(</span><span class="n">size</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
+
+    <span class="n">x_ramp</span><span class="p">,</span> <span class="n">y_ramp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">mean</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">mean</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">cov</span><span class="p">):</span>  <span class="c1"># Scalar</span>
+        <span class="k">if</span> <span class="n">amplitude</span> <span class="o">==</span> <span class="s1">&#39;norm&#39;</span><span class="p">:</span>
+            <span class="n">amplitude</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">cov</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">e</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">x_ramp</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">y_ramp</span><span class="p">))</span><span class="o">/</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="n">cov</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">cov</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span> <span class="c1">#  2D-Vector</span>
+        <span class="k">if</span> <span class="n">amplitude</span> <span class="o">==</span> <span class="s1">&#39;norm&#39;</span><span class="p">:</span>
+            <span class="n">amplitude</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">cov</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">cov</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="n">e</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">x_ramp</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="n">cov</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">y_ramp</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="n">cov</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">amplitude</span> <span class="o">==</span> <span class="s1">&#39;norm&#39;</span><span class="p">:</span>
+            <span class="n">amplitude</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">det</span><span class="p">(</span><span class="n">cov</span><span class="p">)))</span>
+        <span class="n">cov</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">cov</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
+        <span class="n">e</span> <span class="o">=</span> <span class="n">cov</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">x_ramp</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">cov</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">cov</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">x_ramp</span><span class="p">,</span> <span class="n">y_ramp</span><span class="p">)</span> <span class="o">+</span> <span class="n">cov</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">y_ramp</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">amplitude</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Giuseppe Boccignone, Renato Nobre.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

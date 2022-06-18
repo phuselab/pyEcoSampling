@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>complexity &mdash; Eco Sampling 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html">
+            <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user/introduction.html">Ecological Sampling Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/config.html">Configuration file</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">EcoSampling Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/generate_scanpath.html">Generate Scanpath</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/frame_processor.html">Frame Processor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/salience_map.html">Salience Map</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/feature_map.html">Feature Map</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/proto_parameters.html">Proto Parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/interest_points.html">Interest Points</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/complexity.html">Complexity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/action_selector.html">Action Selector</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/gaze_sampler.html">Gaze Sampler</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Salience Backends</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/self_resemblance.html">Self-Resemblance</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Utils</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../utils/statistics.html">Statistics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/helper.html">Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/logger.html">Logger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/plotter.html">Plotter</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Eco Sampling</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Module code</a> &raquo;</li>
+      <li>complexity</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for complexity</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Computes spatial configuration complexity.</span>
+
+<span class="sd">Authors:</span>
+<span class="sd">    - Giuseppe Boccignone &lt;giuseppe.boccignone@unimi.it&gt;</span>
+<span class="sd">    - Renato Nobre &lt;renato.avellarnobre@studenti.unimi.it&gt;</span>
+
+<span class="sd">Changes:</span>
+<span class="sd">    - 12/12/2012  First Edition Matlab</span>
+<span class="sd">    - 31/05/2022  Python Edition</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">config</span> <span class="kn">import</span> <span class="n">ComplexityConfig</span>
+<span class="kn">from</span> <span class="nn">utils.logger</span> <span class="kn">import</span> <span class="n">Logger</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">Logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Complexity"><a class="viewcode-back" href="../ecosampling/complexity.html#complexity.Complexity">[docs]</a><span class="k">class</span> <span class="nc">Complexity</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Handle computation of spatial configuration complexity.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        Other complexity algorithm functions can be added here.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        order (:obj:`list` of :obj:`float`): List of order values</span>
+<span class="sd">        disorder (:obj:`list` of :obj:`float`): List of disorder values</span>
+<span class="sd">        complexity(:obj:`list` of :obj:`float`): List of complexity values</span>
+<span class="sd">        c_type: Complexity algotithm type to execute defined on config.py</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">order</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">disorder</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">complexity</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c_type</span> <span class="o">=</span> <span class="n">ComplexityConfig</span><span class="o">.</span><span class="n">TYPE</span>
+
+<div class="viewcode-block" id="Complexity.compute_complexity"><a class="viewcode-back" href="../ecosampling/complexity.html#complexity.Complexity.compute_complexity">[docs]</a>    <span class="k">def</span> <span class="nf">compute_complexity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">histmat</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">n_bins</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Computes spatial configuration complexity :math:`C(t)` of Interest points.</span>
+
+<span class="sd">        The function is a simple wrapper for complexity computation.</span>
+<span class="sd">        Executes some kind of complexity algorithm which is defined from the</span>
+<span class="sd">        class parameter ``self.c_type`` by calling the appropriate function.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            histmat (np.ndarray): 2D Spatial histogram of IPs.</span>
+<span class="sd">            N (float): number of points.</span>
+<span class="sd">            n_bins (int): number of bins.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            disorder (float): Disorder value.</span>
+<span class="sd">            order (float): Order value.</span>
+<span class="sd">            complexity (float): Space complexity value.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotImplementedError: If desired complexity type was not implemented.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; disorder, order, compl = esComputeComplexity(&#39;SDL&#39;, histmat, N, n_bins)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">verbose</span><span class="p">(</span><span class="s1">&#39;Evaluate complexity&#39;</span><span class="p">)</span>
+        <span class="n">phistmat</span> <span class="o">=</span> <span class="p">(</span><span class="n">histmat</span> <span class="o">/</span> <span class="n">N</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">eps</span>
+        <span class="n">H</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">phistmat</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">phistmat</span><span class="p">))))</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_type</span> <span class="o">==</span> <span class="s1">&#39;SDL&#39;</span><span class="p">:</span>
+            <span class="n">order</span><span class="p">,</span> <span class="n">disorder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shiner_davison_landsberg</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">n_bins</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_type</span> <span class="o">==</span> <span class="s1">&#39;LMC&#39;</span><span class="p">:</span>
+            <span class="n">order</span><span class="p">,</span> <span class="n">disorder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lopez_ruiz_mancini</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">phistmat</span><span class="p">,</span> <span class="n">n_bins</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_type</span> <span class="o">==</span> <span class="s1">&#39;FC&#39;</span><span class="p">:</span>
+            <span class="n">order</span><span class="p">,</span> <span class="n">disorder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_feldman_crutchfield</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">phistmat</span><span class="p">,</span> <span class="n">n_bins</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Not implemented</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Unknown complexity type&quot;</span><span class="p">)</span>
+
+        <span class="n">complexity</span> <span class="o">=</span> <span class="n">disorder</span> <span class="o">*</span> <span class="n">order</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">order</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">disorder</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">disorder</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">complexity</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">complexity</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">order</span><span class="p">,</span> <span class="n">disorder</span><span class="p">,</span> <span class="n">complexity</span></div>
+
+<div class="viewcode-block" id="Complexity._shiner_davison_landsberg"><a class="viewcode-back" href="../ecosampling/complexity.html#complexity.Complexity._shiner_davison_landsberg">[docs]</a>    <span class="k">def</span> <span class="nf">_shiner_davison_landsberg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">n_bins</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Shiner-Davison-Landsberg (SDL) complexity.</span>
+
+<span class="sd">        For more information, see the reference below [1]_.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            H (float): Shannon Entropy (Boltzman-Gibbs entropy).</span>
+<span class="sd">            n_bins (int): number of bins.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            order (float): Order value.</span>
+<span class="sd">            disorder (float): Disorder value.</span>
+
+<span class="sd">        References</span>
+<span class="sd">        ----------</span>
+<span class="sd">        .. [1] `Shiner, J. S., Davison, M., &amp; Landsberg, P. T. (1999). Simple measure for complexity.</span>
+<span class="sd">           Physical review E, 59(2), 1459.</span>
+<span class="sd">           &lt;https://journals.aps.org/pre/abstract/10.1103/PhysRevE.59.1459&gt;`_</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">h_sup</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">n_bins</span><span class="p">)</span>
+        <span class="n">disorder</span> <span class="o">=</span> <span class="n">H</span> <span class="o">/</span> <span class="n">h_sup</span>
+        <span class="n">order</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">disorder</span>
+        <span class="k">return</span> <span class="n">order</span><span class="p">,</span> <span class="n">disorder</span></div>
+
+<div class="viewcode-block" id="Complexity._lopez_ruiz_mancini"><a class="viewcode-back" href="../ecosampling/complexity.html#complexity.Complexity._lopez_ruiz_mancini">[docs]</a>    <span class="k">def</span> <span class="nf">_lopez_ruiz_mancini</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">phistmat</span><span class="p">,</span> <span class="n">n_bins</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Lòpez-Ruiz, Mancini, and Calbet complexity.</span>
+
+<span class="sd">        D is called Disequilibrium. This quantity is a measure of the</span>
+<span class="sd">        divergence of the given probability distribution from the uniform one.</span>
+<span class="sd">        For more information, see the reference below [2]_.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            H (float): Shannon Entropy (Boltzman-Gibbs entropy)</span>
+<span class="sd">            phistmat (np.ndarray): 2D Spatial histogram of IPs devided by number of points.</span>
+<span class="sd">            n_bins (int): number of bins.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            order (float): Order value.</span>
+<span class="sd">            disorder (float): Disorder value.</span>
+
+<span class="sd">        References</span>
+<span class="sd">        ----------</span>
+<span class="sd">        .. [2] `Lopez-Ruiz, R., Mancini, H. L., &amp; Calbet, X. (1995). A statistical measure of complexity.</span>
+<span class="sd">           Physics letters A, 209(5-6), 321-326.</span>
+<span class="sd">           &lt;https://www.sciencedirect.com/science/article/abs/pii/0375960195008675&gt;`_</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">((</span><span class="n">phistmat</span> <span class="o">-</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">n_bins</span><span class="p">)))</span>
+        <span class="n">disorder</span> <span class="o">=</span> <span class="n">H</span>
+        <span class="n">order</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">D</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">order</span><span class="p">,</span> <span class="n">disorder</span></div>
+
+<div class="viewcode-block" id="Complexity._feldman_crutchfield"><a class="viewcode-back" href="../ecosampling/complexity.html#complexity.Complexity._feldman_crutchfield">[docs]</a>    <span class="k">def</span> <span class="nf">_feldman_crutchfield</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">phistmat</span><span class="p">,</span> <span class="n">n_bins</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Feldman and Crutchfield&#39;s amendment replaces Order with the Kullback-Leibler divergence.</span>
+
+<span class="sd">        For the purpose of serving as a component of complexity, one of the</span>
+<span class="sd">        compared distributions is taken to be uniform.</span>
+<span class="sd">        For more information, see the reference below [3]_.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            H (float): Shannon Entropy (Boltzman-Gibbs entropy)</span>
+<span class="sd">            phistmat (np.ndarray): 2D Spatial histogram of IPs devided by number of points.</span>
+<span class="sd">            n_bins (int): number of bins.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            order (float): Order value.</span>
+<span class="sd">            disorder (float): Disorder value.</span>
+
+<span class="sd">        References</span>
+<span class="sd">        ----------</span>
+<span class="sd">        .. [3] `Feldman, D. P., &amp; Crutchfield, J. P. (1998). Measures of statistical complexity: Why?.</span>
+<span class="sd">           Physics Letters A, 238(4-5), 244-252.</span>
+<span class="sd">           &lt;https://www.sciencedirect.com/science/article/abs/pii/S0375960197008554&gt;`_</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">disorder</span> <span class="o">=</span> <span class="n">H</span>
+        <span class="n">order</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">phistmat</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">n_bins</span><span class="o">*</span><span class="n">phistmat</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">order</span><span class="p">,</span> <span class="n">disorder</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Giuseppe Boccignone, Renato Nobre.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

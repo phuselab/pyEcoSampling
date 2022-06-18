@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>salience_map &mdash; Eco Sampling 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html">
+            <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user/introduction.html">Ecological Sampling Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/config.html">Configuration file</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">EcoSampling Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/generate_scanpath.html">Generate Scanpath</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/frame_processor.html">Frame Processor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/salience_map.html">Salience Map</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/feature_map.html">Feature Map</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/proto_parameters.html">Proto Parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/interest_points.html">Interest Points</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/complexity.html">Complexity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/action_selector.html">Action Selector</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/gaze_sampler.html">Gaze Sampler</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Salience Backends</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/self_resemblance.html">Self-Resemblance</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Utils</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../utils/statistics.html">Statistics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/helper.html">Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/logger.html">Logger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/plotter.html">Plotter</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Eco Sampling</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Module code</a> &raquo;</li>
+      <li>salience_map</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for salience_map</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Salience Map class file.</span>
+
+<span class="sd">Authors:</span>
+<span class="sd">    - Giuseppe Boccignone &lt;giuseppe.boccignone@unimi.it&gt;</span>
+<span class="sd">    - Renato Nobre &lt;renato.avellarnobre@studenti.unimi.it&gt;</span>
+
+<span class="sd">Changes:</span>
+<span class="sd">    - 12/12/2012  First Edition Matlab</span>
+<span class="sd">    - 31/05/2022  Python Edition</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">config</span> <span class="kn">import</span> <span class="n">GeneralConfig</span><span class="p">,</span> <span class="n">SaliencyConfig</span>
+<span class="kn">from</span> <span class="nn">utils.logger</span> <span class="kn">import</span> <span class="n">Logger</span>
+<span class="kn">from</span> <span class="nn">backends.self_resemblance</span> <span class="kn">import</span> <span class="n">SelfRessemblance</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">Logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SalienceMap"><a class="viewcode-back" href="../ecosampling/salience_map.html#salience_map.SalienceMap">[docs]</a><span class="k">class</span> <span class="nc">SalienceMap</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Compute salience map given a feature map.</span>
+
+<span class="sd">    The salience map is a simple wrapper for salience computation.</span>
+<span class="sd">    Executes the salience algorithm which is defined.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        We implemented as a backend the Static and space-time visual</span>
+<span class="sd">        saliency detection by self-resemblance method. Additional methods</span>
+<span class="sd">        require to be implemented.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        sal_type (str): Experiment type for saliency computation.</span>
+<span class="sd">        wsize (int): LARK spatial window size.</span>
+<span class="sd">        wsize_t (int): LARK temporal window size.</span>
+<span class="sd">        sigma (float): LARK fall-off parameter.</span>
+<span class="sd">        show (matrix): Saliency map on the current frame.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sal_type</span> <span class="o">=</span> <span class="n">GeneralConfig</span><span class="o">.</span><span class="n">EXPERIMENT_TYPE</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wsize</span> <span class="o">=</span> <span class="n">SaliencyConfig</span><span class="o">.</span><span class="n">WSIZE</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wsize_t</span> <span class="o">=</span> <span class="n">SaliencyConfig</span><span class="o">.</span><span class="n">WSIZE_T</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">SaliencyConfig</span><span class="o">.</span><span class="n">LARK_ALPHA</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span> <span class="o">=</span> <span class="n">SaliencyConfig</span><span class="o">.</span><span class="n">LARK_SIGMA</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">h</span> <span class="o">=</span> <span class="n">SaliencyConfig</span><span class="o">.</span><span class="n">LARK_H</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="SalienceMap.compute_salience"><a class="viewcode-back" href="../ecosampling/salience_map.html#salience_map.SalienceMap.compute_salience">[docs]</a>    <span class="k">def</span> <span class="nf">compute_salience</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feature_map</span><span class="p">,</span> <span class="n">frame_sampling</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;A wrapper for salience computation.</span>
+
+<span class="sd">        The function is a simple wrapper for salience computation. Executes some kind</span>
+<span class="sd">        of salience computation algorithm which is defined from the parameter</span>
+<span class="sd">        sal_type by calling the appropriate function. Here for simplicity only</span>
+<span class="sd">        the 3-D SELF RESEMBLANCE SPATIO TEMPORAL SALIENCY method has been considered.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            f_map (matrix): the foveated feature map</span>
+<span class="sd">            seq (matrix): the foveated sequence of frames</span>
+<span class="sd">            sal_type (string): the salience computation method</span>
+<span class="sd">            s_param (struct): the salience computation parameters</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            s_map (matrix): the salience map on the current frame</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotImplementedError: if the salience computation method is not implemented.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            Any kind of salience or oriority map computation will do:</span>
+<span class="sd">            bottom-up, top-down, etc.If other methods need to be experimented,</span>
+<span class="sd">            then you should extend the control structure.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; sMap  = esComputeSalience(foveated_fMap, seq, &#39;3DLARK_SELFRESEMBLANCE&#39;, s_param);</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">verbose</span><span class="p">(</span><span class="s1">&#39;Sample a saliency map&#39;</span><span class="p">)</span>
+        <span class="n">s_map</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sal_type</span> <span class="o">==</span> <span class="s1">&#39;3DLARK_SELFRESEMBLANCE&#39;</span><span class="p">:</span>
+            <span class="c1"># Compute 3-D SELF RESEMBLANCE SPATIO TEMPORAL SALIENCY</span>
+            <span class="n">salience_method</span> <span class="o">=</span> <span class="n">SelfRessemblance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wsize</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">wsize_t</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">h</span><span class="p">)</span>
+            <span class="n">sm</span> <span class="o">=</span> <span class="n">salience_method</span><span class="o">.</span><span class="n">space_time_saliency_map</span><span class="p">(</span><span class="n">feature_map</span><span class="p">)</span>
+            <span class="c1"># Salience on the current frame</span>
+            <span class="n">s_map</span> <span class="o">=</span> <span class="n">sm</span><span class="p">[:,:,</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">s_map</span> <span class="o">=</span> <span class="n">frame_sampling</span><span class="o">.</span><span class="n">frame_resize_orginal</span><span class="p">(</span><span class="n">s_map</span><span class="p">[:,])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;UNKNOWN SALIENCE COMPUTATION TYPE&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">show</span> <span class="o">=</span> <span class="n">s_map</span>
+        <span class="k">return</span> <span class="n">s_map</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Giuseppe Boccignone, Renato Nobre.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

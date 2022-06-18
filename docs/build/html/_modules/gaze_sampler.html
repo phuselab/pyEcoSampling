@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gaze_sampler &mdash; Eco Sampling 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html">
+            <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user/introduction.html">Ecological Sampling Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/config.html">Configuration file</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">EcoSampling Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/generate_scanpath.html">Generate Scanpath</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/frame_processor.html">Frame Processor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/salience_map.html">Salience Map</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/feature_map.html">Feature Map</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/proto_parameters.html">Proto Parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/interest_points.html">Interest Points</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/complexity.html">Complexity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/action_selector.html">Action Selector</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/gaze_sampler.html">Gaze Sampler</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Salience Backends</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/self_resemblance.html">Self-Resemblance</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Utils</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../utils/statistics.html">Statistics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/helper.html">Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/logger.html">Logger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/plotter.html">Plotter</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Eco Sampling</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Module code</a> &raquo;</li>
+      <li>gaze_sampler</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gaze_sampler</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;File for the GazeSampler class.</span>
+
+<span class="sd">For further information, see also [1]_ and [2]_.</span>
+
+<span class="sd">Authors:</span>
+<span class="sd">    - Giuseppe Boccignone &lt;giuseppe.boccignone@unimi.it&gt;</span>
+<span class="sd">    - Renato Nobre &lt;renato.avellarnobre@studenti.unimi.it&gt;</span>
+
+<span class="sd">Changes:</span>
+<span class="sd">    - 12/12/2012  First Edition Matlab</span>
+<span class="sd">    - 31/05/2022  Python Edition</span>
+
+<span class="sd">References</span>
+<span class="sd">----------</span>
+<span class="sd">.. [1] `Boccignone, G., &amp; Ferraro, M. (2013). Ecological sampling of gaze shifts.</span>
+<span class="sd">    IEEE transactions on cybernetics, 44(2), 266-279.</span>
+<span class="sd">    &lt;https://ieeexplore.ieee.org/abstract/document/6502674&gt;`_</span>
+<span class="sd">.. [2] `G. Boccignone and M. Ferraro, The active sampling of gaze-shifts,</span>
+<span class="sd">    in Image Analysis and Processing ICIAP 2011, ser. Lecture Notes in Computer Science,</span>
+<span class="sd">    G. Maino and G. Foresti, Eds. Springer Berlin / Heidelberg, 2011, vol. 6978, pp. 187?196.</span>
+<span class="sd">    &lt;https://ieeexplore.ieee.org/abstract/document/6502674&gt;`_</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">config</span> <span class="kn">import</span> <span class="n">GazeConfig</span><span class="p">,</span> <span class="n">IPConfig</span>
+<span class="kn">from</span> <span class="nn">utils.logger</span> <span class="kn">import</span> <span class="n">Logger</span>
+<span class="kn">from</span> <span class="nn">scipy.spatial</span> <span class="kn">import</span> <span class="n">KDTree</span><span class="p">,</span> <span class="n">cKDTree</span>
+<span class="kn">from</span> <span class="nn">utils.statistics</span> <span class="kn">import</span> <span class="n">sample_multivariate</span><span class="p">,</span> <span class="n">sample_levy_stable</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">Logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GazeSampler"><a class="viewcode-back" href="../ecosampling/gaze_sampler.html#gaze_sampler.GazeSampler">[docs]</a><span class="k">class</span> <span class="nc">GazeSampler</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Compute the future Focus of Attention, using gaze sampling.</span>
+
+<span class="sd">    Function computing, using gaze attractors, the actual gaze relocation by</span>
+<span class="sd">    sampling the appropriate noise parameters from a mixture of alpha-stable distributions</span>
+<span class="sd">    as a function of the oculomotor state, The parameters are used to propose one or multiple</span>
+<span class="sd">    candidate gaze shifts actually implemented by calling for ``_langevin_sampling``,</span>
+<span class="sd">    which performs the Langevin step. Eventually decides and sets the actual shift</span>
+<span class="sd">    to the new Focus of Attention.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        start_nu (np.array): vector of the starting probabilities for the Dirichlet distribution.</span>
+<span class="sd">        start_foa (np.array): vector of the starting FOA coordinates.</span>
+<span class="sd">        num_internalsim (int): maximum allowed number of candidate new  gaze position r_new</span>
+<span class="sd">        max_numattempts (int): maximum number of attempts to sample a new valid gaze position.</span>
+<span class="sd">        simple_attractors (bool): if True, the attractors are set to the FOA.</span>
+<span class="sd">        alpha (float): alpha parameter of the stable distribution.</span>
+<span class="sd">        beta (float): beta parameter of the stable distribution.</span>
+<span class="sd">        gamma (float): gamma parameter of the stable distribution.</span>
+<span class="sd">        delta (float): delta parameter of the stable distribution.</span>
+<span class="sd">        foa_size (int): size of the FOA.</span>
+<span class="sd">        frame_sampling (FrameSampling): frame sampling object.</span>
+<span class="sd">        ip_sampler (IPSampler): ip sampling object.</span>
+<span class="sd">        num_proto (int): number of prototypes.</span>
+<span class="sd">        landscape (dict): The parameters for setting the landscape representation.</span>
+<span class="sd">        candidate_foa (np.array): candidate FOA coordinates.</span>
+<span class="sd">        candx (np.array): candidate FOA x coordinates.</span>
+<span class="sd">        candy (np.array): candidate FOA y coordinates.</span>
+<span class="sd">        show (np.ndarray): visualization mask of the FOA.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        frame_sampling (FrameSampling): frame sampling object</span>
+<span class="sd">        proto_params (ProtoParams): proto params object</span>
+<span class="sd">        ip_sampler (IPSampler): ip sampler object</span>
+<span class="sd">        hist_mat (np.array): histogram matrix</span>
+<span class="sd">        num_proto (int): number of proto-objects</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        NotImplementedError: No methods defined for setting the first FOA</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame_sampling</span><span class="p">,</span> <span class="n">proto_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ip_sampler</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hist_mat</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_proto</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+
+        <span class="c1"># Starting Values</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_nu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">GazeConfig</span><span class="o">.</span><span class="n">FIRST_FOA_ON_CENTER</span><span class="p">:</span>
+            <span class="n">x_center</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">frame_sampling</span><span class="o">.</span><span class="n">n_rows</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">y_center</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">frame_sampling</span><span class="o">.</span><span class="n">n_cols</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;No methods defined for setting the first FOA&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Instance values</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_foa</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x_center</span><span class="p">,</span> <span class="n">y_center</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_internalsim</span> <span class="o">=</span> <span class="n">GazeConfig</span><span class="o">.</span><span class="n">NUM_INTERNALSIM</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_numattempts</span> <span class="o">=</span> <span class="n">GazeConfig</span><span class="o">.</span><span class="n">MAX_NUMATTEMPTS</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simple_attractors</span> <span class="o">=</span> <span class="n">GazeConfig</span><span class="o">.</span><span class="n">SIMPLE_ATTRACTOR</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">GazeConfig</span><span class="o">.</span><span class="n">ALPHA_STABLE</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">=</span> <span class="n">GazeConfig</span><span class="o">.</span><span class="n">BETA_STABLE</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span> <span class="o">=</span> <span class="n">GazeConfig</span><span class="o">.</span><span class="n">GAMMA_STABLE</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">delta</span> <span class="o">=</span> <span class="n">GazeConfig</span><span class="o">.</span><span class="n">DELTA_STABLE</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">foa_size</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">frame_sampling</span><span class="o">.</span><span class="n">n_rows</span><span class="p">,</span>
+                                  <span class="n">frame_sampling</span><span class="o">.</span><span class="n">n_cols</span><span class="p">)</span> <span class="o">/</span> <span class="mi">6</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_sampling</span> <span class="o">=</span> <span class="n">frame_sampling</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ip_sampler</span> <span class="o">=</span> <span class="n">ip_sampler</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_proto</span> <span class="o">=</span> <span class="n">num_proto</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">candidate_foa</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">candx</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">candy</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Landscape Configuration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">landscape</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_proto</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">landscape</span><span class="p">[</span><span class="s2">&quot;area_proto&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">proto_params</span><span class="o">.</span><span class="n">area_proto</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">landscape</span><span class="p">[</span><span class="s2">&quot;proto_centers&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">proto_params</span><span class="o">.</span><span class="n">proto_centers</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">landscape</span><span class="p">[</span><span class="s2">&quot;histmat&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">hist_mat</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">landscape</span><span class="p">[</span><span class="s2">&quot;xbinsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">IPConfig</span><span class="o">.</span><span class="n">X_BIN_SIZE</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">landscape</span><span class="p">[</span><span class="s2">&quot;ybinsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">IPConfig</span><span class="o">.</span><span class="n">Y_BIN_SIZE</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">landscape</span><span class="p">[</span><span class="s2">&quot;NMAX&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">GazeConfig</span><span class="o">.</span><span class="n">NMAX</span>
+
+
+<div class="viewcode-block" id="GazeSampler.sample_gaze_shift"><a class="viewcode-back" href="../ecosampling/gaze_sampler.html#gaze_sampler.GazeSampler.sample_gaze_shift">[docs]</a>    <span class="k">def</span> <span class="nf">sample_gaze_shift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">pred_foa</span><span class="p">,</span> <span class="n">dir_old</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sampling the gaze shift.</span>
+
+<span class="sd">        Setting the attractors of the FOA, sampling the FOA, which is</span>
+<span class="sd">        returned together with the simulated candidates</span>
+<span class="sd">        setting the oculomotor state z parameter</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            z (int): Index of kind of gaze shift</span>
+<span class="sd">            pred_foa (np.ndarray): Previous FOA coordinates</span>
+<span class="sd">            dir_old (float): Value of the previous direction</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            final_foa (np.ndarray): Final FOA coordinates</span>
+<span class="sd">            dir_new (float): Value of the new direction</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">verbose</span><span class="p">(</span><span class="s2">&quot;Sample gaze point&quot;</span><span class="p">)</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+
+        <span class="n">foa_attractors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_gaze_attractors</span><span class="p">(</span><span class="n">pred_foa</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">verbose</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;FOA attractors: </span><span class="si">{</span><span class="n">foa_attractors</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">final_foa</span><span class="p">,</span> <span class="n">dir_new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gaze_sampling</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">foa_attractors</span><span class="p">,</span> <span class="n">pred_foa</span><span class="p">,</span> <span class="n">dir_old</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">show</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_circular_mask</span><span class="p">(</span><span class="n">final_foa</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">final_foa</span><span class="p">,</span> <span class="n">dir_new</span></div>
+
+
+
+<div class="viewcode-block" id="GazeSampler._get_gaze_attractors"><a class="viewcode-back" href="../ecosampling/gaze_sampler.html#gaze_sampler.GazeSampler._get_gaze_attractors">[docs]</a>    <span class="k">def</span> <span class="nf">_get_gaze_attractors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pred_foa</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Samples the possible gaze attractors.</span>
+
+<span class="sd">        Function computing possible ONE or MULTIPLE gaze attractors</span>
+<span class="sd">        If a landscape of proto-objects is given then their centers are used as described in [1].</span>
+<span class="sd">        Otherwise attractors are determined through the IPs sampled from saliency as in [2].</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            pred_foa (np.ndarray): (1, 2) vector representing the previous FoA coordinatesxs</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            foa_attractors (np.ndarray): (N_V, 2) matrix representing the FoA attractors</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># If true: if multiple maxima, choose the first closest one</span>
+        <span class="c1"># to the previous FOA for stability purposes</span>
+        <span class="n">MAKE_STABLE</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># Setting the landscape</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_proto</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">area_proto</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">landscape</span><span class="p">[</span><span class="s2">&quot;area_proto&quot;</span><span class="p">]</span>
+            <span class="n">prot_object_centers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">landscape</span><span class="p">[</span><span class="s2">&quot;proto_centers&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">histmat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">landscape</span><span class="p">[</span><span class="s2">&quot;histmat&quot;</span><span class="p">]</span>
+            <span class="n">xbin_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">landscape</span><span class="p">[</span><span class="s2">&quot;xbinsize&quot;</span><span class="p">]</span>
+            <span class="n">ybin_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">landscape</span><span class="p">[</span><span class="s2">&quot;ybinsize&quot;</span><span class="p">]</span>
+            <span class="n">NMAX</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">landscape</span><span class="p">[</span><span class="s2">&quot;NMAX&quot;</span><span class="p">]</span>
+
+        <span class="c1"># Landscape Evaluation</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">simple_attractors</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_proto</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># Patch of maximum area to set at least 1 potential candidateFOA mean</span>
+                <span class="n">index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">area_proto</span><span class="p">)</span>
+                <span class="c1"># Center fo the Patch</span>
+                <span class="n">foa_x</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">prot_object_centers</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+                <span class="n">foa_y</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">prot_object_centers</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Histogram maximum to set at least 1 potential candidateFOA mean</span>
+                <span class="n">max_hist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">histmat</span><span class="p">))</span>
+                <span class="n">x_max</span><span class="p">,</span> <span class="n">y_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">histmat</span> <span class="o">==</span> <span class="n">max_hist</span><span class="p">)</span>
+                <span class="n">k</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="n">MAKE_STABLE</span><span class="p">:</span>
+                    <span class="c1"># If multiple maxima, choose the first closest one</span>
+                    <span class="c1"># to the previous FOA for stability purposes</span>
+                    <span class="n">X</span> <span class="o">=</span> <span class="p">[</span><span class="n">x_max</span><span class="p">,</span> <span class="n">y_max</span><span class="p">]</span>
+                    <span class="n">XI</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flip</span><span class="p">(</span><span class="n">pred_foa</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+                    <span class="n">kdt</span> <span class="o">=</span> <span class="n">KDTree</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+                    <span class="n">_</span><span class="p">,</span> <span class="n">k</span> <span class="o">=</span> <span class="n">kdt</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">XI</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+
+                    <span class="c1"># This actually is the column index in the image bitmap</span>
+                    <span class="n">foa_x</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">x_max</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">xbin_size</span> <span class="o">-</span> <span class="n">xbin_size</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+                    <span class="c1"># This actually is the row index in the image bitmap!</span>
+                    <span class="n">foa_y</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">y_max</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">ybin_size</span> <span class="o">-</span> <span class="n">ybin_size</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+
+                    <span class="c1"># Swap image coordinates</span>
+                    <span class="n">foa_x</span><span class="p">,</span> <span class="n">foa_y</span> <span class="o">=</span> <span class="n">foa_y</span><span class="p">,</span> <span class="n">foa_x</span>
+
+            <span class="c1"># Now we have at least 1 potential candidate FOA</span>
+            <span class="c1"># simple one point attractor: use the candidate FOA</span>
+            <span class="n">foa_attractors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">foa_x</span><span class="p">,</span> <span class="n">foa_y</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Multipoint attractor</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_proto</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">foa_attractors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">prot_object_centers</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+                <span class="n">foa_attractors</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">prot_object_centers</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">round</span><span class="p">()</span>
+                <span class="n">foa_attractors</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">prot_object_centers</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">round</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># find first  NMAX to determine the total attractor potential in LANGEVIN:</span>
+                <span class="n">ms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">histmat</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">rx</span><span class="p">,</span> <span class="n">cx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unravel_index</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">histmat</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span> <span class="n">histmat</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+                <span class="c1"># row col val: row col inverted with respect to image coord</span>
+                <span class="n">foa_attractors_all</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">rx</span><span class="p">[:,</span><span class="kc">None</span><span class="p">],</span> <span class="n">cx</span><span class="p">[:,</span><span class="kc">None</span><span class="p">],</span> <span class="n">ms</span><span class="p">[:,</span><span class="kc">None</span><span class="p">]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">foa_attractors_all</span> <span class="o">=</span> <span class="n">foa_attractors_all</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">NMAX</span><span class="p">,:]</span>
+                <span class="c1"># Retains only row col</span>
+                <span class="n">foa_attractors</span> <span class="o">=</span> <span class="n">foa_attractors_all</span><span class="p">[:,</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>
+                <span class="c1"># This actually is the column index in the image bitmap</span>
+                <span class="n">foa_attractors</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">foa_attractors</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">xbin_size</span> <span class="o">-</span> <span class="n">xbin_size</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">()</span>
+                <span class="c1"># This actually is the column index in the image bitmap!</span>
+                <span class="n">foa_attractors</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">foa_attractors</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">ybin_size</span> <span class="o">-</span> <span class="n">ybin_size</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">()</span>
+
+                <span class="c1"># Swap image coordinates</span>
+                <span class="n">foa_attractors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flip</span><span class="p">(</span><span class="n">foa_attractors</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">foa_attractors</span></div>
+
+
+<div class="viewcode-block" id="GazeSampler._gaze_sampling"><a class="viewcode-back" href="../ecosampling/gaze_sampler.html#gaze_sampler.GazeSampler._gaze_sampling">[docs]</a>    <span class="k">def</span> <span class="nf">_gaze_sampling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">foa_attractors</span><span class="p">,</span> <span class="n">pred_foa</span><span class="p">,</span> <span class="n">dir_old</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Samples the new gaze position</span>
+
+<span class="sd">        Function computing the actual gaze relocation by using a</span>
+<span class="sd">        Langevin like stochastic differential equation,</span>
+<span class="sd">        whose noise source is sampled from a mixture of alpha-stable distributions.</span>
+<span class="sd">        By using NUM_INTERNALSIM generates an equal number of candidate</span>
+<span class="sd">        parameters, that is of candidate new possible shifts which are then</span>
+<span class="sd">        passed to the _langevin_sampling() function, which executes the</span>
+<span class="sd">        Langevin step</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            If a valid new gaze point is returned this is set as the final FOA</span>
+<span class="sd">            Otherwise, a gaussian noise &quot;perturbated&quot; candidate FOA is tried.</span>
+<span class="sd">            The dafault solution, if all goes wrong, is to keep the old FOA</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            z (int): Kind of gaze shift</span>
+<span class="sd">            foa_attractors (np.ndarray): (N_V, 2) matrix representing the FoA attractors</span>
+<span class="sd">            pred_foa (np.ndarray): (1, 2) vector representing the previous FoA coordinatesxs</span>
+<span class="sd">            dir_old (float): Value of the previous direction</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            final_foa (np.ndarray): (1, 2) vector representing the new FoA coordinates</span>
+<span class="sd">            dir_new (float): Value of the new direction</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">nrow</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame_sampling</span><span class="o">.</span><span class="n">n_rows</span>
+        <span class="n">ncol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame_sampling</span><span class="o">.</span><span class="n">n_cols</span>
+
+        <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">foa_size</span> <span class="o">/</span> <span class="mi">4</span>
+
+        <span class="c1"># Direction Sampling - Uniform random sampling</span>
+        <span class="n">dir_new</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_internalsim</span><span class="p">)</span>
+
+        <span class="c1"># Shaping the potential of Langevin equation</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">simple_attractors</span><span class="p">:</span>
+            <span class="n">candidate_foa</span> <span class="o">=</span> <span class="n">foa_attractors</span><span class="o">.</span><span class="n">round</span><span class="p">()</span>
+            <span class="n">dhx</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">pred_foa</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">foa_attractors</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">dhy</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">pred_foa</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">foa_attractors</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Set the center of mass of attractors as a potential candidate FOA</span>
+            <span class="n">candidate_foa</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">foa_attractors</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">/</span><span class="n">foa_attractors</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">round</span><span class="p">()</span>
+            <span class="n">dhx</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">pred_foa</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">foa_attractors</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">dhy</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">pred_foa</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">foa_attractors</span><span class="p">[:,</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">T</span> <span class="o">=</span> <span class="mi">1</span> <span class="c1"># Maximum time</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="mi">30</span>
+
+        <span class="n">sde_param</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># SDE new direction of the gaze shift</span>
+        <span class="n">sde_param</span><span class="p">[</span><span class="s2">&quot;dir_new&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dir_new</span>
+        <span class="c1"># SDE gradient potential x and y coordinate</span>
+        <span class="n">sde_param</span><span class="p">[</span><span class="s2">&quot;dHx&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dhx</span><span class="p">)</span>
+        <span class="n">sde_param</span><span class="p">[</span><span class="s2">&quot;dHy&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dhy</span><span class="p">)</span>
+        <span class="c1"># SDE integration Time step</span>
+        <span class="n">sde_param</span><span class="p">[</span><span class="s2">&quot;h&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">T</span> <span class="o">/</span> <span class="n">N</span>
+        <span class="c1"># SDE alpha-stable characteristic exponent parameter</span>
+        <span class="n">sde_param</span><span class="p">[</span><span class="s2">&quot;alpha&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">[</span><span class="n">z</span><span class="p">]</span>
+        <span class="c1"># SDE alpha-stable scale parameter</span>
+        <span class="n">sde_param</span><span class="p">[</span><span class="s2">&quot;gamma&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span><span class="p">[</span><span class="n">z</span><span class="p">]</span>
+
+        <span class="n">accept</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">count_attempts</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># Cycling until a sampled FOA is accepted</span>
+        <span class="k">while</span> <span class="p">(</span><span class="ow">not</span> <span class="n">accept</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">count_attempts</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_numattempts</span><span class="p">):</span>
+            <span class="c1"># setting alpha-stable distribution parameters according to the</span>
+            <span class="c1"># regime specified by rv z</span>
+            <span class="n">xi</span> <span class="o">=</span> <span class="n">sample_levy_stable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">[</span><span class="n">z</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">[</span><span class="n">z</span><span class="p">],</span>
+                                    <span class="n">scale</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gamma</span><span class="p">[</span><span class="n">z</span><span class="p">],</span> <span class="n">loc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">delta</span><span class="p">[</span><span class="n">z</span><span class="p">],</span>
+                                    <span class="n">size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">num_internalsim</span><span class="p">)</span>
+
+            <span class="c1"># Setting Langevin SDE parameters</span>
+            <span class="c1"># SDE alpha-stable component</span>
+            <span class="n">sde_param</span><span class="p">[</span><span class="s2">&quot;xi&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">xi</span>
+
+            <span class="c1"># Langevin gaze shift sampling</span>
+            <span class="c1"># final_foa is the sampled new Gaze position</span>
+            <span class="n">final_foa</span><span class="p">,</span> <span class="n">dir_new</span><span class="p">,</span> <span class="n">accept</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_langevin_sampling</span><span class="p">(</span><span class="n">sde_param</span><span class="p">,</span> <span class="n">pred_foa</span><span class="p">)</span>
+            <span class="n">count_attempts</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">verbose</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Trying...count_attempts = </span><span class="si">{</span><span class="n">count_attempts</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># if something didn&#39;t work for some reason use a perturbed argmax solution</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">accept</span><span class="p">:</span>
+            <span class="c1"># For normal regime simple choice on most salient point</span>
+            <span class="n">new</span> <span class="o">=</span> <span class="n">sample_multivariate</span><span class="p">(</span><span class="n">candidate_foa</span><span class="o">.</span><span class="n">conj</span><span class="p">()</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="n">s</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">new</span> <span class="o">=</span> <span class="n">new</span><span class="o">.</span><span class="n">conj</span><span class="p">()</span><span class="o">.</span><span class="n">T</span>
+            <span class="n">validcord</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">((</span><span class="n">new</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">new</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">nrow</span><span class="p">)</span> <span class="o">&amp;</span>
+                                   <span class="p">(</span><span class="n">new</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">new</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">ncol</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="n">logger</span><span class="o">.</span><span class="n">verbose</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Sampled </span><span class="si">{</span><span class="n">validcord</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s1"> valid candidate FOAs from normal&#39;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">validcord</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">final_foa</span> <span class="o">=</span> <span class="n">new</span>
+                <span class="n">accept</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">verbose</span><span class="p">(</span><span class="s1">&#39;DEFAULT SOLUTION: Perturbed ArgMax solution!!&#39;</span><span class="p">)</span>
+
+        <span class="c1"># The last chance: use the previous FOA</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">accept</span><span class="p">:</span>
+            <span class="n">final_foa</span> <span class="o">=</span> <span class="n">pred_foa</span>
+            <span class="n">accept</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;BACKUP SOLUTION!!!!!! Keeping OLD FOA&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">candidate_foa</span> <span class="o">=</span> <span class="n">candidate_foa</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">verbose</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Current FOA </span><span class="si">{</span><span class="n">pred_foa</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">pred_foa</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">verbose</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Candidate Max FOA </span><span class="si">{</span><span class="n">candidate_foa</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">candidate_foa</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">verbose</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Old dir </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">dir_old</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">verbose</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;New dir </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">dir_new</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">verbose</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Final FOA </span><span class="si">{</span><span class="n">final_foa</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">final_foa</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">dis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">final_foa</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span> <span class="n">candidate_foa</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">final_foa</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span> <span class="n">candidate_foa</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">verbose</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Distance from candidate FOA </span><span class="si">{</span><span class="n">dis</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">verbose</span><span class="p">(</span><span class="s1">&#39;-----FOA SAMPLING TERMINATED </span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">final_foa</span><span class="p">,</span> <span class="n">dir_new</span></div>
+
+<div class="viewcode-block" id="GazeSampler._langevin_sampling"><a class="viewcode-back" href="../ecosampling/gaze_sampler.html#gaze_sampler.GazeSampler._langevin_sampling">[docs]</a>    <span class="k">def</span> <span class="nf">_langevin_sampling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sde_param</span><span class="p">,</span> <span class="n">pred_foa</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Langevin step for sampling the new gaze position.</span>
+
+<span class="sd">        Implements a step of the Langevin like stochastic</span>
+<span class="sd">        differential equation (SDE), whose noise source is sampled</span>
+<span class="sd">        from a mixture of alpha-stable distributions.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            sde_param (dict): Langevin SDE parameters::</span>
+
+<span class="sd">                {</span>
+<span class="sd">                    &quot;dHx&quot;: SDE gradient potential x coordinate,</span>
+<span class="sd">                    &quot;dHy&quot;: SDE gradient potential y coordinate,</span>
+<span class="sd">                    &quot;xi&quot;: SDE alpha-stable component</span>
+<span class="sd">                    &quot;dir_new&quot;: SDE new direction of the gaze shift</span>
+<span class="sd">                    &quot;alpha&quot;: SDE alpha-stable characteristic exponent parameter</span>
+<span class="sd">                    &quot;gamma&quot;: SDE alpha-stable scale parameter</span>
+<span class="sd">                    &quot;h&quot;: SDE integration step</span>
+<span class="sd">                }</span>
+
+<span class="sd">            pred_foa (np.ndarray): Previous FOA coordinates</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            final_foa (np.ndarray): (1, 2) vector representing the new FoA coordinates</span>
+<span class="sd">            dir_new (float): Value of the new direction</span>
+<span class="sd">            accept (bool): 1 if the new FOA is accepted, 0 otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Rough initialization: nothing changes</span>
+        <span class="n">final_foa</span> <span class="o">=</span> <span class="n">pred_foa</span>
+
+        <span class="n">xCordIP</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ip_sampler</span><span class="o">.</span><span class="n">xCoord</span>
+        <span class="n">yCordIP</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ip_sampler</span><span class="o">.</span><span class="n">yCoord</span>
+        <span class="n">nrow</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame_sampling</span><span class="o">.</span><span class="n">n_rows</span>
+        <span class="n">ncol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame_sampling</span><span class="o">.</span><span class="n">n_cols</span>
+
+        <span class="n">candx</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">candy</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">accept</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="n">dHx</span> <span class="o">=</span> <span class="n">sde_param</span><span class="p">[</span><span class="s2">&quot;dHx&quot;</span><span class="p">]</span>
+        <span class="n">dHy</span> <span class="o">=</span> <span class="n">sde_param</span><span class="p">[</span><span class="s2">&quot;dHy&quot;</span><span class="p">]</span>
+        <span class="n">xi</span> <span class="o">=</span> <span class="n">sde_param</span><span class="p">[</span><span class="s2">&quot;xi&quot;</span><span class="p">]</span>
+        <span class="n">dir_new</span> <span class="o">=</span> <span class="n">sde_param</span><span class="p">[</span><span class="s2">&quot;dir_new&quot;</span><span class="p">]</span>
+        <span class="n">alpha_stable</span> <span class="o">=</span> <span class="n">sde_param</span><span class="p">[</span><span class="s2">&quot;alpha&quot;</span><span class="p">]</span>
+        <span class="n">gamma_stable</span> <span class="o">=</span> <span class="n">sde_param</span><span class="p">[</span><span class="s2">&quot;gamma&quot;</span><span class="p">]</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="n">sde_param</span><span class="p">[</span><span class="s2">&quot;h&quot;</span><span class="p">]</span>
+
+        <span class="c1"># Sampling the shift dx, dy on the basis of the generalized discretized Langevin</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">gamma_stable</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">h</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">alpha_stable</span><span class="p">))</span><span class="o">*</span><span class="n">xi</span>
+        <span class="n">dx</span> <span class="o">=</span> <span class="n">dHx</span><span class="o">*</span><span class="n">h</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">dir_new</span><span class="p">))</span>
+        <span class="n">dy</span> <span class="o">=</span> <span class="n">dHy</span><span class="o">*</span><span class="n">h</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">dir_new</span><span class="p">))</span>
+
+        <span class="c1"># Candidate new FOA</span>
+        <span class="n">tryFOA_x</span> <span class="o">=</span> <span class="p">(</span><span class="n">pred_foa</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">dx</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">()</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+        <span class="n">tryFOA_y</span> <span class="o">=</span> <span class="p">(</span><span class="n">pred_foa</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">dy</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">()</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+
+        <span class="c1"># Verifies if the candidate shift is located within the image</span>
+        <span class="n">validcord</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(((</span><span class="n">tryFOA_x</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">tryFOA_x</span> <span class="o">&lt;</span> <span class="n">nrow</span><span class="p">)</span> <span class="o">&amp;</span>
+                                <span class="p">(</span><span class="n">tryFOA_y</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">tryFOA_y</span> <span class="o">&lt;</span> <span class="n">ncol</span><span class="p">)))[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">verbose</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Sampled </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">validcord</span><span class="p">)</span><span class="si">}</span><span class="s2"> valid candidate FOAs&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">validcord</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">tryFOA_x</span> <span class="o">=</span> <span class="n">tryFOA_x</span><span class="p">[</span><span class="n">validcord</span><span class="p">]</span><span class="o">.</span><span class="n">round</span><span class="p">()</span>
+            <span class="n">tryFOA_y</span> <span class="o">=</span> <span class="n">tryFOA_y</span><span class="p">[</span><span class="n">validcord</span><span class="p">]</span><span class="o">.</span><span class="n">round</span><span class="p">()</span>
+            <span class="n">NcandFOAs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tryFOA_y</span><span class="p">)</span>
+            <span class="n">candx</span><span class="p">,</span> <span class="n">candy</span> <span class="o">=</span> <span class="n">tryFOA_x</span><span class="p">,</span> <span class="n">tryFOA_y</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">validcord</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># Retains only the valid ones</span>
+                <span class="n">final_foa</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">final_foa</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">candx</span><span class="p">,</span> <span class="n">candy</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Retains only the valid ones</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">verbose</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Sampled </span><span class="si">{</span><span class="n">NcandFOAs</span><span class="si">}</span><span class="s1"> candidate new FOAS&#39;</span><span class="p">)</span>
+
+                <span class="c1"># Computes the local visibility with respect to the FOA</span>
+                <span class="n">foaSize</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">nrow</span><span class="p">,</span><span class="n">ncol</span><span class="p">)</span> <span class="o">/</span> <span class="mi">6</span><span class="p">)</span>
+                <span class="n">visibility_radius</span> <span class="o">=</span> <span class="mf">1.5</span><span class="o">*</span><span class="n">foaSize</span>
+
+                <span class="c1"># Choose the best FOA among the simulated</span>
+                <span class="c1"># For each simulated FOA, computes how many preys /IPs</span>
+                <span class="c1"># are within the visual search range. The IP which can get more preys survives.</span>
+                <span class="n">sampled_ip</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">xCordIP</span><span class="p">[:,</span><span class="kc">None</span><span class="p">],</span> <span class="n">yCordIP</span><span class="p">[:,</span><span class="kc">None</span><span class="p">]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">candidate_foas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">tryFOA_x</span><span class="p">[:,</span><span class="kc">None</span><span class="p">],</span> <span class="n">tryFOA_y</span><span class="p">[:,</span><span class="kc">None</span><span class="p">]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">verbose</span><span class="p">(</span><span class="s1">&#39;Choosing the best one&#39;</span><span class="p">)</span>
+
+                <span class="c1"># Performs a range search via kd-tree</span>
+                <span class="n">points_kdtree</span> <span class="o">=</span> <span class="n">cKDTree</span><span class="p">(</span><span class="n">sampled_ip</span><span class="p">)</span>
+                <span class="n">idxIP</span> <span class="o">=</span> <span class="n">points_kdtree</span><span class="o">.</span><span class="n">query_ball_point</span><span class="p">(</span><span class="n">candidate_foas</span><span class="p">,</span> <span class="n">visibility_radius</span><span class="p">)</span>
+
+                <span class="c1"># Get the best candidate</span>
+                <span class="n">maxnIP</span><span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+                <span class="k">for</span> <span class="n">nCand</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">NcandFOAs</span><span class="p">):</span>
+                    <span class="n">temp</span> <span class="o">=</span> <span class="n">idxIP</span><span class="p">[</span><span class="n">nCand</span><span class="p">]</span>
+                    <span class="n">len_temp</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">len_temp</span> <span class="o">&gt;</span> <span class="n">maxnIP</span><span class="p">):</span>
+                        <span class="n">maxnIP</span> <span class="o">=</span> <span class="n">len_temp</span>
+                        <span class="n">bestCandID</span> <span class="o">=</span> <span class="n">nCand</span>
+
+                <span class="n">final_foa</span> <span class="o">=</span> <span class="n">candidate_foas</span><span class="p">[</span><span class="n">bestCandID</span><span class="p">,</span> <span class="p">:]</span>
+
+            <span class="n">final_foa</span> <span class="o">=</span> <span class="n">final_foa</span><span class="o">.</span><span class="n">round</span><span class="p">()</span>
+            <span class="n">accept</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">candx</span> <span class="o">=</span> <span class="n">candx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">candy</span> <span class="o">=</span> <span class="n">candy</span>
+        <span class="k">return</span> <span class="n">final_foa</span><span class="p">,</span> <span class="n">dir_new</span><span class="p">,</span> <span class="n">accept</span></div>
+
+<div class="viewcode-block" id="GazeSampler._create_circular_mask"><a class="viewcode-back" href="../ecosampling/gaze_sampler.html#gaze_sampler.GazeSampler._create_circular_mask">[docs]</a>    <span class="k">def</span> <span class="nf">_create_circular_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">center</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Creates a circular mask visualization of the FOA.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            center (np.ndarray): (1, 2) vector representing the center of the FOA</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            mask (np.ndarray): (h, w) binary mask</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame_sampling</span><span class="o">.</span><span class="n">n_rows</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame_sampling</span><span class="o">.</span><span class="n">n_cols</span>
+        <span class="n">radius</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">foa_size</span>
+
+        <span class="n">Y</span><span class="p">,</span> <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ogrid</span><span class="p">[:</span><span class="n">h</span><span class="p">,</span> <span class="p">:</span><span class="n">w</span><span class="p">]</span>
+        <span class="n">dist_from_center</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">X</span> <span class="o">-</span> <span class="n">center</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">Y</span><span class="o">-</span><span class="n">center</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">dist_from_center</span> <span class="o">&lt;=</span> <span class="n">radius</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_where</span><span class="p">(</span><span class="n">mask</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="n">mask</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">mask</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Giuseppe Boccignone, Renato Nobre.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

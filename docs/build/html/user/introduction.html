@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ecological Sampling Python &mdash; Eco Sampling 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="PyEcosampling API Usage Demo" href="api_usage.html" />
+    <link rel="prev" title="Welcome to Eco Sampling’s documentation!" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html">
+            <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Ecological Sampling Python</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#requirements">Requirements</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#installing-tkinter">Installing Tkinter</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#adding-your-data">Adding your data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#usage">Usage</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#running-as-an-application">Running as an Application</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#running-as-an-api">Running as an API</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#documentation-read-more">Documentation - Read More</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#citing">Citing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api_usage.html">PyEcosampling API Usage Demo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config.html">Configuration file</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">EcoSampling Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/generate_scanpath.html">Generate Scanpath</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/frame_processor.html">Frame Processor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/salience_map.html">Salience Map</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/feature_map.html">Feature Map</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/proto_parameters.html">Proto Parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/interest_points.html">Interest Points</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/complexity.html">Complexity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/action_selector.html">Action Selector</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/gaze_sampler.html">Gaze Sampler</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Salience Backends</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/self_resemblance.html">Self-Resemblance</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Utils</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../utils/statistics.html">Statistics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/helper.html">Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/logger.html">Logger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/plotter.html">Plotter</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Eco Sampling</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Ecological Sampling Python</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/user/introduction.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="ecological-sampling-python">
+<h1>Ecological Sampling Python<a class="headerlink" href="#ecological-sampling-python" title="Permalink to this headline"></a></h1>
+<a class="reference external image-reference" href="logo.svg"><img alt="logo" src="user/logo.svg" /></a>
+<p>The code is a simple demo of the Ecological Sampling (ES) method, which generates gaze shifts on video clips (frame sequences). It is a baseline implementation of the Ecological Sampling model described in
+<code class="docutils literal notranslate"><span class="pre">Boccignone</span> <span class="pre">&amp;</span> <span class="pre">Ferraro</span> <span class="pre">[1]</span></code>, a stochastic model of eye guidance
+The gaze shift mechanism is conceived as  an active random sampling that
+the “foraging eye” carries out upon the visual landscape, under the constraints set by the observable features and the global complexity of the landscape.
+The actual gaze relocation is driven by a stochastic differential equation
+whose noise source is sampled from a mixture of alpha-stable distributions.</p>
+<p>The sampling strategy allows to mimic a fundamental property of eye guidance:
+where we choose to look next at any given moment in time is not completely deterministic,
+but neither is it completely random</p>
+<p>The experiment consists in putting into action an artificial observer, generating a visual scanpath
+(a sequence of fixations, saccades or smooth pursuit) on an image sequence using a simple implementation of the
+ES method described in <code class="docutils literal notranslate"><span class="pre">Boccignone</span> <span class="pre">&amp;</span> <span class="pre">Ferraro</span> <span class="pre">[1]</span> <span class="pre">&amp;</span> <span class="pre">[2]</span></code>.</p>
+<a class="reference external image-reference" href="simulation.gif"><img alt="simulation" src="user/simulation.gif" /></a>
+<section id="requirements">
+<h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline"></a></h2>
+<p>The following are a list of basic requirements and tested OS for the ecosampling execution.</p>
+<ul class="simple">
+<li><p><strong>Python:</strong> Tested on &gt;= 3.8, but might work on previous versions as well</p></li>
+<li><p><strong>Tkinter:</strong> A GUI backend for matplotlib</p></li>
+<li><p><strong>macOS Monterey:</strong> Tested on version 12.4</p></li>
+<li><p><strong>Ubuntu 20:</strong> Tested on version</p></li>
+</ul>
+<section id="installing-tkinter">
+<h3>Installing Tkinter<a class="headerlink" href="#installing-tkinter" title="Permalink to this headline"></a></h3>
+<ul>
+<li><p><strong>Ubuntu via apt-get</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo apt-get install python3-tk
+</pre></div>
+</div>
+</li>
+<li><p><strong>macOS via Brew</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>brew install python-tk
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+</section>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline"></a></h2>
+<p>To create the software library and run the demos, given that your python is in the correct version and Tkinter is installed, clone the repository, enter the project root folder and install the project requirements:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ git clone https://github.com/phuselab/INMCA_Nobre
+$ <span class="nb">cd</span> INMCA_Nobre/
+$ pip install -r requirements.txt
+</pre></div>
+</div>
+</section>
+<section id="adding-your-data">
+<h2>Adding your data<a class="headerlink" href="#adding-your-data" title="Permalink to this headline"></a></h2>
+<p>A sample sequence for demo purpose is provided with the source code in the <code class="docutils literal notranslate"><span class="pre">data</span></code> directory. To add your own clips add a folder in the same directory.</p>
+<p>The folder that you add need to have the video as a sequence of ordered frames. To direct the execution of the application for your datafolder, change the configurations in <code class="docutils literal notranslate"><span class="pre">ecosampling/config.py</span></code>.</p>
+</section>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline"></a></h2>
+<p>Ecosampling might be used as a application stand alone or as an API to write your own gaze sampling script. Following are the methods for execution the application</p>
+<section id="running-as-an-application">
+<h3>Running as an Application<a class="headerlink" href="#running-as-an-application" title="Permalink to this headline"></a></h3>
+<p>To run the application as is you can run the following command on the root of the project:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python ecosampling
+</pre></div>
+</div>
+<p>This should be enough to generate all the gaze sampling and the fields of attention for your application.</p>
+<p>If you want to plasy around, change parameters, or try with your personalized data set, try changing the <code class="docutils literal notranslate"><span class="pre">ecosampling/config.py</span></code> file. Different gaze shifting behaviors can be obtained by playing with parameters in the configuration script.</p>
+</section>
+<section id="running-as-an-api">
+<h3>Running as an API<a class="headerlink" href="#running-as-an-api" title="Permalink to this headline"></a></h3>
+<p>Take a look on the notebook at <code class="docutils literal notranslate"><span class="pre">notebook/demo_api.ipynb</span></code>, to understand how to use the code as an API.</p>
+</section>
+</section>
+<section id="documentation-read-more">
+<h2>Documentation - Read More<a class="headerlink" href="#documentation-read-more" title="Permalink to this headline"></a></h2>
+<p>If you want in-depth understanding of how the project is organized or on the functioning of the API read the documentation provided as an Read the Docs website.</p>
+<p>To open the web documentation, open the file on the directly: <code class="docutils literal notranslate"><span class="pre">docs/build/index.html</span></code>.</p>
+</section>
+<section id="citing">
+<h2>Citing<a class="headerlink" href="#citing" title="Permalink to this headline"></a></h2>
+<p>To cite the current work follow the BibTeX formats:</p>
+<p><code class="docutils literal notranslate"><span class="pre">[1]</span> <span class="pre">G.</span> <span class="pre">Boccignone</span> <span class="pre">and</span> <span class="pre">M.</span> <span class="pre">Ferraro,</span> <span class="pre">Ecological</span> <span class="pre">Sampling</span> <span class="pre">of</span> <span class="pre">Gaze</span> <span class="pre">Shifts</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@article</span><span class="p">{</span><span class="n">BocFerSMCB2013</span><span class="p">,</span>
+   <span class="n">title</span><span class="o">=</span><span class="p">{</span><span class="n">Ecological</span> <span class="n">Sampling</span> <span class="n">of</span> <span class="n">Gaze</span> <span class="n">Shifts</span><span class="p">},</span>
+   <span class="n">author</span> <span class="o">=</span>  <span class="s2">&quot;Boccignone, Giuseppe and Ferraro, Mario&quot;</span><span class="p">,</span>
+   <span class="n">journal</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{IEEE}</span><span class="s2"> Trans. Systems Man Cybernetics - B&quot;</span><span class="p">,</span>
+   <span class="n">year</span><span class="o">=</span><span class="p">{</span><span class="mi">2013</span><span class="p">},</span>
+   <span class="n">pages</span><span class="o">=</span><span class="p">{</span><span class="mi">1</span><span class="o">-</span><span class="mi">1</span><span class="p">},</span>
+   <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;http://dx.doi.org/10.1109/TCYB.2013.2253460&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">[2]</span> <span class="pre">G.</span> <span class="pre">Boccignone</span> <span class="pre">and</span> <span class="pre">M.</span> <span class="pre">Ferraro,</span> <span class="pre">The</span> <span class="pre">active</span> <span class="pre">sampling</span> <span class="pre">of</span> <span class="pre">gaze-shifts</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@incollection</span><span class="p">{</span><span class="n">BocFerIciap2011</span><span class="p">,</span>
+   <span class="n">author</span> <span class="o">=</span> <span class="s2">&quot;Boccignone, G. and Ferraro, M.&quot;</span><span class="p">,</span>
+   <span class="n">title</span> <span class="o">=</span> <span class="p">{</span><span class="n">The</span> <span class="n">Active</span> <span class="n">Sampling</span> <span class="n">of</span> <span class="n">Gaze</span><span class="o">-</span><span class="n">Shifts</span><span class="p">},</span>
+   <span class="n">booktitle</span> <span class="o">=</span> <span class="p">{</span><span class="n">Image</span> <span class="n">Analysis</span> <span class="ow">and</span> <span class="n">Processingâ</span> <span class="n">ICIAP</span> <span class="mi">2011</span><span class="p">},</span>
+   <span class="n">series</span> <span class="o">=</span> <span class="p">{</span><span class="n">Lecture</span> <span class="n">Notes</span> <span class="ow">in</span> <span class="n">Computer</span> <span class="n">Science</span><span class="p">},</span>
+   <span class="n">editor</span> <span class="o">=</span> <span class="p">{</span><span class="n">Maino</span><span class="p">,</span> <span class="n">Giuseppe</span> <span class="ow">and</span> <span class="n">Foresti</span><span class="p">,</span> <span class="n">Gian</span><span class="p">},</span>
+   <span class="n">publisher</span> <span class="o">=</span> <span class="p">{</span><span class="n">Springer</span> <span class="n">Berlin</span> <span class="o">/</span> <span class="n">Heidelberg</span><span class="p">},</span>
+   <span class="n">pages</span> <span class="o">=</span> <span class="p">{</span><span class="mi">187</span><span class="o">-</span><span class="mi">196</span><span class="p">},</span>
+   <span class="n">volume</span> <span class="o">=</span> <span class="p">{</span><span class="mi">6978</span><span class="p">},</span>
+   <span class="n">year</span> <span class="o">=</span> <span class="p">{</span><span class="mi">2011</span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../index.html" class="btn btn-neutral float-left" title="Welcome to Eco Sampling’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="api_usage.html" class="btn btn-neutral float-right" title="PyEcosampling API Usage Demo" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Giuseppe Boccignone, Renato Nobre.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

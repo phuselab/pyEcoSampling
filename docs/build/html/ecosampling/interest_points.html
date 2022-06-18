@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interest Points &mdash; Eco Sampling 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Complexity" href="complexity.html" />
+    <link rel="prev" title="Proto Parameters" href="proto_parameters.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html">
+            <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user/introduction.html">Ecological Sampling Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/config.html">Configuration file</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">EcoSampling Modules</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="generate_scanpath.html">Generate Scanpath</a></li>
+<li class="toctree-l1"><a class="reference internal" href="frame_processor.html">Frame Processor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="salience_map.html">Salience Map</a></li>
+<li class="toctree-l1"><a class="reference internal" href="feature_map.html">Feature Map</a></li>
+<li class="toctree-l1"><a class="reference internal" href="proto_parameters.html">Proto Parameters</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Interest Points</a></li>
+<li class="toctree-l1"><a class="reference internal" href="complexity.html">Complexity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="action_selector.html">Action Selector</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gaze_sampler.html">Gaze Sampler</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Salience Backends</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="self_resemblance.html">Self-Resemblance</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Utils</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../utils/statistics.html">Statistics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/helper.html">Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/logger.html">Logger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/plotter.html">Plotter</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Eco Sampling</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Interest Points</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/ecosampling/interest_points.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="module-interest_points">
+<span id="interest-points"></span><h1>Interest Points<a class="headerlink" href="#module-interest_points" title="Permalink to this headline"></a></h1>
+<p>Generate Interest Points and captures complexity within the landscape.</p>
+<p>Sample points from set of points, weighted according to their salience and
+captures the time-varying configurational complexity of interest points
+within the landscape, generating a 2D Histogram of IPs.</p>
+<dl class="simple">
+<dt>Authors:</dt><dd><ul class="simple">
+<li><p>Giuseppe Boccignone &lt;<a class="reference external" href="mailto:giuseppe&#46;boccignone&#37;&#52;&#48;unimi&#46;it">giuseppe<span>&#46;</span>boccignone<span>&#64;</span>unimi<span>&#46;</span>it</a>&gt;</p></li>
+<li><p>Renato Nobre &lt;<a class="reference external" href="mailto:renato&#46;avellarnobre&#37;&#52;&#48;studenti&#46;unimi&#46;it">renato<span>&#46;</span>avellarnobre<span>&#64;</span>studenti<span>&#46;</span>unimi<span>&#46;</span>it</a>&gt;</p></li>
+</ul>
+</dd>
+<dt>Changes:</dt><dd><ul class="simple">
+<li><p>12/12/2012  First Edition Matlab</p></li>
+<li><p>31/05/2022  Python Edition</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="interest_points.IPSampler">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">interest_points.</span></span><span class="sig-name descname"><span class="pre">IPSampler</span></span><a class="reference internal" href="../_modules/interest_points.html#IPSampler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interest_points.IPSampler" title="Permalink to this definition"></a></dt>
+<dd><p>Generate Interest Points and captures complexity within the landscape.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="interest_points.IPSampler.xCoord">
+<span class="sig-name descname"><span class="pre">xCoord</span></span><a class="headerlink" href="#interest_points.IPSampler.xCoord" title="Permalink to this definition"></a></dt>
+<dd><p>X Coordinates of sampled points.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="interest_points.IPSampler.yCoord">
+<span class="sig-name descname"><span class="pre">yCoord</span></span><a class="headerlink" href="#interest_points.IPSampler.yCoord" title="Permalink to this definition"></a></dt>
+<dd><p>Y Coordinates of sampled points.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="interest_points.IPSampler.show_hist">
+<span class="sig-name descname"><span class="pre">show_hist</span></span><a class="headerlink" href="#interest_points.IPSampler.show_hist" title="Permalink to this definition"></a></dt>
+<dd><p>2D histogram of IPs for visualization.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="interest_points.IPSampler.N">
+<span class="sig-name descname"><span class="pre">N</span></span><a class="headerlink" href="#interest_points.IPSampler.N" title="Permalink to this definition"></a></dt>
+<dd><p>Number of sampled points.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="interest_points.IPSampler.num_samples">
+<span class="sig-name descname"><span class="pre">num_samples</span></span><a class="headerlink" href="#interest_points.IPSampler.num_samples" title="Permalink to this definition"></a></dt>
+<dd><p>Number of samples in the 2D histogram.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="interest_points.IPSampler.num_bins">
+<span class="sig-name descname"><span class="pre">num_bins</span></span><a class="headerlink" href="#interest_points.IPSampler.num_bins" title="Permalink to this definition"></a></dt>
+<dd><p>Number of bins in the 2D histogram.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="interest_points.IPSampler.max_points">
+<span class="sig-name descname"><span class="pre">max_points</span></span><a class="headerlink" href="#interest_points.IPSampler.max_points" title="Permalink to this definition"></a></dt>
+<dd><p>Maximum number of points to sample. Value is set in
+<cite>config.py</cite></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="interest_points.IPSampler.landscape_sampling">
+<span class="sig-name descname"><span class="pre">landscape_sampling</span></span><a class="headerlink" href="#interest_points.IPSampler.landscape_sampling" title="Permalink to this definition"></a></dt>
+<dd><p>Landscape sampligling flag. If True,
+sample also from the landscape. Value is set in <cite>config.py</cite></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interest_points.IPSampler.interest_point_sample">
+<span class="sig-name descname"><span class="pre">interest_point_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_proto</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proto_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">saliency_map</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interest_points.html#IPSampler.interest_point_sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interest_points.IPSampler.interest_point_sample" title="Permalink to this definition"></a></dt>
+<dd><p>Sample Interest points from proto-objects and/or from the landscape.</p>
+<p>Control the sampling of interest points. If there is no proto-objects,
+sample only from the landscape. If there are proto-objects, sample from both
+if <cite>self.landscape_sampling</cite> is True, otherwise only from proto-objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_proto</strong> (<em>int</em>) – Ammount of proto-objects.</p></li>
+<li><p><strong>proto_params</strong> (<em>obj</em>) – ProtoParameters object.</p></li>
+<li><p><strong>saliency_map</strong> (<em>np.ndarray</em>) – Frame saliency map.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Vector of XCoord and YCoord</strong></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interest_points.IPSampler.histogram_ips">
+<span class="sig-name descname"><span class="pre">histogram_ips</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame_sampling</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampled_points_coord</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interest_points.html#IPSampler.histogram_ips"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interest_points.IPSampler.histogram_ips" title="Permalink to this definition"></a></dt>
+<dd><p>Create representation of IP as an Empirical Distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>sampled_points_coord</strong> (<em>np.array</em>) – (N, 2) array containing data points coordinated.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>histmat</strong> (<em>nd.array</em>) – 2D histogram array (rows represent X, columns represent Y)</p></li>
+<li><p><strong>num_samples</strong> (<em>int</em>) – Number of sample points in the 2D histogram</p></li>
+<li><p><strong>num_bins</strong> (<em>int</em>) – Number of bins in the 2D histogram</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interest_points.IPSampler._proto_objects_sampling">
+<span class="sig-name descname"><span class="pre">_proto_objects_sampling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">proto_params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interest_points.html#IPSampler._proto_objects_sampling"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interest_points.IPSampler._proto_objects_sampling" title="Permalink to this definition"></a></dt>
+<dd><p>Sample points from the proto-objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>proto_params</strong> (<em>obj</em>) – Sampled proto parameters for the frame</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Update <cite>self.xCoord</cite> and <cite>self.yCoord</cite> with the sampled points</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interest_points.IPSampler._landscape_sampling">
+<span class="sig-name descname"><span class="pre">_landscape_sampling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">saliency_map</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interest_points.html#IPSampler._landscape_sampling"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interest_points.IPSampler._landscape_sampling" title="Permalink to this definition"></a></dt>
+<dd><p>Sample points from the landscape.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Update <cite>self.xCoord</cite> and <cite>self.yCoord</cite> with the sampled points</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>saliency_map</strong> (<em>np.ndarray</em>) – Frame saliency map</p></li>
+<li><p><strong>only</strong> (<em>bool</em><em>, </em><em>optional</em>) – Flag indicating if we are only sampling
+landscape or if the data will be appended to other
+previously sampled points. Defaults to False.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interest_points.IPSampler._boccignone_ferraro_ip_sampling">
+<span class="sig-name descname"><span class="pre">_boccignone_ferraro_ip_sampling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">saliency_map</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interest_points.html#IPSampler._boccignone_ferraro_ip_sampling"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interest_points.IPSampler._boccignone_ferraro_ip_sampling" title="Permalink to this definition"></a></dt>
+<dd><p>Boccignone-Ferraro’s backend function for the IP sampling method.</p>
+<ol class="arabic simple">
+<li><p>Sample Interest_Point.Max_Points points from set of points
+weighted according to their salience</p></li>
+<li><p>For each sample, set scale by drawing from uniform distribution
+over Interest_Point.Scale</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>saliency_map</strong> (<em>np.ndarray</em>) – Frame saliency map</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>xCoord</strong> (<em>np.array</em>) – X Coordinates of IPs</p></li>
+<li><p><strong>yCoord</strong> (<em>np.array</em>) – Y Coordinates of IPs</p></li>
+<li><p><strong>scale</strong> (<em>np.array</em>) – Scale of points (radius, inpixels)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interest_points.IPSampler._get_points">
+<span class="sig-name descname"><span class="pre">_get_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">salience_map</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interest_points.html#IPSampler._get_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interest_points.IPSampler._get_points" title="Permalink to this definition"></a></dt>
+<dd><p>Extract salient points from the saliency map.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>saliency_map</strong> (<em>np.ndarray</em>) – Frame saliency map</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>yy</strong> – Y coordinates of salient points</p></li>
+<li><p><strong>xx</strong> – X coordinates of salient points</p></li>
+<li><p><strong>strength</strong> – Saliency strength of salient points</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="proto_parameters.html" class="btn btn-neutral float-left" title="Proto Parameters" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="complexity.html" class="btn btn-neutral float-right" title="Complexity" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Giuseppe Boccignone, Renato Nobre.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

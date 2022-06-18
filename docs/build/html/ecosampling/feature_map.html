@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Feature Map &mdash; Eco Sampling 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Proto Parameters" href="proto_parameters.html" />
+    <link rel="prev" title="Salience Map" href="salience_map.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html">
+            <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user/introduction.html">Ecological Sampling Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/config.html">Configuration file</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">EcoSampling Modules</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="generate_scanpath.html">Generate Scanpath</a></li>
+<li class="toctree-l1"><a class="reference internal" href="frame_processor.html">Frame Processor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="salience_map.html">Salience Map</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Feature Map</a></li>
+<li class="toctree-l1"><a class="reference internal" href="proto_parameters.html">Proto Parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interest_points.html">Interest Points</a></li>
+<li class="toctree-l1"><a class="reference internal" href="complexity.html">Complexity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="action_selector.html">Action Selector</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gaze_sampler.html">Gaze Sampler</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Salience Backends</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="self_resemblance.html">Self-Resemblance</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Utils</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../utils/statistics.html">Statistics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/helper.html">Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/logger.html">Logger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/plotter.html">Plotter</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Eco Sampling</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Feature Map</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/ecosampling/feature_map.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="module-feature_map">
+<span id="feature-map"></span><h1>Feature Map<a class="headerlink" href="#module-feature_map" title="Permalink to this headline"></a></h1>
+<p>Feature Map class file.</p>
+<dl class="simple">
+<dt>Authors:</dt><dd><ul class="simple">
+<li><p>Giuseppe Boccignone &lt;<a class="reference external" href="mailto:giuseppe&#46;boccignone&#37;&#52;&#48;unimi&#46;it">giuseppe<span>&#46;</span>boccignone<span>&#64;</span>unimi<span>&#46;</span>it</a>&gt;</p></li>
+<li><p>Renato Nobre &lt;<a class="reference external" href="mailto:renato&#46;avellarnobre&#37;&#52;&#48;studenti&#46;unimi&#46;it">renato<span>&#46;</span>avellarnobre<span>&#64;</span>studenti<span>&#46;</span>unimi<span>&#46;</span>it</a>&gt;</p></li>
+</ul>
+</dd>
+<dt>Changes:</dt><dd><ul class="simple">
+<li><p>12/12/2012  First Edition Matlab</p></li>
+<li><p>31/05/2022  Python Edition</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="feature_map.FeatureMap">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">feature_map.</span></span><span class="sig-name descname"><span class="pre">FeatureMap</span></span><a class="reference internal" href="../_modules/feature_map.html#FeatureMap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#feature_map.FeatureMap" title="Permalink to this definition"></a></dt>
+<dd><p>Compute features and create feature map.</p>
+<p>The compute features is a simple wrapper for feature computation.
+Executes the feature extraction algorithm which is defined.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>We implemented as a backend the Static and space-time visual
+saliency detection by self-resemblance method. Additional methods
+require to be implemented.</p>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="feature_map.FeatureMap.feature_type">
+<span class="sig-name descname"><span class="pre">feature_type</span></span><a class="headerlink" href="#feature_map.FeatureMap.feature_type" title="Permalink to this definition"></a></dt>
+<dd><p>Experiment type for saliency computation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="feature_map.FeatureMap.wsize">
+<span class="sig-name descname"><span class="pre">wsize</span></span><a class="headerlink" href="#feature_map.FeatureMap.wsize" title="Permalink to this definition"></a></dt>
+<dd><p>LARK spatial window size.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="feature_map.FeatureMap.wsize_t">
+<span class="sig-name descname"><span class="pre">wsize_t</span></span><a class="headerlink" href="#feature_map.FeatureMap.wsize_t" title="Permalink to this definition"></a></dt>
+<dd><p>LARK temporal window size.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="feature_map.FeatureMap.alpha">
+<span class="sig-name descname"><span class="pre">alpha</span></span><a class="headerlink" href="#feature_map.FeatureMap.alpha" title="Permalink to this definition"></a></dt>
+<dd><p>LARK sensitivity parameter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="feature_map.FeatureMap.sigma">
+<span class="sig-name descname"><span class="pre">sigma</span></span><a class="headerlink" href="#feature_map.FeatureMap.sigma" title="Permalink to this definition"></a></dt>
+<dd><p>Fall-off parameter for self-resemblamnce.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="feature_map.FeatureMap.h">
+<span class="sig-name descname"><span class="pre">h</span></span><a class="headerlink" href="#feature_map.FeatureMap.h" title="Permalink to this definition"></a></dt>
+<dd><p>Smoothing parameter for LARK.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="feature_map.FeatureMap.show">
+<span class="sig-name descname"><span class="pre">show</span></span><a class="headerlink" href="#feature_map.FeatureMap.show" title="Permalink to this definition"></a></dt>
+<dd><p>Version of the feature map to visualization.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="feature_map.FeatureMap.compute_features">
+<span class="sig-name descname"><span class="pre">compute_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fov_seq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_sampling</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/feature_map.html#FeatureMap.compute_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#feature_map.FeatureMap.compute_features" title="Permalink to this definition"></a></dt>
+<dd><p>Computes features using a foveated sequence of frames.</p>
+<p>The function is a simple wrapper for feature computation. Executes some kind
+of feature extraction algorithm which is defined from the
+<code class="docutils literal notranslate"><span class="pre">feature_type</span></code> by calling the appropriate function.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Here for simplicity only the Self Resemblance method has been considered.
+If other methods need to be experimented, then you should extend the
+if…elif… control structure. For further information, see also <a class="footnote-reference brackets" href="#id2" id="id1">1</a>.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fov_seq</strong> (<em>matrix</em>) – the foveated sequence of frames.</p></li>
+<li><p><strong>feature_type</strong> (<em>string</em>) – the chosen method.</p></li>
+<li><p><strong>feature_params</strong> (<em>dict</em>) – the parameters for the chosen feature.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>fmap</strong> (<em>matrix</em>) – the feature map.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fMap</span> <span class="o">=</span> <span class="n">esComputeFeatures</span><span class="p">(</span><span class="n">fov_seq</span><span class="p">,</span> <span class="s1">&#39;3DLARK_SELFRESEMBLANCE&#39;</span><span class="p">,</span> <span class="n">feature_params</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id2"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dd><p><a class="reference external" href="https://jov.arvojournals.org/article.aspx?articleid=2122209">Seo, H. J., &amp; Milanfar, P. (2009). Static and space-time visual saliency detection
+by self-resemblance. Journal of vision, 9(12), 15-15.</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="salience_map.html" class="btn btn-neutral float-left" title="Salience Map" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="proto_parameters.html" class="btn btn-neutral float-right" title="Proto Parameters" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Giuseppe Boccignone, Renato Nobre.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gaze Sampler &mdash; Eco Sampling 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Self-Resemblance" href="self_resemblance.html" />
+    <link rel="prev" title="Action Selector" href="action_selector.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html">
+            <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user/introduction.html">Ecological Sampling Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/config.html">Configuration file</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">EcoSampling Modules</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="generate_scanpath.html">Generate Scanpath</a></li>
+<li class="toctree-l1"><a class="reference internal" href="frame_processor.html">Frame Processor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="salience_map.html">Salience Map</a></li>
+<li class="toctree-l1"><a class="reference internal" href="feature_map.html">Feature Map</a></li>
+<li class="toctree-l1"><a class="reference internal" href="proto_parameters.html">Proto Parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interest_points.html">Interest Points</a></li>
+<li class="toctree-l1"><a class="reference internal" href="complexity.html">Complexity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="action_selector.html">Action Selector</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Gaze Sampler</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Salience Backends</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="self_resemblance.html">Self-Resemblance</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Utils</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../utils/statistics.html">Statistics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/helper.html">Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/logger.html">Logger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/plotter.html">Plotter</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Eco Sampling</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Gaze Sampler</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/ecosampling/gaze_sampler.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="module-gaze_sampler">
+<span id="gaze-sampler"></span><h1>Gaze Sampler<a class="headerlink" href="#module-gaze_sampler" title="Permalink to this headline"></a></h1>
+<p>File for the GazeSampler class.</p>
+<p>For further information, see also <a class="footnote-reference brackets" href="#id3" id="id1">1</a> and <a class="footnote-reference brackets" href="#id4" id="id2">2</a>.</p>
+<dl class="simple">
+<dt>Authors:</dt><dd><ul class="simple">
+<li><p>Giuseppe Boccignone &lt;<a class="reference external" href="mailto:giuseppe&#46;boccignone&#37;&#52;&#48;unimi&#46;it">giuseppe<span>&#46;</span>boccignone<span>&#64;</span>unimi<span>&#46;</span>it</a>&gt;</p></li>
+<li><p>Renato Nobre &lt;<a class="reference external" href="mailto:renato&#46;avellarnobre&#37;&#52;&#48;studenti&#46;unimi&#46;it">renato<span>&#46;</span>avellarnobre<span>&#64;</span>studenti<span>&#46;</span>unimi<span>&#46;</span>it</a>&gt;</p></li>
+</ul>
+</dd>
+<dt>Changes:</dt><dd><ul class="simple">
+<li><p>12/12/2012  First Edition Matlab</p></li>
+<li><p>31/05/2022  Python Edition</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id3"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dd><p><a class="reference external" href="https://ieeexplore.ieee.org/abstract/document/6502674">Boccignone, G., &amp; Ferraro, M. (2013). Ecological sampling of gaze shifts.
+IEEE transactions on cybernetics, 44(2), 266-279.</a></p>
+</dd>
+<dt class="label" id="id4"><span class="brackets"><a class="fn-backref" href="#id2">2</a></span></dt>
+<dd><p><a class="reference external" href="https://ieeexplore.ieee.org/abstract/document/6502674">G. Boccignone and M. Ferraro, The active sampling of gaze-shifts,
+in Image Analysis and Processing ICIAP 2011, ser. Lecture Notes in Computer Science,
+G. Maino and G. Foresti, Eds. Springer Berlin / Heidelberg, 2011, vol. 6978, pp. 187?196.</a></p>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="gaze_sampler.GazeSampler">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gaze_sampler.</span></span><span class="sig-name descname"><span class="pre">GazeSampler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame_sampling</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proto_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ip_sampler</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hist_mat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_proto</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gaze_sampler.html#GazeSampler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gaze_sampler.GazeSampler" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the future Focus of Attention, using gaze sampling.</p>
+<p>Function computing, using gaze attractors, the actual gaze relocation by
+sampling the appropriate noise parameters from a mixture of alpha-stable distributions
+as a function of the oculomotor state, The parameters are used to propose one or multiple
+candidate gaze shifts actually implemented by calling for <code class="docutils literal notranslate"><span class="pre">_langevin_sampling</span></code>,
+which performs the Langevin step. Eventually decides and sets the actual shift
+to the new Focus of Attention.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gaze_sampler.GazeSampler.start_nu">
+<span class="sig-name descname"><span class="pre">start_nu</span></span><a class="headerlink" href="#gaze_sampler.GazeSampler.start_nu" title="Permalink to this definition"></a></dt>
+<dd><p>vector of the starting probabilities for the Dirichlet distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gaze_sampler.GazeSampler.start_foa">
+<span class="sig-name descname"><span class="pre">start_foa</span></span><a class="headerlink" href="#gaze_sampler.GazeSampler.start_foa" title="Permalink to this definition"></a></dt>
+<dd><p>vector of the starting FOA coordinates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gaze_sampler.GazeSampler.num_internalsim">
+<span class="sig-name descname"><span class="pre">num_internalsim</span></span><a class="headerlink" href="#gaze_sampler.GazeSampler.num_internalsim" title="Permalink to this definition"></a></dt>
+<dd><p>maximum allowed number of candidate new  gaze position r_new</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gaze_sampler.GazeSampler.max_numattempts">
+<span class="sig-name descname"><span class="pre">max_numattempts</span></span><a class="headerlink" href="#gaze_sampler.GazeSampler.max_numattempts" title="Permalink to this definition"></a></dt>
+<dd><p>maximum number of attempts to sample a new valid gaze position.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gaze_sampler.GazeSampler.simple_attractors">
+<span class="sig-name descname"><span class="pre">simple_attractors</span></span><a class="headerlink" href="#gaze_sampler.GazeSampler.simple_attractors" title="Permalink to this definition"></a></dt>
+<dd><p>if True, the attractors are set to the FOA.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gaze_sampler.GazeSampler.alpha">
+<span class="sig-name descname"><span class="pre">alpha</span></span><a class="headerlink" href="#gaze_sampler.GazeSampler.alpha" title="Permalink to this definition"></a></dt>
+<dd><p>alpha parameter of the stable distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gaze_sampler.GazeSampler.beta">
+<span class="sig-name descname"><span class="pre">beta</span></span><a class="headerlink" href="#gaze_sampler.GazeSampler.beta" title="Permalink to this definition"></a></dt>
+<dd><p>beta parameter of the stable distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gaze_sampler.GazeSampler.gamma">
+<span class="sig-name descname"><span class="pre">gamma</span></span><a class="headerlink" href="#gaze_sampler.GazeSampler.gamma" title="Permalink to this definition"></a></dt>
+<dd><p>gamma parameter of the stable distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gaze_sampler.GazeSampler.delta">
+<span class="sig-name descname"><span class="pre">delta</span></span><a class="headerlink" href="#gaze_sampler.GazeSampler.delta" title="Permalink to this definition"></a></dt>
+<dd><p>delta parameter of the stable distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gaze_sampler.GazeSampler.foa_size">
+<span class="sig-name descname"><span class="pre">foa_size</span></span><a class="headerlink" href="#gaze_sampler.GazeSampler.foa_size" title="Permalink to this definition"></a></dt>
+<dd><p>size of the FOA.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gaze_sampler.GazeSampler.frame_sampling">
+<span class="sig-name descname"><span class="pre">frame_sampling</span></span><a class="headerlink" href="#gaze_sampler.GazeSampler.frame_sampling" title="Permalink to this definition"></a></dt>
+<dd><p>frame sampling object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>FrameSampling</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gaze_sampler.GazeSampler.ip_sampler">
+<span class="sig-name descname"><span class="pre">ip_sampler</span></span><a class="headerlink" href="#gaze_sampler.GazeSampler.ip_sampler" title="Permalink to this definition"></a></dt>
+<dd><p>ip sampling object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="interest_points.html#interest_points.IPSampler" title="interest_points.IPSampler">IPSampler</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gaze_sampler.GazeSampler.num_proto">
+<span class="sig-name descname"><span class="pre">num_proto</span></span><a class="headerlink" href="#gaze_sampler.GazeSampler.num_proto" title="Permalink to this definition"></a></dt>
+<dd><p>number of prototypes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gaze_sampler.GazeSampler.landscape">
+<span class="sig-name descname"><span class="pre">landscape</span></span><a class="headerlink" href="#gaze_sampler.GazeSampler.landscape" title="Permalink to this definition"></a></dt>
+<dd><p>The parameters for setting the landscape representation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gaze_sampler.GazeSampler.candidate_foa">
+<span class="sig-name descname"><span class="pre">candidate_foa</span></span><a class="headerlink" href="#gaze_sampler.GazeSampler.candidate_foa" title="Permalink to this definition"></a></dt>
+<dd><p>candidate FOA coordinates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gaze_sampler.GazeSampler.candx">
+<span class="sig-name descname"><span class="pre">candx</span></span><a class="headerlink" href="#gaze_sampler.GazeSampler.candx" title="Permalink to this definition"></a></dt>
+<dd><p>candidate FOA x coordinates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gaze_sampler.GazeSampler.candy">
+<span class="sig-name descname"><span class="pre">candy</span></span><a class="headerlink" href="#gaze_sampler.GazeSampler.candy" title="Permalink to this definition"></a></dt>
+<dd><p>candidate FOA y coordinates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gaze_sampler.GazeSampler.show">
+<span class="sig-name descname"><span class="pre">show</span></span><a class="headerlink" href="#gaze_sampler.GazeSampler.show" title="Permalink to this definition"></a></dt>
+<dd><p>visualization mask of the FOA.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>frame_sampling</strong> (<em>FrameSampling</em>) – frame sampling object</p></li>
+<li><p><strong>proto_params</strong> (<em>ProtoParams</em>) – proto params object</p></li>
+<li><p><strong>ip_sampler</strong> (<a class="reference internal" href="interest_points.html#interest_points.IPSampler" title="interest_points.IPSampler"><em>IPSampler</em></a>) – ip sampler object</p></li>
+<li><p><strong>hist_mat</strong> (<em>np.array</em>) – histogram matrix</p></li>
+<li><p><strong>num_proto</strong> (<em>int</em>) – number of proto-objects</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>NotImplementedError</strong> – No methods defined for setting the first FOA</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gaze_sampler.GazeSampler.sample_gaze_shift">
+<span class="sig-name descname"><span class="pre">sample_gaze_shift</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pred_foa</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dir_old</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gaze_sampler.html#GazeSampler.sample_gaze_shift"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gaze_sampler.GazeSampler.sample_gaze_shift" title="Permalink to this definition"></a></dt>
+<dd><p>Sampling the gaze shift.</p>
+<p>Setting the attractors of the FOA, sampling the FOA, which is
+returned together with the simulated candidates
+setting the oculomotor state z parameter</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>z</strong> (<em>int</em>) – Index of kind of gaze shift</p></li>
+<li><p><strong>pred_foa</strong> (<em>np.ndarray</em>) – Previous FOA coordinates</p></li>
+<li><p><strong>dir_old</strong> (<em>float</em>) – Value of the previous direction</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>final_foa</strong> (<em>np.ndarray</em>) – Final FOA coordinates</p></li>
+<li><p><strong>dir_new</strong> (<em>float</em>) – Value of the new direction</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gaze_sampler.GazeSampler._get_gaze_attractors">
+<span class="sig-name descname"><span class="pre">_get_gaze_attractors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pred_foa</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gaze_sampler.html#GazeSampler._get_gaze_attractors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gaze_sampler.GazeSampler._get_gaze_attractors" title="Permalink to this definition"></a></dt>
+<dd><p>Samples the possible gaze attractors.</p>
+<p>Function computing possible ONE or MULTIPLE gaze attractors
+If a landscape of proto-objects is given then their centers are used as described in [1].
+Otherwise attractors are determined through the IPs sampled from saliency as in [2].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pred_foa</strong> (<em>np.ndarray</em>) – (1, 2) vector representing the previous FoA coordinatesxs</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>foa_attractors</strong> (<em>np.ndarray</em>) – (N_V, 2) matrix representing the FoA attractors</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gaze_sampler.GazeSampler._gaze_sampling">
+<span class="sig-name descname"><span class="pre">_gaze_sampling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">foa_attractors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pred_foa</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dir_old</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gaze_sampler.html#GazeSampler._gaze_sampling"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gaze_sampler.GazeSampler._gaze_sampling" title="Permalink to this definition"></a></dt>
+<dd><p>Samples the new gaze position</p>
+<p>Function computing the actual gaze relocation by using a
+Langevin like stochastic differential equation,
+whose noise source is sampled from a mixture of alpha-stable distributions.
+By using NUM_INTERNALSIM generates an equal number of candidate
+parameters, that is of candidate new possible shifts which are then
+passed to the _langevin_sampling() function, which executes the
+Langevin step</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If a valid new gaze point is returned this is set as the final FOA
+Otherwise, a gaussian noise “perturbated” candidate FOA is tried.
+The dafault solution, if all goes wrong, is to keep the old FOA</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>z</strong> (<em>int</em>) – Kind of gaze shift</p></li>
+<li><p><strong>foa_attractors</strong> (<em>np.ndarray</em>) – (N_V, 2) matrix representing the FoA attractors</p></li>
+<li><p><strong>pred_foa</strong> (<em>np.ndarray</em>) – (1, 2) vector representing the previous FoA coordinatesxs</p></li>
+<li><p><strong>dir_old</strong> (<em>float</em>) – Value of the previous direction</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>final_foa</strong> (<em>np.ndarray</em>) – (1, 2) vector representing the new FoA coordinates</p></li>
+<li><p><strong>dir_new</strong> (<em>float</em>) – Value of the new direction</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gaze_sampler.GazeSampler._langevin_sampling">
+<span class="sig-name descname"><span class="pre">_langevin_sampling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sde_param</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pred_foa</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gaze_sampler.html#GazeSampler._langevin_sampling"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gaze_sampler.GazeSampler._langevin_sampling" title="Permalink to this definition"></a></dt>
+<dd><p>Langevin step for sampling the new gaze position.</p>
+<p>Implements a step of the Langevin like stochastic
+differential equation (SDE), whose noise source is sampled
+from a mixture of alpha-stable distributions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sde_param</strong> (<em>dict</em>) – <p>Langevin SDE parameters:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;dHx&quot;</span><span class="p">:</span> <span class="n">SDE</span> <span class="n">gradient</span> <span class="n">potential</span> <span class="n">x</span> <span class="n">coordinate</span><span class="p">,</span>
+    <span class="s2">&quot;dHy&quot;</span><span class="p">:</span> <span class="n">SDE</span> <span class="n">gradient</span> <span class="n">potential</span> <span class="n">y</span> <span class="n">coordinate</span><span class="p">,</span>
+    <span class="s2">&quot;xi&quot;</span><span class="p">:</span> <span class="n">SDE</span> <span class="n">alpha</span><span class="o">-</span><span class="n">stable</span> <span class="n">component</span>
+    <span class="s2">&quot;dir_new&quot;</span><span class="p">:</span> <span class="n">SDE</span> <span class="n">new</span> <span class="n">direction</span> <span class="n">of</span> <span class="n">the</span> <span class="n">gaze</span> <span class="n">shift</span>
+    <span class="s2">&quot;alpha&quot;</span><span class="p">:</span> <span class="n">SDE</span> <span class="n">alpha</span><span class="o">-</span><span class="n">stable</span> <span class="n">characteristic</span> <span class="n">exponent</span> <span class="n">parameter</span>
+    <span class="s2">&quot;gamma&quot;</span><span class="p">:</span> <span class="n">SDE</span> <span class="n">alpha</span><span class="o">-</span><span class="n">stable</span> <span class="n">scale</span> <span class="n">parameter</span>
+    <span class="s2">&quot;h&quot;</span><span class="p">:</span> <span class="n">SDE</span> <span class="n">integration</span> <span class="n">step</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</p></li>
+<li><p><strong>pred_foa</strong> (<em>np.ndarray</em>) – Previous FOA coordinates</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>final_foa</strong> (<em>np.ndarray</em>) – (1, 2) vector representing the new FoA coordinates</p></li>
+<li><p><strong>dir_new</strong> (<em>float</em>) – Value of the new direction</p></li>
+<li><p><strong>accept</strong> (<em>bool</em>) – 1 if the new FOA is accepted, 0 otherwise</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gaze_sampler.GazeSampler._create_circular_mask">
+<span class="sig-name descname"><span class="pre">_create_circular_mask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">center</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gaze_sampler.html#GazeSampler._create_circular_mask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gaze_sampler.GazeSampler._create_circular_mask" title="Permalink to this definition"></a></dt>
+<dd><p>Creates a circular mask visualization of the FOA.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>center</strong> (<em>np.ndarray</em>) – (1, 2) vector representing the center of the FOA</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>mask</strong> (<em>np.ndarray</em>) – (h, w) binary mask</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="action_selector.html" class="btn btn-neutral float-left" title="Action Selector" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="self_resemblance.html" class="btn btn-neutral float-right" title="Self-Resemblance" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Giuseppe Boccignone, Renato Nobre.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

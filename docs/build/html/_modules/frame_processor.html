@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>frame_processor &mdash; Eco Sampling 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html">
+            <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user/introduction.html">Ecological Sampling Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/config.html">Configuration file</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">EcoSampling Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/generate_scanpath.html">Generate Scanpath</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/frame_processor.html">Frame Processor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/salience_map.html">Salience Map</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/feature_map.html">Feature Map</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/proto_parameters.html">Proto Parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/interest_points.html">Interest Points</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/complexity.html">Complexity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/action_selector.html">Action Selector</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/gaze_sampler.html">Gaze Sampler</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Salience Backends</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/self_resemblance.html">Self-Resemblance</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Utils</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../utils/statistics.html">Statistics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/helper.html">Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/logger.html">Logger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/plotter.html">Plotter</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Eco Sampling</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Module code</a> &raquo;</li>
+      <li>frame_processor</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for frame_processor</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Frame Processor class file.</span>
+
+<span class="sd">Authors:</span>
+<span class="sd">    - Giuseppe Boccignone &lt;giuseppe.boccignone@unimi.it&gt;</span>
+<span class="sd">    - Renato Nobre &lt;renato.avellarnobre@studenti.unimi.it&gt;</span>
+
+<span class="sd">Changes:</span>
+<span class="sd">    - 12/12/2012  First Edition Matlab</span>
+<span class="sd">    - 31/05/2022  Python Edition</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">skimage</span> <span class="kn">import</span> <span class="n">io</span>
+<span class="kn">from</span> <span class="nn">skimage.color</span> <span class="kn">import</span> <span class="n">rgb2gray</span>
+<span class="kn">from</span> <span class="nn">skimage.transform</span> <span class="kn">import</span> <span class="n">resize</span>
+
+<span class="kn">from</span> <span class="nn">config</span> <span class="kn">import</span> <span class="n">GeneralConfig</span><span class="p">,</span> <span class="n">SaliencyConfig</span>
+<span class="kn">from</span> <span class="nn">utils.helper</span> <span class="kn">import</span> <span class="n">mk_gaussian</span>
+<span class="kn">from</span> <span class="nn">utils.logger</span> <span class="kn">import</span> <span class="n">Logger</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">Logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<div class="viewcode-block" id="FrameProcessor"><a class="viewcode-back" href="../ecosampling/frame_processor.html#frame_processor.FrameProcessor">[docs]</a><span class="k">class</span> <span class="nc">FrameProcessor</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Set of functions to handle image input and create frames.</span>
+
+<span class="sd">    This class has functions to create the window size frame from images</span>
+<span class="sd">    in a local dir, apply foveated filtering to a frame, reduce the frame</span>
+<span class="sd">    size and increase image size.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        n_frames (int): Number of frames to process in a step.</span>
+<span class="sd">        frame_offset (int): Offset between frames.</span>
+<span class="sd">        img_list (list): List of images in the local dir.</span>
+<span class="sd">        total_frames (int): Total number of images in the local dir.</span>
+<span class="sd">        n_rows (int): Number of rows in the image.</span>
+<span class="sd">        n_cols (int): Number of columns in the image.</span>
+<span class="sd">        I (np.ndarray): 3 time-step frame.</span>
+<span class="sd">        foveated_I (np.ndarray): 3 time-step foveated frame.</span>
+<span class="sd">        show_frame (np.ndarray): Current frame for visualization.</span>
+<span class="sd">        show_foveated_frame (np.ndarray): Current foveated frame for visualization.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Number of Frames to process in a step</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_frames</span> <span class="o">=</span> <span class="n">SaliencyConfig</span><span class="o">.</span><span class="n">WSIZE_T</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_offset</span> <span class="o">=</span> <span class="n">GeneralConfig</span><span class="o">.</span><span class="n">OFFSET</span>
+        <span class="c1"># Image List Setup</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">img_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">GeneralConfig</span><span class="o">.</span><span class="n">FRAME_DIR</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span> <span class="k">for</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">GeneralConfig</span><span class="o">.</span><span class="n">FRAME_DIR</span><span class="p">)</span> <span class="k">if</span> <span class="n">image</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.jpg&quot;</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">img_list</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="c1"># Total Frames in list</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">total_frames</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">img_list</span><span class="p">)</span>
+
+        <span class="n">r</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">img_list</span><span class="p">[</span><span class="mi">0</span><span class="p">])[:,:,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_rows</span> <span class="o">=</span> <span class="n">r</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_cols</span> <span class="o">=</span> <span class="n">c</span>
+
+        <span class="n">I_shape</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_rows</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_cols</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_frames</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">I</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">I_shape</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">foveated_I</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">I_shape</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_frame</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">n_rows</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_cols</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_foveated_frame</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">n_rows</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_cols</span><span class="p">))</span>
+
+<div class="viewcode-block" id="FrameProcessor.frame_resize_orginal"><a class="viewcode-back" href="../ecosampling/frame_processor.html#frame_processor.FrameProcessor.frame_resize_orginal">[docs]</a>    <span class="k">def</span> <span class="nf">frame_resize_orginal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Resize frame to original size</span>
+
+<span class="sd">        Use bilinear interpolation</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            frame (np.ndarray): Small size frame</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            np.ndarray: Original size frame</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">resize</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_rows</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_cols</span><span class="p">),</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FrameProcessor.read_frames"><a class="viewcode-back" href="../ecosampling/frame_processor.html#frame_processor.FrameProcessor.read_frames">[docs]</a>    <span class="k">def</span> <span class="nf">read_frames</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame_idx</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Read current, next and previous image, creating a frame.</span>
+
+<span class="sd">        Reading include opening the files, converting them</span>
+<span class="sd">        to grayscale, and creating a 3 time-step frame.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            Also save the frames in the object instance.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            frame_idx (int): Current frame indices</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            I: Grayscale image frame</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">verbose</span><span class="p">(</span><span class="s2">&quot;Data acquisition&quot;</span><span class="p">)</span>
+        <span class="c1"># Reading three consecutive frames</span>
+        <span class="c1"># Get previous frame</span>
+        <span class="n">img_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">img_list</span><span class="p">[</span><span class="n">frame_idx</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_offset</span><span class="p">]</span>
+        <span class="n">pred_frame</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">img_path</span><span class="p">)</span>
+        <span class="c1"># Get current frame</span>
+        <span class="n">img_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">img_list</span><span class="p">[</span><span class="n">frame_idx</span><span class="p">]</span>
+        <span class="n">curr_frame</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">img_path</span><span class="p">)</span>
+        <span class="c1"># Get subsequent frame</span>
+        <span class="n">img_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">img_list</span><span class="p">[</span><span class="n">frame_idx</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_offset</span><span class="p">]</span>
+        <span class="n">next_frame</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">img_path</span><span class="p">)</span>
+
+        <span class="c1"># Converting to grey level</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">I</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">rgb2gray</span><span class="p">(</span><span class="n">pred_frame</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">I</span><span class="p">[:,:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">rgb2gray</span><span class="p">(</span><span class="n">curr_frame</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">I</span><span class="p">[:,:,</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">rgb2gray</span><span class="p">(</span><span class="n">next_frame</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_frame</span> <span class="o">=</span> <span class="n">curr_frame</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">I</span></div>
+
+<div class="viewcode-block" id="FrameProcessor.foveated_imaging"><a class="viewcode-back" href="../ecosampling/frame_processor.html#frame_processor.FrameProcessor.foveated_imaging">[docs]</a>    <span class="k">def</span> <span class="nf">foveated_imaging</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">foa</span><span class="p">,</span> <span class="n">I</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Apply foveated imaging to the Grayscale frame.</span>
+
+<span class="sd">        To convert to the foveated version this function apply a gaussian</span>
+<span class="sd">        filter in the field of attention (``foa``) of the image.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            foa (np.ndarray): Field of attention.</span>
+<span class="sd">            I (np.ndarray): Grayscale frame</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            Also save the frames in the object instance.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Foveated frame</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">verbose</span><span class="p">(</span><span class="s2">&quot;Makes a foa dependent image&quot;</span><span class="p">)</span>
+
+        <span class="n">size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">n_rows</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_cols</span><span class="p">])</span>
+        <span class="n">cov</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">size</span><span class="p">)</span><span class="o">/</span><span class="mf">1.5</span><span class="p">)</span><span class="o">**</span><span class="mf">2.5</span>
+        <span class="n">conjugate_T_foa</span> <span class="o">=</span> <span class="n">foa</span><span class="o">.</span><span class="n">conj</span><span class="p">()</span><span class="o">.</span><span class="n">T</span>
+
+        <span class="n">foa_filter</span> <span class="o">=</span> <span class="n">mk_gaussian</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">cov</span><span class="p">,</span> <span class="n">conjugate_T_foa</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">foveated_I</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">I</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;double&#39;</span><span class="p">),</span>
+                                             <span class="n">foa_filter</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">foveated_I</span><span class="p">[:,:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">I</span><span class="p">[:,:,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;double&#39;</span><span class="p">),</span>
+                                             <span class="n">foa_filter</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">foveated_I</span><span class="p">[:,:,</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">I</span><span class="p">[:,:,</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;double&#39;</span><span class="p">),</span>
+                                             <span class="n">foa_filter</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_foveated_frame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">foveated_I</span><span class="p">[:,:,</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">foveated_I</span></div>
+
+<div class="viewcode-block" id="FrameProcessor.reduce_frames"><a class="viewcode-back" href="../ecosampling/frame_processor.html#frame_processor.FrameProcessor.reduce_frames">[docs]</a>    <span class="k">def</span> <span class="nf">reduce_frames</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">foveated_I</span><span class="p">,</span> <span class="n">reduced_rows</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span> <span class="n">reduced_cols</span><span class="o">=</span><span class="mi">64</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Reduce the frame to a desired size.</span>
+
+<span class="sd">        The main purpose of this reduction is to compute the features.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            foveated_I (np.ndarray): Frame to be reduced.</span>
+<span class="sd">            reduced_rows (int, optional): Final desired row size. Defaults to 64.</span>
+<span class="sd">            reduced_cols (int, optional): Final desired col size. Defaults to 64.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The reduced frame.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">verbose</span><span class="p">(</span><span class="s2">&quot;Reducing frames size for feature processing&quot;</span><span class="p">)</span>
+        <span class="c1"># Reducing the frame to [64 64] dimension suitable for feature extraction</span>
+        <span class="n">reduced_frame</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">reduced_rows</span><span class="p">,</span> <span class="n">reduced_cols</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_frames</span><span class="p">))</span>
+
+        <span class="c1"># Bilinear by default</span>
+        <span class="n">S</span> <span class="o">=</span> <span class="n">resize</span><span class="p">(</span><span class="n">foveated_I</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;double&#39;</span><span class="p">),</span> <span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">),</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">reduced_frame</span> <span class="p">[:,:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">S</span><span class="p">[:]))</span>
+
+        <span class="n">S</span> <span class="o">=</span> <span class="n">resize</span><span class="p">(</span><span class="n">foveated_I</span><span class="p">[:,:,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;double&#39;</span><span class="p">),</span> <span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">),</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">reduced_frame</span> <span class="p">[:,:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">S</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">S</span><span class="p">[:])</span>
+
+        <span class="n">S</span> <span class="o">=</span> <span class="n">resize</span><span class="p">(</span><span class="n">foveated_I</span><span class="p">[:,:,</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;double&#39;</span><span class="p">),</span> <span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">),</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">reduced_frame</span> <span class="p">[:,:,</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">S</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">S</span><span class="p">[:])</span>
+
+        <span class="n">reduced_frame</span>  <span class="o">=</span> <span class="n">reduced_frame</span>  <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">reduced_frame</span> <span class="p">[:])</span>
+
+        <span class="k">return</span> <span class="n">reduced_frame</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Giuseppe Boccignone, Renato Nobre.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

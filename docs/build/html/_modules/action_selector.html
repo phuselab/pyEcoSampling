@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>action_selector &mdash; Eco Sampling 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html">
+            <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user/introduction.html">Ecological Sampling Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/config.html">Configuration file</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">EcoSampling Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/generate_scanpath.html">Generate Scanpath</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/frame_processor.html">Frame Processor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/salience_map.html">Salience Map</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/feature_map.html">Feature Map</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/proto_parameters.html">Proto Parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/interest_points.html">Interest Points</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/complexity.html">Complexity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/action_selector.html">Action Selector</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/gaze_sampler.html">Gaze Sampler</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Salience Backends</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/self_resemblance.html">Self-Resemblance</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Utils</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../utils/statistics.html">Statistics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/helper.html">Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/logger.html">Logger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/plotter.html">Plotter</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Eco Sampling</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Module code</a> &raquo;</li>
+      <li>action_selector</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for action_selector</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Class file for the Action Selector.</span>
+
+<span class="sd">Authors:</span>
+<span class="sd">    - Giuseppe Boccignone &lt;giuseppe.boccignone@unimi.it&gt;</span>
+<span class="sd">    - Renato Nobre &lt;renato.avellarnobre@studenti.unimi.it&gt;</span>
+
+<span class="sd">Changes:</span>
+<span class="sd">    - 12/12/2012  First Edition Matlab</span>
+<span class="sd">    - 31/05/2022  Python Edition</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">config</span> <span class="kn">import</span> <span class="n">ComplexityConfig</span>
+<span class="kn">from</span> <span class="nn">utils.logger</span> <span class="kn">import</span> <span class="n">Logger</span>
+<span class="kn">from</span> <span class="nn">utils.statistics</span> <span class="kn">import</span> <span class="n">sample_discrete</span><span class="p">,</span> <span class="n">sample_dirchlet</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">Logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="ActionSelector"><a class="viewcode-back" href="../ecosampling/action_selector.html#action_selector.ActionSelector">[docs]</a><span class="k">class</span> <span class="nc">ActionSelector</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">disorder</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">complexity</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Select the new gaze action index based on the complexity.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            disorder (float):  disorder parameter</span>
+<span class="sd">            order (float): order parameter</span>
+<span class="sd">            complexity (float): complexity parameter $\mathcal{C}(t)$</span>
+
+<span class="sd">        Attributes:</span>
+<span class="sd">            disorder (float): disorder parameter</span>
+<span class="sd">            order (float): order parameter</span>
+<span class="sd">            complexity (float): complexity parameter $\mathcal{C}(t)$</span>
+<span class="sd">            c_eps (float): the chaos edge</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c_eps</span> <span class="o">=</span> <span class="n">ComplexityConfig</span><span class="o">.</span><span class="n">EPS</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">complexity</span> <span class="o">=</span> <span class="n">complexity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">order</span> <span class="o">=</span> <span class="n">order</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">disorder</span> <span class="o">=</span> <span class="n">disorder</span>
+
+
+<div class="viewcode-block" id="ActionSelector.select_action"><a class="viewcode-back" href="../ecosampling/action_selector.html#action_selector.ActionSelector.select_action">[docs]</a>    <span class="k">def</span> <span class="nf">select_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nu</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Dirichlet hyper-parameter update.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            nu (vector): previous Dirichlet Hyperparameters</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            nu (vector): new Dirichlet Hyperparameters</span>
+<span class="sd">            z (int): selected action index</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">nu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dirichlet_hyper_param_update</span><span class="p">(</span><span class="n">nu</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">verbose</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Complexity  </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">complexity</span><span class="si">}</span><span class="s2"> // Order </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="si">}</span><span class="s2"> // Disorder </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">disorder</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">verbose</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Parameter nu1 </span><span class="si">{</span><span class="n">nu</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">verbose</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Parameter nu2 </span><span class="si">{</span><span class="n">nu</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">verbose</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Parameter nu3 </span><span class="si">{</span><span class="n">nu</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Sampling the \pi parameter that is the probability of an order event</span>
+        <span class="c1"># $$\pi ~ %Dir(\pi | \nu)$$</span>
+        <span class="n">pi_prob</span> <span class="o">=</span> <span class="n">sample_dirchlet</span><span class="p">(</span><span class="n">nu</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Sampling the kind of gaze-shift regime:</span>
+        <span class="c1"># $$ z ~ Mult(z | \pi) $$</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">sample_discrete</span><span class="p">(</span><span class="n">pi_prob</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">verbose</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Action sampled: z = </span><span class="si">{</span><span class="n">z</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">nu</span><span class="p">,</span> <span class="n">z</span></div>
+
+<div class="viewcode-block" id="ActionSelector._dirichlet_hyper_param_update"><a class="viewcode-back" href="../ecosampling/action_selector.html#action_selector.ActionSelector._dirichlet_hyper_param_update">[docs]</a>    <span class="k">def</span> <span class="nf">_dirichlet_hyper_param_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nu</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Dirichlet hyper-parameter update.</span>
+
+<span class="sd">        Computes the new Dirichlet hyper-parameter nu. Given the complexity Ct,</span>
+<span class="sd">        we partition the complexity range in order to define K possible</span>
+<span class="sd">        complexity events. This way the hyper-parameter update can be rewritten</span>
+<span class="sd">        as the recursion. For further information, see [1]_ and [2]_.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            nu (vector): old Dirichlet Hyperparameters</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            nu (vector): new Dirichlet Hyperparameters</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; nu = _dirichlet_hyper_param_update(nu_old, disorder, order, compl, COMPL_EDGE)</span>
+
+<span class="sd">        References</span>
+<span class="sd">        ----------</span>
+<span class="sd">        .. [1] `Boccignone, G., &amp; Ferraro, M. (2013). Ecological sampling of gaze shifts.</span>
+<span class="sd">           IEEE transactions on cybernetics, 44(2), 266-279.</span>
+<span class="sd">           &lt;https://ieeexplore.ieee.org/abstract/document/6502674&gt;`_</span>
+<span class="sd">        .. [2] `G. Boccignone and M. Ferraro, The active sampling of gaze-shifts,</span>
+<span class="sd">           in Image Analysis and Processing ICIAP 2011, ser. Lecture Notes in Computer Science,</span>
+<span class="sd">           G. Maino and G. Foresti, Eds. Springer Berlin / Heidelberg, 2011, vol. 6978, pp. 187?196.</span>
+<span class="sd">           &lt;https://ieeexplore.ieee.org/abstract/document/6502674&gt;`_</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">thresh</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.25</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_eps</span><span class="p">)</span> <span class="c1"># If beyond threshold we are in the complex domain</span>
+        <span class="n">reset_step</span> <span class="o">=</span> <span class="mi">25</span> <span class="c1"># Parameter to control hysteresis</span>
+
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nu</span><span class="p">)):</span>
+            <span class="n">nu</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">nu</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">%</span> <span class="n">reset_step</span>
+            <span class="k">if</span> <span class="n">nu</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">nu</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">complexity</span> <span class="o">&lt;=</span> <span class="n">thresh</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">disorder</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="p">):</span>
+                <span class="c1"># Order Event</span>
+                <span class="n">nu</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">nu</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Disorder Event</span>
+                <span class="n">nu</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">nu</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># At the edge of chaos</span>
+            <span class="n">nu</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">nu</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">verbose</span><span class="p">(</span><span class="s1">&#39;MAX COMPLEXITY!!!!!!&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">nu</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Giuseppe Boccignone, Renato Nobre.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

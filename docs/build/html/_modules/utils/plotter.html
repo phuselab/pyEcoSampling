@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>utils.plotter &mdash; Eco Sampling 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html">
+            <img src="../../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../user/introduction.html">Ecological Sampling Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/config.html">Configuration file</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">EcoSampling Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../ecosampling/generate_scanpath.html">Generate Scanpath</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../ecosampling/frame_processor.html">Frame Processor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../ecosampling/salience_map.html">Salience Map</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../ecosampling/feature_map.html">Feature Map</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../ecosampling/proto_parameters.html">Proto Parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../ecosampling/interest_points.html">Interest Points</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../ecosampling/complexity.html">Complexity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../ecosampling/action_selector.html">Action Selector</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../ecosampling/gaze_sampler.html">Gaze Sampler</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Salience Backends</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../ecosampling/self_resemblance.html">Self-Resemblance</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Utils</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../utils/statistics.html">Statistics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../utils/helper.html">Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../utils/logger.html">Logger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../utils/plotter.html">Plotter</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Eco Sampling</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      <li>utils.plotter</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for utils.plotter</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;File for plotting data with matplotlib.</span>
+
+<span class="sd">Authors:</span>
+<span class="sd">    Giuseppe Boccignone &lt;giuseppe.boccignone@unimi.it&gt;</span>
+<span class="sd">    Renato Nobre &lt;renato.avellarnobre@studenti.unimi.it&gt;</span>
+
+<span class="sd">Changes:</span>
+<span class="sd">    12/12/2012  First Edition Matlab</span>
+<span class="sd">    31/05/2022  Python Edition</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">io</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">cv2</span>
+
+<span class="kn">from</span> <span class="nn">matplotlib.patches</span> <span class="kn">import</span> <span class="n">Ellipse</span><span class="p">,</span> <span class="n">Circle</span>
+
+<span class="kn">from</span> <span class="nn">config</span> <span class="kn">import</span> <span class="n">GeneralConfig</span>
+
+<div class="viewcode-block" id="Plotter"><a class="viewcode-back" href="../../utils/plotter.html#utils.plotter.Plotter">[docs]</a><span class="k">class</span> <span class="nc">Plotter</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Class for plotting data with matplotlib.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        Don&#39;t need to instantiate this class, unless</span>
+<span class="sd">        you want to plot the entire visualization with</span>
+<span class="sd">        ``plot_visualization``.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        num_line (int, optional): Number of lines to plot.</span>
+<span class="sd">            Defaults to 2.</span>
+<span class="sd">        num_pics_line (int, optional): Number of pictures to plot in each line.</span>
+<span class="sd">            Defaults to 5.</span>
+<span class="sd">        fig_size (tuple, optional): Size of the figure.</span>
+<span class="sd">            Defaults to (15, 5).</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        fig (plt.figure.Figure): Figure to plot the visualization.</span>
+<span class="sd">        axes (plt.axes.Axes): Axes to plot the visualization.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_line</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">num_pics_line</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">fig_size</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">n_obs</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">num_line</span><span class="p">,</span> <span class="n">num_pics_line</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="n">fig_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gif_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_result_folder</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">n_obs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gif_images</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fig</span> <span class="o">=</span> <span class="n">fig</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes</span> <span class="o">=</span> <span class="n">ax</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ion</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Plotter._clean_axes"><a class="viewcode-back" href="../../utils/plotter.html#utils.plotter.Plotter._clean_axes">[docs]</a>    <span class="k">def</span> <span class="nf">_clean_axes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Clean axes of the plot visualization.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Plotter._configure_axis"><a class="viewcode-back" href="../../utils/plotter.html#utils.plotter.Plotter._configure_axis">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_configure_axis</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">keep_axis</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Configure axis interface.</span>
+
+<span class="sd">        Wrap common aspects of plot axis.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            ax (axes.Axes): Axes to plot the image</span>
+<span class="sd">            title (str): Title of the plot</span>
+<span class="sd">            keep_axis (bool, optional): Whether to show or hide the axis.</span>
+<span class="sd">                Defaults to False.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">keep_axis</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_axis_off</span><span class="p">()</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Plotter._image_plot"><a class="viewcode-back" href="../../utils/plotter.html#utils.plotter.Plotter._image_plot">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_image_plot</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">,</span> <span class="n">interpol</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Image plot interface.</span>
+
+<span class="sd">        Wrap common aspects of image plotting.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            ax (axes.Axes): Axes to plot the image</span>
+<span class="sd">            image (np.ndarray): Image to plot.</span>
+<span class="sd">            title (str): Title of the plot</span>
+<span class="sd">            cmap (str, optional): Color map. Defaults to &#39;viridis&#39;.</span>
+<span class="sd">            interpol (str, optional): Interpolation type. Defaults to None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_configure_axis</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">title</span><span class="p">)</span>
+        <span class="n">ax_image</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="n">interpol</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ax_image</span></div>
+
+<div class="viewcode-block" id="Plotter.save_foa_values"><a class="viewcode-back" href="../../utils/plotter.html#utils.plotter.Plotter.save_foa_values">[docs]</a>    <span class="k">def</span> <span class="nf">save_foa_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">foa_values</span><span class="p">,</span> <span class="n">n_obs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Save foa numpy values.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            foa_values (np.ndarray): Foa values to save.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Save foa numpy values</span>
+        <span class="k">if</span> <span class="n">GeneralConfig</span><span class="o">.</span><span class="n">SAVE_FOA_ONFILE</span><span class="p">:</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_result_folder</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">n_obs</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="s1">&#39;/foa_values.npy&#39;</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">foa_values</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Plotter.save_complexity"><a class="viewcode-back" href="../../utils/plotter.html#utils.plotter.Plotter.save_complexity">[docs]</a>    <span class="k">def</span> <span class="nf">save_complexity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">complexity</span><span class="p">,</span> <span class="n">n_obs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Save complexy data plots an numpy values.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data (dict): Data dictionary</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">GeneralConfig</span><span class="o">.</span><span class="n">SAVE_COMPLEXITY_ONFILE</span><span class="p">:</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_result_folder</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">n_obs</span><span class="p">)</span>
+
+            <span class="c1"># Plot Final Order/Disorder</span>
+            <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">6</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">plot_order_disorder</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">complexity</span><span class="p">)</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="s1">&#39;/order_disorder_plot.png&#39;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+
+            <span class="c1"># Plot final complexity</span>
+            <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">6</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">plot_complexity</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">complexity</span><span class="p">)</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="s1">&#39;/complexity_plot.png&#39;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+
+            <span class="c1"># Save numpy values</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="s1">&#39;/order.npy&#39;</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">complexity</span><span class="o">.</span><span class="n">order</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="s1">&#39;/disorder.npy&#39;</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">complexity</span><span class="o">.</span><span class="n">disorder</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="s1">&#39;/complexity.npy&#39;</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">complexity</span><span class="o">.</span><span class="n">complexity</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Plotter.plot_visualization"><a class="viewcode-back" href="../../utils/plotter.html#utils.plotter.Plotter.plot_visualization">[docs]</a>    <span class="k">def</span> <span class="nf">plot_visualization</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">pause_time</span><span class="o">=</span><span class="mf">0.001</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Plot complete visualization for instance.</span>
+
+<span class="sd">        Plot all 10 plots for every frame.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data (dict): Data dictionary</span>
+<span class="sd">            pause_time (float, optional): Time to visualize the plot.</span>
+<span class="sd">                Defaults to 0.001 (for GPU issues).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_clean_axes</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot_original_frame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;frame_sampling&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot_foveated_frame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;frame_sampling&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot_feature_map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;feature_map&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot_saliency_map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;saliency_map&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot_proto_objects</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;frame_sampling&quot;</span><span class="p">],</span>
+                                <span class="n">data</span><span class="p">[</span><span class="s2">&quot;proto_params&quot;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;num_proto&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot_interest_points</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;frame_sampling&quot;</span><span class="p">],</span>
+                                  <span class="n">data</span><span class="p">[</span><span class="s2">&quot;circle_coords&quot;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;gaze_sampler&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot_empirical_dists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;hist_mat&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot_order_disorder</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;complexity&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot_complexity</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;complexity&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot_sampled_FOA</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;frame_sampling&quot;</span><span class="p">],</span>
+                              <span class="n">data</span><span class="p">[</span><span class="s2">&quot;gaze_sampler&quot;</span><span class="p">])</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">pause</span><span class="p">(</span><span class="n">pause_time</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">GeneralConfig</span><span class="o">.</span><span class="n">GENERATE_GIF</span><span class="p">:</span>
+            <span class="n">buf</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;png&quot;</span><span class="p">)</span>
+            <span class="n">buf</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">img_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="n">buf</span><span class="o">.</span><span class="n">getvalue</span><span class="p">(),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+            <span class="n">buf</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="n">img</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imdecode</span><span class="p">(</span><span class="n">img_arr</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">img</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">COLOR_BGR2RGB</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gif_images</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">pause</span><span class="p">(</span><span class="n">pause_time</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Plotter.plot_original_frame"><a class="viewcode-back" href="../../utils/plotter.html#utils.plotter.Plotter.plot_original_frame">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">plot_original_frame</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">frame_sampling</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Plot original frame.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            axes (axes.Axes): Axes to plot the image</span>
+<span class="sd">            frame_sampling (obj): Frame sampling object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_image_plot</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="n">frame_sampling</span><span class="o">.</span><span class="n">show_frame</span><span class="p">,</span> <span class="s1">&#39;Current frame&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Plotter.plot_foveated_frame"><a class="viewcode-back" href="../../utils/plotter.html#utils.plotter.Plotter.plot_foveated_frame">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">plot_foveated_frame</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">frame_sampling</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Plot foveated frame.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            axes (axes.Axes): Axes to plot the image</span>
+<span class="sd">            frame_sampling (obj): Frame sampling object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_image_plot</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="n">frame_sampling</span><span class="o">.</span><span class="n">show_foveated_frame</span><span class="p">,</span> <span class="s1">&#39;Foveated frame&#39;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Plotter.plot_feature_map"><a class="viewcode-back" href="../../utils/plotter.html#utils.plotter.Plotter.plot_feature_map">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">plot_feature_map</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">feature_map</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Plot feature map.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            axes (axes.Axes): Axes to plot the image</span>
+<span class="sd">            feature_map (np.ndarray): Feature map frame to plot.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_image_plot</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="n">feature_map</span><span class="o">.</span><span class="n">show</span><span class="p">,</span> <span class="s1">&#39;Feature map&#39;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Plotter.plot_saliency_map"><a class="viewcode-back" href="../../utils/plotter.html#utils.plotter.Plotter.plot_saliency_map">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">plot_saliency_map</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">saliency_map</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Plot saliency map.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            axes (axes.Axes): Axes to plot the image</span>
+<span class="sd">            saliency_map (np.ndarray): Salience map frame to plot.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_image_plot</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="n">saliency_map</span><span class="p">,</span> <span class="s1">&#39;Salience map&#39;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;jet&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Plotter.plot_proto_objects"><a class="viewcode-back" href="../../utils/plotter.html#utils.plotter.Plotter.plot_proto_objects">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">plot_proto_objects</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">frame_sampler</span><span class="p">,</span> <span class="n">proto_params</span><span class="p">,</span> <span class="n">num_proto</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Plot Proto Objects.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            axes (axes.Axes): Axes to plot the image</span>
+<span class="sd">            frame_sampler (obj): Frame sampling object.</span>
+<span class="sd">            proto_params (obj): protoparams objetcs to plot.</span>
+<span class="sd">            num_proto (int): Number of protoparameres.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">num_proto</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">_image_plot</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="n">frame_sampler</span><span class="o">.</span><span class="n">show_frame</span><span class="p">,</span> <span class="s1">&#39;Proto-Objects&#39;</span><span class="p">)</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">_image_plot</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="n">proto_params</span><span class="o">.</span><span class="n">show_proto</span><span class="p">,</span> <span class="s1">&#39;Proto-Objects&#39;</span><span class="p">,</span>
+                            <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">interpol</span><span class="o">=</span><span class="s1">&#39;nearest&#39;</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">proto_params</span><span class="o">.</span><span class="n">nV</span><span class="p">):</span>
+                <span class="p">((</span><span class="n">centx</span><span class="p">,</span><span class="n">centy</span><span class="p">),</span> <span class="p">(</span><span class="n">width</span><span class="p">,</span><span class="n">height</span><span class="p">),</span> <span class="n">angle</span><span class="p">)</span> <span class="o">=</span> <span class="n">proto_params</span><span class="o">.</span><span class="n">a</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
+                <span class="n">elli</span> <span class="o">=</span> <span class="n">Ellipse</span><span class="p">((</span><span class="n">centx</span><span class="p">,</span><span class="n">centy</span><span class="p">),</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">angle</span><span class="p">)</span>
+                <span class="n">elli</span><span class="o">.</span><span class="n">set_ec</span><span class="p">(</span><span class="s1">&#39;yellow&#39;</span><span class="p">)</span>
+                <span class="n">elli</span><span class="o">.</span><span class="n">set_fill</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+                <span class="n">axes</span><span class="o">.</span><span class="n">add_artist</span><span class="p">(</span><span class="n">elli</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Plotter.plot_interest_points"><a class="viewcode-back" href="../../utils/plotter.html#utils.plotter.Plotter.plot_interest_points">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">plot_interest_points</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">frame_sampler</span><span class="p">,</span> <span class="n">circle_coords</span><span class="p">,</span> <span class="n">gaze_sampler</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Plot Interest points.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            axes (axes.Axes): Axes to plot the image</span>
+<span class="sd">            frame_sampler (obj): Frame sampling object.</span>
+<span class="sd">            circle_coords (np.ndarray): Coordinates of interest points</span>
+<span class="sd">            gaze_sampler (obj): gaze_sampler object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_image_plot</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="n">frame_sampler</span><span class="o">.</span><span class="n">show_frame</span><span class="p">,</span> <span class="s2">&quot;Sampled Interest Points (IP)&quot;</span><span class="p">)</span>
+        <span class="c1"># Show image with region marked</span>
+        <span class="n">xCoord</span><span class="p">,</span> <span class="n">yCoord</span> <span class="o">=</span> <span class="n">circle_coords</span>
+
+        <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">yCoord</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="n">circle</span> <span class="o">=</span> <span class="n">Circle</span><span class="p">((</span><span class="n">xCoord</span><span class="p">[</span><span class="n">b</span><span class="p">],</span><span class="n">yCoord</span><span class="p">[</span><span class="n">b</span><span class="p">]),</span> <span class="mi">4</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">axes</span><span class="o">.</span><span class="n">add_artist</span><span class="p">(</span><span class="n">circle</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">gaze_sampler</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">candx</span><span class="p">,</span> <span class="n">candy</span> <span class="o">=</span> <span class="n">gaze_sampler</span><span class="o">.</span><span class="n">candx</span><span class="p">,</span> <span class="n">gaze_sampler</span><span class="o">.</span><span class="n">candy</span>
+            <span class="k">for</span> <span class="n">idc</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">candx</span><span class="p">)):</span>
+                <span class="n">circle</span> <span class="o">=</span> <span class="n">Circle</span><span class="p">((</span><span class="n">candx</span><span class="p">[</span><span class="n">idc</span><span class="p">],</span> <span class="n">candy</span><span class="p">[</span><span class="n">idc</span><span class="p">]),</span> <span class="mi">4</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+                <span class="n">axes</span><span class="o">.</span><span class="n">add_artist</span><span class="p">(</span><span class="n">circle</span><span class="p">)</span>
+
+            <span class="n">circle</span> <span class="o">=</span> <span class="n">Circle</span><span class="p">((</span><span class="n">gaze_sampler</span><span class="o">.</span><span class="n">candidate_foa</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">gaze_sampler</span><span class="o">.</span><span class="n">candidate_foa</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="mi">10</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;g&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+            <span class="n">axes</span><span class="o">.</span><span class="n">add_artist</span><span class="p">(</span><span class="n">circle</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Plotter.plot_empirical_dists"><a class="viewcode-back" href="../../utils/plotter.html#utils.plotter.Plotter.plot_empirical_dists">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">plot_empirical_dists</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">hist_mat</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Plot IP Empirical distribution.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            axes (axes.Axes): Axes to plot the image</span>
+<span class="sd">            hist_mat (np.ndarray): 2D histogram array, already transposed to original</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_configure_axis</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="s2">&quot;IP Empirical Distribution&quot;</span><span class="p">)</span>
+        <span class="n">sns</span><span class="o">.</span><span class="n">heatmap</span><span class="p">(</span><span class="n">hist_mat</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">cbar</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;jet&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Plotter.plot_order_disorder"><a class="viewcode-back" href="../../utils/plotter.html#utils.plotter.Plotter.plot_order_disorder">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">plot_order_disorder</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">complexity</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Plot order/disorder.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            axes (axes.Axes): Axes to plot the image</span>
+<span class="sd">            complexity (obj): Complexity object.</span>
+<span class="sd">            lw (int, optional): Line width. Defaults to 2.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_configure_axis</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="s2">&quot;Order/Disorder&quot;</span><span class="p">,</span> <span class="n">keep_axis</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">axes</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">complexity</span><span class="o">.</span><span class="n">disorder</span><span class="p">,</span> <span class="s1">&#39;r--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Disorder&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="n">lw</span><span class="p">)</span>
+        <span class="n">axes</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">complexity</span><span class="o">.</span><span class="n">order</span><span class="p">,</span> <span class="s1">&#39;g-&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Order&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="n">lw</span><span class="p">)</span>
+        <span class="n">axes</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper right&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Plotter.plot_complexity"><a class="viewcode-back" href="../../utils/plotter.html#utils.plotter.Plotter.plot_complexity">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">plot_complexity</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">complexity</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Plot complexity curves.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            axes (axes.Axes): Axes to plot the image</span>
+<span class="sd">            complexity (obj): Complexity object.</span>
+<span class="sd">            lw (int, optional): Line width. Defaults to 2.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_configure_axis</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="s2">&quot;Complexity&quot;</span> <span class="p">,</span> <span class="n">keep_axis</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">axes</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">complexity</span><span class="o">.</span><span class="n">complexity</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Complexity&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="n">lw</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Plotter.plot_sampled_FOA"><a class="viewcode-back" href="../../utils/plotter.html#utils.plotter.Plotter.plot_sampled_FOA">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">plot_sampled_FOA</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">frame_sampler</span><span class="p">,</span> <span class="n">gaze_sampler</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Plot final FOA.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            axes (axes.Axes): Axes to plot the image</span>
+<span class="sd">            frame_sampler (obj): Frame sampling object.</span>
+<span class="sd">            gaze_sampler (obj): Gaze sampler object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_image_plot</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="n">frame_sampler</span><span class="o">.</span><span class="n">show_frame</span><span class="p">,</span> <span class="s2">&quot;Final FOA&quot;</span><span class="p">)</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_image_plot</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="n">gaze_sampler</span><span class="o">.</span><span class="n">show</span><span class="p">,</span> <span class="s2">&quot;Final FOA&quot;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">interpol</span><span class="o">=</span><span class="s1">&#39;nearest&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Plotter._create_result_folder"><a class="viewcode-back" href="../../utils/plotter.html#utils.plotter.Plotter._create_result_folder">[docs]</a>    <span class="k">def</span> <span class="nf">_create_result_folder</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">plot_type_folder</span><span class="p">,</span> <span class="n">n_obs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create result folder.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            plot_type_folder (str): Plot type folder.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: Path to the result folder.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">results_folder</span> <span class="o">=</span> <span class="n">GeneralConfig</span><span class="o">.</span><span class="n">RESULTS_DIR</span>
+
+        <span class="k">if</span> <span class="n">GeneralConfig</span><span class="o">.</span><span class="n">TOTAL_OBSERVERS</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">results_folder</span> <span class="o">=</span> <span class="n">results_folder</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;/obs_</span><span class="si">{</span><span class="n">n_obs</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">/&quot;</span>
+
+        <span class="c1"># Create result folder</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">results_folder</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">results_folder</span><span class="p">)</span>
+
+        <span class="c1"># Create subfolders</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">results_folder</span> <span class="o">+</span> <span class="n">plot_type_folder</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">results_folder</span> <span class="o">+</span> <span class="n">plot_type_folder</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">results_folder</span> <span class="o">+</span> <span class="n">plot_type_folder</span></div>
+
+
+<div class="viewcode-block" id="Plotter._configure_axis_save"><a class="viewcode-back" href="../../utils/plotter.html#utils.plotter.Plotter._configure_axis_save">[docs]</a>    <span class="k">def</span> <span class="nf">_configure_axis_save</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">save_name</span><span class="p">,</span> <span class="n">frame_num</span><span class="p">,</span> <span class="n">n_obs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Configure axis to save a clean image.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            fig (obj): Matplotlib figure</span>
+<span class="sd">            ax (axes.Axes): Axes to plot the image</span>
+<span class="sd">            save_name (string): Name of the image to save and path to create.</span>
+<span class="sd">            frame_num (int): Number of the frame</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_create_result_folder</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">save_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">n_obs</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39;/</span><span class="si">{</span><span class="n">save_name</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">frame_num</span><span class="si">}</span><span class="s1">.png&#39;</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s1">&#39;tight&#39;</span><span class="p">,</span> <span class="n">pad_inches</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Plotter.save_imgs"><a class="viewcode-back" href="../../utils/plotter.html#utils.plotter.Plotter.save_imgs">[docs]</a>    <span class="k">def</span> <span class="nf">save_imgs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">frame_num</span><span class="p">,</span> <span class="n">n_obs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;&quot;Save images to disk.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data (dict): Data dictionary</span>
+<span class="sd">            frame_num (int): Number of the frame</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">6</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">GeneralConfig</span><span class="o">.</span><span class="n">SAVE_FOV_IMG</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">plot_foveated_frame</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;frame_sampling&quot;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_configure_axis_save</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="s1">&#39;foveated&#39;</span><span class="p">,</span> <span class="n">frame_num</span><span class="p">,</span> <span class="n">n_obs</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">GeneralConfig</span><span class="o">.</span><span class="n">SAVE_SAL_IMG</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">plot_saliency_map</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;saliency_map&quot;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_configure_axis_save</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="s1">&#39;salience&#39;</span><span class="p">,</span> <span class="n">frame_num</span><span class="p">,</span> <span class="n">n_obs</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">GeneralConfig</span><span class="o">.</span><span class="n">SAVE_PROTO_IMG</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">plot_proto_objects</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;frame_sampling&quot;</span><span class="p">],</span>
+                                    <span class="n">data</span><span class="p">[</span><span class="s2">&quot;proto_params&quot;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;num_proto&quot;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_configure_axis_save</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="s1">&#39;protos&#39;</span><span class="p">,</span> <span class="n">frame_num</span><span class="p">,</span> <span class="n">n_obs</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">GeneralConfig</span><span class="o">.</span><span class="n">SAVE_IP_IMG</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">plot_interest_points</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;frame_sampling&quot;</span><span class="p">],</span>
+                                      <span class="n">data</span><span class="p">[</span><span class="s2">&quot;circle_coords&quot;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;gaze_sampler&quot;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_configure_axis_save</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="s1">&#39;ips&#39;</span><span class="p">,</span> <span class="n">frame_num</span><span class="p">,</span> <span class="n">n_obs</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">GeneralConfig</span><span class="o">.</span><span class="n">SAVE_HISTO_IMG</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">plot_empirical_dists</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;hist_mat&quot;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_configure_axis_save</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="s1">&#39;empirical_dists&#39;</span><span class="p">,</span> <span class="n">frame_num</span><span class="p">,</span> <span class="n">n_obs</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">GeneralConfig</span><span class="o">.</span><span class="n">SAVE_FOA_IMG</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">plot_sampled_FOA</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;frame_sampling&quot;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;gaze_sampler&quot;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_configure_axis_save</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="s1">&#39;foa&#39;</span><span class="p">,</span> <span class="n">frame_num</span><span class="p">,</span> <span class="n">n_obs</span><span class="p">)</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span></div></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Giuseppe Boccignone, Renato Nobre.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

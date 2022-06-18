@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Proto Parameters &mdash; Eco Sampling 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Interest Points" href="interest_points.html" />
+    <link rel="prev" title="Feature Map" href="feature_map.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html">
+            <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user/introduction.html">Ecological Sampling Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/config.html">Configuration file</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">EcoSampling Modules</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="generate_scanpath.html">Generate Scanpath</a></li>
+<li class="toctree-l1"><a class="reference internal" href="frame_processor.html">Frame Processor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="salience_map.html">Salience Map</a></li>
+<li class="toctree-l1"><a class="reference internal" href="feature_map.html">Feature Map</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Proto Parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interest_points.html">Interest Points</a></li>
+<li class="toctree-l1"><a class="reference internal" href="complexity.html">Complexity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="action_selector.html">Action Selector</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gaze_sampler.html">Gaze Sampler</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Salience Backends</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="self_resemblance.html">Self-Resemblance</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Utils</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../utils/statistics.html">Statistics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/helper.html">Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/logger.html">Logger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/plotter.html">Plotter</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Eco Sampling</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Proto Parameters</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/ecosampling/proto_parameters.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="module-proto_parameters">
+<span id="proto-parameters"></span><h1>Proto Parameters<a class="headerlink" href="#module-proto_parameters" title="Permalink to this headline"></a></h1>
+<p>Handle creation of the proto-objects its visualizations.</p>
+<p>Sample the patch or proto-object map M(t), the proto parameters and
+calculate the center of mass of the proto-objects. Additionally, creates
+the visual representation of the proto-objects.</p>
+<dl class="simple">
+<dt>Authors:</dt><dd><ul class="simple">
+<li><p>Giuseppe Boccignone &lt;<a class="reference external" href="mailto:giuseppe&#46;boccignone&#37;&#52;&#48;unimi&#46;it">giuseppe<span>&#46;</span>boccignone<span>&#64;</span>unimi<span>&#46;</span>it</a>&gt;</p></li>
+<li><p>Renato Nobre &lt;<a class="reference external" href="mailto:renato&#46;avellarnobre&#37;&#52;&#48;studenti&#46;unimi&#46;it">renato<span>&#46;</span>avellarnobre<span>&#64;</span>studenti<span>&#46;</span>unimi<span>&#46;</span>it</a>&gt;</p></li>
+</ul>
+</dd>
+<dt>Changes:</dt><dd><ul class="simple">
+<li><p>12/12/2012  First Edition Matlab</p></li>
+<li><p>31/05/2022  Python Edition</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="proto_parameters.ProtoParameters">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">proto_parameters.</span></span><span class="sig-name descname"><span class="pre">ProtoParameters</span></span><a class="reference internal" href="../_modules/proto_parameters.html#ProtoParameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#proto_parameters.ProtoParameters" title="Permalink to this definition"></a></dt>
+<dd><p>Handle creation of the proto-objects its visualizations.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The proto-parameters, its visual representation, centers, and areas
+are stored in the object, and are updated at each frame.</p>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="proto_parameters.ProtoParameters.B">
+<span class="sig-name descname"><span class="pre">B</span></span><a class="headerlink" href="#proto_parameters.ProtoParameters.B" title="Permalink to this definition"></a></dt>
+<dd><p>Patch boundaries</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="proto_parameters.ProtoParameters.a">
+<span class="sig-name descname"><span class="pre">a</span></span><a class="headerlink" href="#proto_parameters.ProtoParameters.a" title="Permalink to this definition"></a></dt>
+<dd><p>The proto-objects fitting ellipses parameters</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="proto_parameters.ProtoParameters.r1">
+<span class="sig-name descname"><span class="pre">r1</span></span><a class="headerlink" href="#proto_parameters.ProtoParameters.r1" title="Permalink to this definition"></a></dt>
+<dd><p>Normal form parameters axis</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="proto_parameters.ProtoParameters.r2">
+<span class="sig-name descname"><span class="pre">r2</span></span><a class="headerlink" href="#proto_parameters.ProtoParameters.r2" title="Permalink to this definition"></a></dt>
+<dd><p>Normal form parameters axis</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="proto_parameters.ProtoParameters.cx">
+<span class="sig-name descname"><span class="pre">cx</span></span><a class="headerlink" href="#proto_parameters.ProtoParameters.cx" title="Permalink to this definition"></a></dt>
+<dd><p>Normal form center X</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="proto_parameters.ProtoParameters.cy">
+<span class="sig-name descname"><span class="pre">cy</span></span><a class="headerlink" href="#proto_parameters.ProtoParameters.cy" title="Permalink to this definition"></a></dt>
+<dd><p>Normal form center Y</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="proto_parameters.ProtoParameters.theta">
+<span class="sig-name descname"><span class="pre">theta</span></span><a class="headerlink" href="#proto_parameters.ProtoParameters.theta" title="Permalink to this definition"></a></dt>
+<dd><p>Elipse Rotation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="proto_parameters.ProtoParameters.show_proto">
+<span class="sig-name descname"><span class="pre">show_proto</span></span><a class="headerlink" href="#proto_parameters.ProtoParameters.show_proto" title="Permalink to this definition"></a></dt>
+<dd><p>Visual representation of proto objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="proto_parameters.ProtoParameters.n_best_proto">
+<span class="sig-name descname"><span class="pre">n_best_proto</span></span><a class="headerlink" href="#proto_parameters.ProtoParameters.n_best_proto" title="Permalink to this definition"></a></dt>
+<dd><p>Maximum ammount of best proto objects to sample.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="proto_parameters.ProtoParameters.area_proto">
+<span class="sig-name descname"><span class="pre">area_proto</span></span><a class="headerlink" href="#proto_parameters.ProtoParameters.area_proto" title="Permalink to this definition"></a></dt>
+<dd><p>Area of proto objects ellipses.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="proto_parameters.ProtoParameters.nV">
+<span class="sig-name descname"><span class="pre">nV</span></span><a class="headerlink" href="#proto_parameters.ProtoParameters.nV" title="Permalink to this definition"></a></dt>
+<dd><p>Number of best patches to sample.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="proto_parameters.ProtoParameters.proto_centers">
+<span class="sig-name descname"><span class="pre">proto_centers</span></span><a class="headerlink" href="#proto_parameters.ProtoParameters.proto_centers" title="Permalink to this definition"></a></dt>
+<dd><p>Centers of proto objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="proto_parameters.ProtoParameters.sample_proto_objects">
+<span class="sig-name descname"><span class="pre">sample_proto_objects</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">salience_map</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/proto_parameters.html#ProtoParameters.sample_proto_objects"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#proto_parameters.ProtoParameters.sample_proto_objects" title="Permalink to this definition"></a></dt>
+<dd><p>Sample the proto-objects and create visualizations.</p>
+<p>Sample the patch or proto-object map M(t), the proto parameters and
+calculate the center of mass of the proto-objects. Additionally, creates
+the visual representation of the proto-objects.</p>
+<p>Using the proto-object representation which is the base of method
+described in <a class="footnote-reference brackets" href="#id2" id="id1">1</a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The proto-parameters and its visual representation are stored in the object,
+and are updated at each frame.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>saliency_map</strong> (<em>np.ndarray</em>) – Frame saliency map</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>num_proto</strong> (<em>int</em>) – Number of proto-objects found.</p>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id2"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dd><p><a class="reference external" href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.1.7559&amp;rep=rep1&amp;type=pdf">Halir, R., &amp; Flusser, J. (1998, February). Numerically stable direct least squares
+fitting of ellipses. In Proc. 6th International Conference in Central Europe
+on Computer Graphics and Visualization. WSCG (Vol. 98, pp. 125-132). Citeseer.</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="proto_parameters.ProtoParameters._calculate_center_area">
+<span class="sig-name descname"><span class="pre">_calculate_center_area</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_proto</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/proto_parameters.html#ProtoParameters._calculate_center_area"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#proto_parameters.ProtoParameters._calculate_center_area" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate center and Area of proto-objects.</p>
+<p>Determine the center and the area of patches for
+subsequent IP sampling.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The proto-parameters area and centers are stored in the object,
+and are updated at each frame.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>num_proto</strong> (<em>int</em>) – Number of proto-objects found.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="proto_parameters.ProtoParameters._sample_proto_params">
+<span class="sig-name descname"><span class="pre">_sample_proto_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mt_map</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/proto_parameters.html#ProtoParameters._sample_proto_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#proto_parameters.ProtoParameters._sample_proto_params" title="Permalink to this definition"></a></dt>
+<dd><p>Update the class patch map M(t) parameters <span class="math notranslate nohighlight">\(theta_p\)</span>.</p>
+<p>In a first step finds the boundaries of the actual patches.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The proto-parameters and are stored in the object,
+and are updated at each frame.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>mt_map</strong> (<em>np.ndarray</em>) – the patch map <span class="math notranslate nohighlight">\(M(t)\)</span></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>num_proto</strong> (<em>int</em>) – Number of protoparametes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="proto_parameters.ProtoParameters._sample_proto_map">
+<span class="sig-name descname"><span class="pre">_sample_proto_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s_map</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/proto_parameters.html#ProtoParameters._sample_proto_map"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#proto_parameters.ProtoParameters._sample_proto_map" title="Permalink to this definition"></a></dt>
+<dd><p>Generates the patch map M(t).</p>
+<p>In a first step generates the raw patch map by thresholding the normalized salience map
+so as to achieve 95% significance level for deciding whether the given saliency values are
+in the extreme tails. For further information, see also <a class="footnote-reference brackets" href="#id4" id="id3">2</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>s_map</strong> (<em>matrix</em>) – the salience map, 0/1 overlay representation</p></li>
+<li><p><strong>curr_frame</strong> (<em>matrix</em>) – the current frame</p></li>
+<li><p><strong>n_best_proto</strong> (<em>integer</em>) – the N_V most valuable patches</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>mt_map</strong> (<em>matrix</em>) – the patch map M(t)</p></li>
+<li><p><strong>proto_map</strong> (<em>matrix</em>) – the object layer representation of patch map M(t)</p></li>
+<li><p><strong>norm_sal</strong> (<em>matrix</em>) – the normalized salience map</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id4"><span class="brackets"><a class="fn-backref" href="#id3">2</a></span></dt>
+<dd><p><a class="reference external" href="https://ieeexplore.ieee.org/abstract/document/6502674">Boccignone, G., &amp; Ferraro, M. (2013). Ecological sampling of gaze shifts.
+IEEE transactions on cybernetics, 44(2), 266-279.</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="proto_parameters.ProtoParameters._sample_best_patches">
+<span class="sig-name descname"><span class="pre">_sample_best_patches</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">proto_map_raw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/proto_parameters.html#ProtoParameters._sample_best_patches"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#proto_parameters.ProtoParameters._sample_best_patches" title="Permalink to this definition"></a></dt>
+<dd><p>Samples the N_V best patches.</p>
+<p>Samples the N_V best patches ranked through their size and returns the actual
+M(t) map.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>proto_map_raw</strong> (<em>matrix</em>) – the raw patch map</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>mt_map</strong> (<em>matrix</em>) – the patch map M(t)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="feature_map.html" class="btn btn-neutral float-left" title="Feature Map" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="interest_points.html" class="btn btn-neutral float-right" title="Interest Points" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Giuseppe Boccignone, Renato Nobre.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

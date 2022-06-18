@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>proto_parameters &mdash; Eco Sampling 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html">
+            <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user/introduction.html">Ecological Sampling Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/config.html">Configuration file</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">EcoSampling Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/generate_scanpath.html">Generate Scanpath</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/frame_processor.html">Frame Processor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/salience_map.html">Salience Map</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/feature_map.html">Feature Map</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/proto_parameters.html">Proto Parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/interest_points.html">Interest Points</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/complexity.html">Complexity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/action_selector.html">Action Selector</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/gaze_sampler.html">Gaze Sampler</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Salience Backends</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../ecosampling/self_resemblance.html">Self-Resemblance</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Utils</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../utils/statistics.html">Statistics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/helper.html">Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/logger.html">Logger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/plotter.html">Plotter</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Eco Sampling</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Module code</a> &raquo;</li>
+      <li>proto_parameters</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for proto_parameters</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Handle creation of the proto-objects its visualizations.</span>
+
+<span class="sd">Sample the patch or proto-object map M(t), the proto parameters and</span>
+<span class="sd">calculate the center of mass of the proto-objects. Additionally, creates</span>
+<span class="sd">the visual representation of the proto-objects.</span>
+
+<span class="sd">Authors:</span>
+<span class="sd">    - Giuseppe Boccignone &lt;giuseppe.boccignone@unimi.it&gt;</span>
+<span class="sd">    - Renato Nobre &lt;renato.avellarnobre@studenti.unimi.it&gt;</span>
+
+<span class="sd">Changes:</span>
+<span class="sd">    - 12/12/2012  First Edition Matlab</span>
+<span class="sd">    - 31/05/2022  Python Edition</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">config</span> <span class="kn">import</span> <span class="n">ProtoConfig</span>
+<span class="kn">from</span> <span class="nn">utils.logger</span> <span class="kn">import</span> <span class="n">Logger</span>
+<span class="kn">import</span> <span class="nn">cv2</span>
+<span class="kn">from</span> <span class="nn">skimage</span> <span class="kn">import</span> <span class="n">measure</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">Logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ProtoParameters"><a class="viewcode-back" href="../ecosampling/proto_parameters.html#proto_parameters.ProtoParameters">[docs]</a><span class="k">class</span> <span class="nc">ProtoParameters</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Handle creation of the proto-objects its visualizations.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        The proto-parameters, its visual representation, centers, and areas</span>
+<span class="sd">        are stored in the object, and are updated at each frame.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        B (np.ndarray): Patch boundaries</span>
+<span class="sd">        a (np.ndarray): The proto-objects fitting ellipses parameters</span>
+<span class="sd">        r1 (np.ndarray): Normal form parameters axis</span>
+<span class="sd">        r2 (np.ndarray): Normal form parameters axis</span>
+<span class="sd">        cx (np.ndarray): Normal form center X</span>
+<span class="sd">        cy (np.ndarray): Normal form center Y</span>
+<span class="sd">        theta (np.ndarray): Elipse Rotation</span>
+<span class="sd">        show_proto (np.ndarray): Visual representation of proto objects.</span>
+<span class="sd">        n_best_proto (int): Maximum ammount of best proto objects to sample.</span>
+<span class="sd">        area_proto (np.ndarray): Area of proto objects ellipses.</span>
+<span class="sd">        nV (int): Number of best patches to sample.</span>
+<span class="sd">        proto_centers (np.ndarray): Centers of proto objects.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">B</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">r2</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cy</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">theta</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nV</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_proto</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">area_proto</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proto_centers</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_best_proto</span> <span class="o">=</span> <span class="n">ProtoConfig</span><span class="o">.</span><span class="n">N_BEST_PROTO</span>
+
+<div class="viewcode-block" id="ProtoParameters.sample_proto_objects"><a class="viewcode-back" href="../ecosampling/proto_parameters.html#proto_parameters.ProtoParameters.sample_proto_objects">[docs]</a>    <span class="k">def</span> <span class="nf">sample_proto_objects</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">salience_map</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sample the proto-objects and create visualizations.</span>
+
+<span class="sd">        Sample the patch or proto-object map M(t), the proto parameters and</span>
+<span class="sd">        calculate the center of mass of the proto-objects. Additionally, creates</span>
+<span class="sd">        the visual representation of the proto-objects.</span>
+
+<span class="sd">        Using the proto-object representation which is the base of method</span>
+<span class="sd">        described in [1]_.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            The proto-parameters and its visual representation are stored in the object,</span>
+<span class="sd">            and are updated at each frame.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            saliency_map (np.ndarray): Frame saliency map</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            num_proto (int): Number of proto-objects found.</span>
+
+<span class="sd">        References</span>
+<span class="sd">        ----------</span>
+<span class="sd">        .. [1] `Halir, R., &amp; Flusser, J. (1998, February). Numerically stable direct least squares</span>
+<span class="sd">           fitting of ellipses. In Proc. 6th International Conference in Central Europe</span>
+<span class="sd">           on Computer Graphics and Visualization. WSCG (Vol. 98, pp. 125-132). Citeseer.</span>
+<span class="sd">           &lt;http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.1.7559&amp;rep=rep1&amp;type=pdf&gt;`_</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Sampling the patch or proto-object map M(t)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">verbose</span><span class="p">(</span><span class="s1">&#39;Sampling the proto-object map&#39;</span><span class="p">)</span>
+        <span class="n">mt_map</span><span class="p">,</span> <span class="n">proto_map</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_proto_map</span><span class="p">(</span><span class="n">salience_map</span><span class="p">)</span>
+
+        <span class="c1"># Create show version of proto-objects</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_proto</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_where</span><span class="p">(</span><span class="n">proto_map</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="n">proto_map</span><span class="p">)</span>
+
+        <span class="c1"># Sampling the proto-object parameters</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">verbose</span><span class="p">(</span><span class="s1">&#39;Sampling the proto-object parameters&#39;</span><span class="p">)</span>
+        <span class="n">num_proto</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_proto_params</span><span class="p">(</span><span class="n">mt_map</span><span class="p">)</span>
+
+        <span class="c1"># Calculate centers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_center_area</span><span class="p">(</span><span class="n">num_proto</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">num_proto</span></div>
+
+
+<div class="viewcode-block" id="ProtoParameters._calculate_center_area"><a class="viewcode-back" href="../ecosampling/proto_parameters.html#proto_parameters.ProtoParameters._calculate_center_area">[docs]</a>    <span class="k">def</span> <span class="nf">_calculate_center_area</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_proto</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate center and Area of proto-objects.</span>
+
+<span class="sd">        Determine the center and the area of patches for</span>
+<span class="sd">        subsequent IP sampling.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            The proto-parameters area and centers are stored in the object,</span>
+<span class="sd">            and are updated at each frame.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            num_proto (int): Number of proto-objects found.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cx</span>
+        <span class="n">cy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cy</span>
+        <span class="k">if</span> <span class="n">num_proto</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">proto_object_centers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">cx</span><span class="p">,</span> <span class="n">cy</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
+            <span class="n">nV</span> <span class="o">=</span> <span class="n">proto_object_centers</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">verbose</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of proto_object_centers: </span><span class="si">{</span><span class="n">proto_object_centers</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="n">area_proto</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nV</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">nV</span><span class="p">):</span>
+                <span class="c1"># Aea of the fitting ellipse/area of the saliency map</span>
+                <span class="n">area_proto</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">r1</span><span class="p">[</span><span class="n">p</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">r2</span><span class="p">[</span><span class="n">p</span><span class="p">]</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nV</span> <span class="o">=</span> <span class="n">nV</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proto_centers</span> <span class="o">=</span> <span class="n">proto_object_centers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">area_proto</span> <span class="o">=</span> <span class="n">area_proto</span></div>
+
+
+<div class="viewcode-block" id="ProtoParameters._sample_proto_params"><a class="viewcode-back" href="../ecosampling/proto_parameters.html#proto_parameters.ProtoParameters._sample_proto_params">[docs]</a>    <span class="k">def</span> <span class="nf">_sample_proto_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mt_map</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Update the class patch map M(t) parameters :math:`theta_p`.</span>
+
+<span class="sd">        In a first step finds the boundaries of the actual patches.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            The proto-parameters and are stored in the object,</span>
+<span class="sd">            and are updated at each frame.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            mt_map (np.ndarray): the patch map :math:`M(t)`</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            num_proto (int): Number of protoparametes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Computing patch boundaries</span>
+        <span class="n">feat_map_img</span> <span class="o">=</span> <span class="n">mt_map</span> <span class="o">*</span> <span class="mi">255</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">thresh</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">threshold</span><span class="p">(</span><span class="n">cv2</span><span class="o">.</span><span class="n">convertScaleAbs</span><span class="p">(</span><span class="n">feat_map_img</span><span class="p">),</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">THRESH_BINARY</span><span class="o">+</span><span class="n">cv2</span><span class="o">.</span><span class="n">THRESH_OTSU</span><span class="p">)</span>
+        <span class="n">B</span> <span class="o">=</span> <span class="n">measure</span><span class="o">.</span><span class="n">find_contours</span><span class="p">(</span><span class="n">thresh</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+
+        <span class="c1"># The actual patch number</span>
+        <span class="n">num_proto</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">B</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">num_proto</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">r1</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">r2</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">cx</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">cy</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">theta</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="n">invalid</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="c1"># invalid_p = []</span>
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_proto</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">boundary</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flip</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">B</span><span class="p">[</span><span class="n">p</span><span class="p">]),</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+                    <span class="n">a</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cv2</span><span class="o">.</span><span class="n">fitEllipse</span><span class="p">(</span><span class="n">boundary</span><span class="p">))</span>
+                    <span class="n">r1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">p</span><span class="p">][</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="mf">2.</span><span class="p">)</span>
+                    <span class="n">r2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">p</span><span class="p">][</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="mf">2.</span><span class="p">)</span>
+                    <span class="n">cx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">p</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+                    <span class="n">cy</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">p</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+                    <span class="n">theta</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">p</span><span class="p">][</span><span class="mi">2</span><span class="p">])</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="n">invalid</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="n">num_proto</span> <span class="o">-=</span> <span class="n">invalid</span>
+
+            <span class="c1"># Assign the new parameters</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">B</span> <span class="o">=</span> <span class="n">B</span>
+            <span class="c1"># The proto-objects fitting ellipses parameters:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="n">a</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">r1</span> <span class="o">=</span> <span class="n">r1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">r2</span> <span class="o">=</span> <span class="n">r2</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cx</span> <span class="o">=</span> <span class="n">cx</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cy</span> <span class="o">=</span> <span class="n">cy</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">theta</span> <span class="o">=</span> <span class="n">theta</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;No proto-objects found, keeping old ones&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">num_proto</span></div>
+
+<div class="viewcode-block" id="ProtoParameters._sample_proto_map"><a class="viewcode-back" href="../ecosampling/proto_parameters.html#proto_parameters.ProtoParameters._sample_proto_map">[docs]</a>    <span class="k">def</span> <span class="nf">_sample_proto_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s_map</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Generates the patch map M(t).</span>
+
+<span class="sd">        In a first step generates the raw patch map by thresholding the normalized salience map</span>
+<span class="sd">        so as to achieve 95% significance level for deciding whether the given saliency values are</span>
+<span class="sd">        in the extreme tails. For further information, see also [2]_.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            s_map (matrix): the salience map, 0/1 overlay representation</span>
+<span class="sd">            curr_frame (matrix): the current frame</span>
+<span class="sd">            n_best_proto (integer): the N_V most valuable patches</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            mt_map (matrix): the patch map M(t)</span>
+<span class="sd">            proto_map (matrix): the object layer representation of patch map M(t)</span>
+<span class="sd">            norm_sal (matrix): the normalized salience map</span>
+
+<span class="sd">        References</span>
+<span class="sd">        ----------</span>
+<span class="sd">        .. [2] `Boccignone, G., &amp; Ferraro, M. (2013). Ecological sampling of gaze shifts.</span>
+<span class="sd">           IEEE transactions on cybernetics, 44(2), 266-279.</span>
+<span class="sd">           &lt;https://ieeexplore.ieee.org/abstract/document/6502674&gt;`_</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">proto_map_raw</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">s_map</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="c1"># Normalizing salience</span>
+        <span class="n">norm_sal</span> <span class="o">=</span> <span class="n">s_map</span>
+        <span class="n">max_sal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">norm_sal</span><span class="p">)</span>
+        <span class="n">min_sal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">norm_sal</span><span class="p">)</span>
+        <span class="n">norm_sal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">((</span><span class="n">norm_sal</span><span class="o">-</span><span class="n">min_sal</span><span class="p">),(</span><span class="n">max_sal</span><span class="o">-</span><span class="n">min_sal</span><span class="p">))</span>
+        <span class="n">norm_sal</span> <span class="o">=</span> <span class="n">norm_sal</span><span class="o">*</span><span class="mi">100</span>
+
+        <span class="c1"># Method percentile based</span>
+        <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">norm_sal</span> <span class="o">&gt;=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">norm_sal</span><span class="p">,</span><span class="mi">95</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">proto_map_raw</span><span class="p">[</span><span class="n">ind</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">ind</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="c1"># Samples the N_V best patches</span>
+        <span class="n">mt_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_best_patches</span><span class="p">(</span><span class="n">proto_map_raw</span><span class="p">)</span>
+
+        <span class="n">proto_map</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_not</span><span class="p">(</span><span class="n">mt_map</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">mt_map</span><span class="p">,</span> <span class="n">proto_map</span><span class="p">,</span> <span class="n">norm_sal</span></div>
+
+
+<div class="viewcode-block" id="ProtoParameters._sample_best_patches"><a class="viewcode-back" href="../ecosampling/proto_parameters.html#proto_parameters.ProtoParameters._sample_best_patches">[docs]</a>    <span class="k">def</span> <span class="nf">_sample_best_patches</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">proto_map_raw</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Samples the N_V best patches.</span>
+
+<span class="sd">        Samples the N_V best patches ranked through their size and returns the actual</span>
+<span class="sd">        M(t) map.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            proto_map_raw (matrix): the raw patch map</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            mt_map (matrix): the patch map M(t)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">contours</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">findContours</span><span class="p">(</span><span class="n">cv2</span><span class="o">.</span><span class="n">convertScaleAbs</span><span class="p">(</span><span class="n">proto_map_raw</span><span class="p">),</span>
+                                       <span class="n">cv2</span><span class="o">.</span><span class="n">RETR_TREE</span><span class="p">,</span>
+                                       <span class="n">cv2</span><span class="o">.</span><span class="n">CHAIN_APPROX_SIMPLE</span><span class="p">)</span>
+
+        <span class="n">size_c</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">contours</span><span class="p">):</span>
+            <span class="n">size_c</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">sort_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">size_c</span><span class="p">))[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">mt_map</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">proto_map_raw</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">nBest</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_best_proto</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">contours</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nBest</span><span class="p">):</span>
+            <span class="n">img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">proto_map_raw</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+            <span class="n">cv2</span><span class="o">.</span><span class="n">fillPoly</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">pts</span> <span class="o">=</span><span class="p">[</span><span class="n">contours</span><span class="p">[</span><span class="n">sort_idx</span><span class="p">[</span><span class="n">i</span><span class="p">]]],</span> <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mi">255</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mi">255</span><span class="p">))</span>
+            <span class="n">img</span> <span class="o">=</span> <span class="n">img</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+            <span class="n">mt_map</span> <span class="o">=</span> <span class="n">mt_map</span> <span class="o">+</span> <span class="n">img</span>
+
+        <span class="k">return</span> <span class="n">mt_map</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Giuseppe Boccignone, Renato Nobre.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

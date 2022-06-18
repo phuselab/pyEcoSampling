@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Frame Processor &mdash; Eco Sampling 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Salience Map" href="salience_map.html" />
+    <link rel="prev" title="Generate Scanpath" href="generate_scanpath.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html">
+            <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user/introduction.html">Ecological Sampling Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/config.html">Configuration file</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">EcoSampling Modules</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="generate_scanpath.html">Generate Scanpath</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Frame Processor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="salience_map.html">Salience Map</a></li>
+<li class="toctree-l1"><a class="reference internal" href="feature_map.html">Feature Map</a></li>
+<li class="toctree-l1"><a class="reference internal" href="proto_parameters.html">Proto Parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interest_points.html">Interest Points</a></li>
+<li class="toctree-l1"><a class="reference internal" href="complexity.html">Complexity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="action_selector.html">Action Selector</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gaze_sampler.html">Gaze Sampler</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Salience Backends</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="self_resemblance.html">Self-Resemblance</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Utils</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../utils/statistics.html">Statistics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/helper.html">Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/logger.html">Logger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/plotter.html">Plotter</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Eco Sampling</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Frame Processor</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/ecosampling/frame_processor.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="module-frame_processor">
+<span id="frame-processor"></span><h1>Frame Processor<a class="headerlink" href="#module-frame_processor" title="Permalink to this headline"></a></h1>
+<p>Frame Processor class file.</p>
+<dl class="simple">
+<dt>Authors:</dt><dd><ul class="simple">
+<li><p>Giuseppe Boccignone &lt;<a class="reference external" href="mailto:giuseppe&#46;boccignone&#37;&#52;&#48;unimi&#46;it">giuseppe<span>&#46;</span>boccignone<span>&#64;</span>unimi<span>&#46;</span>it</a>&gt;</p></li>
+<li><p>Renato Nobre &lt;<a class="reference external" href="mailto:renato&#46;avellarnobre&#37;&#52;&#48;studenti&#46;unimi&#46;it">renato<span>&#46;</span>avellarnobre<span>&#64;</span>studenti<span>&#46;</span>unimi<span>&#46;</span>it</a>&gt;</p></li>
+</ul>
+</dd>
+<dt>Changes:</dt><dd><ul class="simple">
+<li><p>12/12/2012  First Edition Matlab</p></li>
+<li><p>31/05/2022  Python Edition</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="frame_processor.FrameProcessor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">frame_processor.</span></span><span class="sig-name descname"><span class="pre">FrameProcessor</span></span><a class="reference internal" href="../_modules/frame_processor.html#FrameProcessor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#frame_processor.FrameProcessor" title="Permalink to this definition"></a></dt>
+<dd><p>Set of functions to handle image input and create frames.</p>
+<p>This class has functions to create the window size frame from images
+in a local dir, apply foveated filtering to a frame, reduce the frame
+size and increase image size.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="frame_processor.FrameProcessor.n_frames">
+<span class="sig-name descname"><span class="pre">n_frames</span></span><a class="headerlink" href="#frame_processor.FrameProcessor.n_frames" title="Permalink to this definition"></a></dt>
+<dd><p>Number of frames to process in a step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="frame_processor.FrameProcessor.frame_offset">
+<span class="sig-name descname"><span class="pre">frame_offset</span></span><a class="headerlink" href="#frame_processor.FrameProcessor.frame_offset" title="Permalink to this definition"></a></dt>
+<dd><p>Offset between frames.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="frame_processor.FrameProcessor.img_list">
+<span class="sig-name descname"><span class="pre">img_list</span></span><a class="headerlink" href="#frame_processor.FrameProcessor.img_list" title="Permalink to this definition"></a></dt>
+<dd><p>List of images in the local dir.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="frame_processor.FrameProcessor.total_frames">
+<span class="sig-name descname"><span class="pre">total_frames</span></span><a class="headerlink" href="#frame_processor.FrameProcessor.total_frames" title="Permalink to this definition"></a></dt>
+<dd><p>Total number of images in the local dir.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="frame_processor.FrameProcessor.n_rows">
+<span class="sig-name descname"><span class="pre">n_rows</span></span><a class="headerlink" href="#frame_processor.FrameProcessor.n_rows" title="Permalink to this definition"></a></dt>
+<dd><p>Number of rows in the image.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="frame_processor.FrameProcessor.n_cols">
+<span class="sig-name descname"><span class="pre">n_cols</span></span><a class="headerlink" href="#frame_processor.FrameProcessor.n_cols" title="Permalink to this definition"></a></dt>
+<dd><p>Number of columns in the image.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="frame_processor.FrameProcessor.I">
+<span class="sig-name descname"><span class="pre">I</span></span><a class="headerlink" href="#frame_processor.FrameProcessor.I" title="Permalink to this definition"></a></dt>
+<dd><p>3 time-step frame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="frame_processor.FrameProcessor.foveated_I">
+<span class="sig-name descname"><span class="pre">foveated_I</span></span><a class="headerlink" href="#frame_processor.FrameProcessor.foveated_I" title="Permalink to this definition"></a></dt>
+<dd><p>3 time-step foveated frame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="frame_processor.FrameProcessor.show_frame">
+<span class="sig-name descname"><span class="pre">show_frame</span></span><a class="headerlink" href="#frame_processor.FrameProcessor.show_frame" title="Permalink to this definition"></a></dt>
+<dd><p>Current frame for visualization.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="frame_processor.FrameProcessor.show_foveated_frame">
+<span class="sig-name descname"><span class="pre">show_foveated_frame</span></span><a class="headerlink" href="#frame_processor.FrameProcessor.show_foveated_frame" title="Permalink to this definition"></a></dt>
+<dd><p>Current foveated frame for visualization.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="frame_processor.FrameProcessor.frame_resize_orginal">
+<span class="sig-name descname"><span class="pre">frame_resize_orginal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/frame_processor.html#FrameProcessor.frame_resize_orginal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#frame_processor.FrameProcessor.frame_resize_orginal" title="Permalink to this definition"></a></dt>
+<dd><p>Resize frame to original size</p>
+<p>Use bilinear interpolation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>frame</strong> (<em>np.ndarray</em>) – Small size frame</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>np.ndarray</strong> – Original size frame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="frame_processor.FrameProcessor.read_frames">
+<span class="sig-name descname"><span class="pre">read_frames</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame_idx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/frame_processor.html#FrameProcessor.read_frames"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#frame_processor.FrameProcessor.read_frames" title="Permalink to this definition"></a></dt>
+<dd><p>Read current, next and previous image, creating a frame.</p>
+<p>Reading include opening the files, converting them
+to grayscale, and creating a 3 time-step frame.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Also save the frames in the object instance.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>frame_idx</strong> (<em>int</em>) – Current frame indices</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>I</strong> – Grayscale image frame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="frame_processor.FrameProcessor.foveated_imaging">
+<span class="sig-name descname"><span class="pre">foveated_imaging</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">foa</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">I</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/frame_processor.html#FrameProcessor.foveated_imaging"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#frame_processor.FrameProcessor.foveated_imaging" title="Permalink to this definition"></a></dt>
+<dd><p>Apply foveated imaging to the Grayscale frame.</p>
+<p>To convert to the foveated version this function apply a gaussian
+filter in the field of attention (<code class="docutils literal notranslate"><span class="pre">foa</span></code>) of the image.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>foa</strong> (<em>np.ndarray</em>) – Field of attention.</p></li>
+<li><p><strong>I</strong> (<em>np.ndarray</em>) – Grayscale frame</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Also save the frames in the object instance.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>Foveated frame</strong></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="frame_processor.FrameProcessor.reduce_frames">
+<span class="sig-name descname"><span class="pre">reduce_frames</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">foveated_I</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduced_rows</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduced_cols</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">64</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/frame_processor.html#FrameProcessor.reduce_frames"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#frame_processor.FrameProcessor.reduce_frames" title="Permalink to this definition"></a></dt>
+<dd><p>Reduce the frame to a desired size.</p>
+<p>The main purpose of this reduction is to compute the features.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>foveated_I</strong> (<em>np.ndarray</em>) – Frame to be reduced.</p></li>
+<li><p><strong>reduced_rows</strong> (<em>int</em><em>, </em><em>optional</em>) – Final desired row size. Defaults to 64.</p></li>
+<li><p><strong>reduced_cols</strong> (<em>int</em><em>, </em><em>optional</em>) – Final desired col size. Defaults to 64.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>The reduced frame.</strong></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="generate_scanpath.html" class="btn btn-neutral float-left" title="Generate Scanpath" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="salience_map.html" class="btn btn-neutral float-right" title="Salience Map" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Giuseppe Boccignone, Renato Nobre.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
