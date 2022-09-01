@@ -45,8 +45,8 @@ brew install python-tk
 To create the software library and run the demos, given that your python is in the correct version and Tkinter is installed, clone the repository, enter the project root folder and install the project requirements:
 
 ```bash
-$ git clone https://github.com/phuselab/INMCA_Nobre
-$ cd INMCA_Nobre/
+$ git clone https://github.com/phuselab/pyEcoSampling
+$ cd pyEcoSampling/
 $ pip install -r requirements.txt
 ```
 
